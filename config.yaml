@@ -1,0 +1,110 @@
+#Parameter file for fastq preprocesing step
+samples: "/home/max/Work/OTHER_PJS/HQ_WGS_QC/pipeline_tests/test_files/FVG/BATCHES/alignment_samples_test.txt"
+
+#prject name
+proj_name : "WGS_VarCalling"
+
+#define some variables to be used for some rules
+#library name
+lb : "L001"
+pl : "Illumina"
+#compression level
+cl : 5
+
+ip1 : 500         #interval_padding (bp)  # HaplotypeCaller
+maa : 3           #max alternate alleles  # HaplotypeCaller
+
+#java options
+java_opts:
+  opt_all: '-XX:ParallelGCThreads=1'       # All GATK steps
+  opt1x: '-Xms5g -Xmx5g -XX:+UseSerialGC' #memoria java       # Chr12,Wg12,21x2
+  opt2x: '-Xms10g -Xmx10g -XX:+UseSerialGC'    #java options       # 02,03,04,05x2,06,07,08,09,Chr10,Wg10x3,14,15,17,18,23,24,Chr25,Chr26
+  opt3x: '-Xms25g -Xmx25g -XX:+UseSerialGC'    #memoria java       # 19
+  opt4x: '-Xms100g -Xmx100g -XX:+UseSerialGC'   #memoria java       # 20
+
+references:
+  basepath: "/home/max/Work/OTHER_PJS/HQ_WGS_QC/pipeline_tests/test_files/resources"
+  # basepath: "/storage/burlo/cocca/resources"
+  provider: "hgRef"
+  release: "GRCh38.p13"
+
+genome_fasta: "GCA_000001405.15_GRCh38_full_plus_hs38d1_analysis_set.fna"
+callable_intervals: "wgs_intervals"
+# wgs_gatk: "/home/max/Work/OTHER_PJS/HQ_WGS_QC/pipeline_tests/test_files/resources/hgRef/GRCh38.p13/wgs_intervals" #this has to be a list of bed files for the calling step
+# call_chr: ["chr1","chr2","chr3","chr4","chr5","chr6","chr7","chr8","chr9","chr10","chr11","chr12","chr13","chr14","chr15","chr16","chr17","chr18","chr19","chr20","chr21","chr22","chrX","chrY","chrM"]
+call_chr: ["chrX_PAR","chrX_NONPAR"]
+
+
+known_variants:
+  dbsnp: "/galileo/home/userexternal/mcocca00/resources/hg38/dbsnp_138.hg38.vcf.gz"
+  dbsnp_latest: "/galileo/home/userexternal/mcocca00/resources/hg38/dbsnp_151.hg38.vcf.gz"
+  hapmap: "/galileo/home/userexternal/mcocca00/resources/hg38/hapmap_3.3.hg38.vcf.gz"
+  g1k: "/galileo/home/userexternal/mcocca00/resources/hg38/1000G_phase1.snps.high_confidence.hg38.vcf.gz"
+  omni: "/galileo/home/userexternal/mcocca00/resources/hg38/1000G_omni2.5.hg38.vcf.gz"
+  mills: "/galileo/home/userexternal/mcocca00/resources/hg38/Mills_and_1000G_gold_standard.indels.hg38.vcf.gz"
+  indels: "/galileo/home/userexternal/mcocca00/resources/hg38/Homo_sapiens_assembly38.known_indels.vcf.gz"
+
+############################################
+#Template to pre-process fastq files
+# with parameters for different tools in different rules
+rules:
+  ubam_gen:
+    out_dir: "1.ALIGNMENT"
+  bwa_mem:
+    out_dir: "1.ALIGNMENT"
+    threads: 12
+    mem: 10000
+  map_unmap_merge:
+    out_dir: "1.ALIGNMENT"
+  mark_dup:
+    out_dir: "1.ALIGNMENT"
+    threads: 8
+    mem: 10000
+  sort_bam:
+    out_dir: "1.ALIGNMENT"
+    threads: 12
+    mem: 10000
+  bqsr_proc:
+    out_dir: "2.BQSR"
+  gather_bqsr:
+    out_dir: "2.BQSR"
+  apply_bqsr:
+    out_dir: "2.BQSR"
+  gatk_hap_caller_autosomal:
+    out_dir: "3.VarCall"
+  gatk_hap_caller_sex:
+    out_dir: "3.VarCall"
+
+#########SET UP YOUR EMAIL HERE ##############
+mail: ""
+#########SET UP YOUR EMAIL HERE ##############
+
+### - GENERAL PATHS - ###
+### - PATH FILE - ###
+files_path:
+  tmp: "localtemp"
+  base_out: "/home/max/Work/OTHER_PJS/HQ_WGS_QC/pipeline_tests"
+  log_dir: "Log"
+  benchmark: "benchmarks"
+
+### - PATH TOOL - ###
+ALIGN_TOOL: "bwa-mem2"
+PICARD_TOOL: "picard"
+SAMBAMBA_TOOL: "sambamba"
+SAMTOOLS: "samtools"
+BCFTOOLS: "bcftools"
+GATK_TOOL: "gatk"
+
+
+tools_path:
+  ph3: "/share/apps/bio/bin/bedtools"
+
+# GNMhg38=/galileo/home/userexternal/mcocca00/resources/hg38/Homo_sapiens_assembly38.fasta
+# DBSNP138=/galileo/home/userexternal/mcocca00/resources/hg38/dbsnp_138.hg38.vcf.gz
+# DBSNP_latest=/galileo/home/userexternal/mcocca00/resources/hg38/dbsnp_151.hg38.vcf.gz
+# INDELS=/galileo/home/userexternal/mcocca00/resources/hg38/Homo_sapiens_assembly38.known_indels.vcf.gz
+# OTGindels=/galileo/home/userexternal/mcocca00/resources/hg38/Mills_and_1000G_gold_standard.indels.hg38.vcf.gz
+# OTGsnps=/galileo/home/userexternal/mcocca00/resources/hg38/1000G_phase1.snps.high_confidence.hg38.vcf.gz
+# HAPMAP=/galileo/home/userexternal/mcocca00/resources/hg38/hapmap_3.3.hg38.vcf.gz
+# OMNI=/galileo/home/userexternal/mcocca00/resources/hg38/1000G_omni2.5.hg38.vcf.gz
+# AXIOM=/galileo/home/userexternal/mcocca00/resources/hg38/Axiom_Exome_Plus.genotypes.all_populations.poly.hg38.vcf.gz
