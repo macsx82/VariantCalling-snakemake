@@ -30,9 +30,9 @@ rule gatk_hap_caller:
         config["files_path"]["benchmark"] + "{sample}_{interval_name}.tsv"
     message: """ HaplotypeCaller """
     run:
-        print("{params.sample_sex}")
-        print("{params.current_chr}")
-        print("{params.chr_mode}")
+        print({params.sample_sex})
+        print({params.current_chr})
+        print({params.chr_mode})
         if params.sample_sex == "2" :
             if params.current_chr != "chrY" :
                 print("Job submitted for female sample on non Y chromosome.")
