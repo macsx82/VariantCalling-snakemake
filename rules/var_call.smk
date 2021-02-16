@@ -32,7 +32,6 @@ rule gatk_hap_caller:
     run:
         print({params.sample_sex})
         print({params.current_chr})
-        print({params.chr_mode})
         if params.sample_sex == "2" :
             if params.current_chr != "chrY" :
                 print("Job submitted for female sample on non Y chromosome.")
