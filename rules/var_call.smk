@@ -31,42 +31,43 @@ rule gatk_hap_caller:
     envmodules:
         "gatk/4.1.9.0"
     message: """ HaplotypeCaller """
-    run:
-        print({params.sample_sex})
-        print({params.current_chr})
-        if params.sample_sex == "2" :
-            if params.current_chr != "chrY" :
-                print("Job submitted for female sample on non Y chromosome.")
-                shell("{params.gatk} --java-options {params.java_opt} HaplotypeCaller -R {params.ref_genome} -I {input.cram} -O ${output} -L {params.intervals_file} -ip {params.ip1} --max-alternate-alleles {params.maa} -ERC GVCF --native-pair-hmm-threads 1 --output-mode EMIT_ALL_CONFIDENT_SITES -G StandardAnnotation -G AS_StandardAnnotation -G StandardHCAnnotation 2> {log[1]}")
-        else :
+    shell:
+        """
+        sample_sex={params.sample_sex}
+        current_chr={params.current_chr}
+        chr_mode={params.chr_mode}
+
+        if [[ ${{sample_sex}} -eq 2 ]];then
+        #we are working with female samples: no need to worry about ploidy
+        #but we need to skip chrY calls
+            if [[ ${{current_chr}} != "chrY" ]];then
+                echo "Job submitted for female sample on non Y chromosome."
+                {params.gatk} --java-options {params.java_opt} HaplotypeCaller -R {params.ref_genome} -I {input.cram} -O ${output} -L {params.intervals_file} -ip {params.ip1} --max-alternate-alleles {params.maa} -ERC GVCF --native-pair-hmm-threads 1 --output-mode EMIT_ALL_CONFIDENT_SITES -G StandardAnnotation -G AS_StandardAnnotation -G StandardHCAnnotation 2> {log[1]}
+            fi
+        else
             #we are working with a male sample
-            if params.chr_mode == "SEXUAL":
-                print("Job submitted for male sample on non sexual chromosome.")
-                shell("{params.gatk} --java-options {params.java_opt} HaplotypeCaller -R {params.ref_genome} -I {input.cram} -O ${output} -L {params.intervals_file} -ip {params.ip1} -ploidy {params.sample_sex} --max-alternate-alleles {params.maa} -ERC GVCF --native-pair-hmm-threads 1 --output-mode EMIT_ALL_CONFIDENT_SITES -G StandardAnnotation -G AS_StandardAnnotation -G StandardHCAnnotation 2> {log[1]}")
-            elif params.chr_mode == "AUTOSOMAL":
-                print("Job submitted for male sample on non sexual chromosome.")
-                shell("{params.gatk} --java-options {params.java_opt} HaplotypeCaller -R {params.ref_genome} -I {input.cram} -O ${output} -L {params.intervals_file} -ip {params.ip1} --max-alternate-alleles {params.maa} -ERC GVCF --native-pair-hmm-threads 1 --output-mode EMIT_ALL_CONFIDENT_SITES -G StandardAnnotation -G AS_StandardAnnotation -G StandardHCAnnotation 2> {log[1]}")
-
-
-        # if [[ {params.sample_sex} -eq 2 ]];then
-        # #we are working with female samples: no need to worry about ploidy
-        # #but we need to skip chrY calls
-        #     if [[ {params.current_chr} != "chrY" ]];then
-        #         echo "Job submitted for female sample on non Y chromosome."
-        #         {params.gatk} --java-options {params.java_opt} HaplotypeCaller -R {params.ref_genome} -I {input.cram} -O ${output} -L {params.intervals_file} -ip {params.ip1} --max-alternate-alleles {params.maa} -ERC GVCF --native-pair-hmm-threads 1 --output-mode EMIT_ALL_CONFIDENT_SITES -G StandardAnnotation -G AS_StandardAnnotation -G StandardHCAnnotation 2> {log[1]}
-        #     fi
-        # else
-        #     #we are working with a male sample
-        #     if [[ {params.current_chr} != "chrY" ]];then
-        #         echo "Job submitted for male sample on autosomal chromosome."
-        #         {params.gatk} --java-options {params.java_opt} HaplotypeCaller -R {params.ref_genome} -I {input.cram} -O ${output} -L {params.intervals_file} -ip {params.ip1} --max-alternate-alleles {params.maa} -ERC GVCF --native-pair-hmm-threads 1 --output-mode EMIT_ALL_CONFIDENT_SITES -G StandardAnnotation -G AS_StandardAnnotation -G StandardHCAnnotation 2> {log[1]}
-        #     else
-        #         echo "Job submitted for male sample on Y chromosome."
-        #         {params.gatk} --java-options {params.java_opt} HaplotypeCaller -R {params.ref_genome} -I {input.cram} -O ${output} -L {params.intervals_file} -ip {params.ip1} -ploidy {params.sample_sex} --max-alternate-alleles {params.maa} -ERC GVCF --native-pair-hmm-threads 1 --output-mode EMIT_ALL_CONFIDENT_SITES -G StandardAnnotation -G AS_StandardAnnotation -G StandardHCAnnotation 2> {log[1]}
-        #     fi
-        # fi
-        # """
-
+            if [[ ${{chr_mode}} == "SEXUAL" ]];then
+                echo "Job submitted for male sample on sexual chromosome."
+                {params.gatk} --java-options {params.java_opt} HaplotypeCaller -R {params.ref_genome} -I {input.cram} -O ${output} -L {params.intervals_file} -ip {params.ip1} -ploidy {params.sample_sex} --max-alternate-alleles {params.maa} -ERC GVCF --native-pair-hmm-threads 1 --output-mode EMIT_ALL_CONFIDENT_SITES -G StandardAnnotation -G AS_StandardAnnotation -G StandardHCAnnotation 2> {log[1]}
+            else 
+                echo "Job submitted for male sample on non sexual chromosome."
+                {params.gatk} --java-options {params.java_opt} HaplotypeCaller -R {params.ref_genome} -I {input.cram} -O ${output} -L {params.intervals_file} -ip {params.ip1} --max-alternate-alleles {params.maa} -ERC GVCF --native-pair-hmm-threads 1 --output-mode EMIT_ALL_CONFIDENT_SITES -G StandardAnnotation -G AS_StandardAnnotation -G StandardHCAnnotation 2> {log[1]}
+            fi
+        fi
+        """
+# run:
+#         if params.sample_sex == "2" :
+#             if params.current_chr != "chrY" :
+#                 print("Job submitted for female sample on non Y chromosome.")
+#                 shell("{params.gatk} --java-options {params.java_opt} HaplotypeCaller -R {params.ref_genome} -I {input.cram} -O ${output} -L {params.intervals_file} -ip {params.ip1} --max-alternate-alleles {params.maa} -ERC GVCF --native-pair-hmm-threads 1 --output-mode EMIT_ALL_CONFIDENT_SITES -G StandardAnnotation -G AS_StandardAnnotation -G StandardHCAnnotation 2> {log[1]}")
+#         else :
+#             #we are working with a male sample
+#             if params.chr_mode == "SEXUAL":
+#                 print("Job submitted for male sample on sexual chromosome.")
+#                 shell("{params.gatk} --java-options {params.java_opt} HaplotypeCaller -R {params.ref_genome} -I {input.cram} -O ${output} -L {params.intervals_file} -ip {params.ip1} -ploidy {params.sample_sex} --max-alternate-alleles {params.maa} -ERC GVCF --native-pair-hmm-threads 1 --output-mode EMIT_ALL_CONFIDENT_SITES -G StandardAnnotation -G AS_StandardAnnotation -G StandardHCAnnotation 2> {log[1]}")
+#             elif params.chr_mode == "AUTOSOMAL":
+#                 print("Job submitted for male sample on non sexual chromosome.")
+#                 shell("{params.gatk} --java-options {params.java_opt} HaplotypeCaller -R {params.ref_genome} -I {input.cram} -O ${output} -L {params.intervals_file} -ip {params.ip1} --max-alternate-alleles {params.maa} -ERC GVCF --native-pair-hmm-threads 1 --output-mode EMIT_ALL_CONFIDENT_SITES -G StandardAnnotation -G AS_StandardAnnotation -G StandardHCAnnotation 2> {log[1]}")
 #rule for calling on sex chromosomes
 # rule gatk_hap_caller_sex:
 #     output:
