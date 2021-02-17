@@ -19,6 +19,8 @@ rule bqsr_proc:
         mem_mb=get_resources_from_jvm(config['java_opts']['opt2x'])
     benchmark:
         config["files_path"]["benchmark"] + "{sample}_bqsr.tsv"
+    envmodules:
+        "gatk/4.1.9.0"
     message: """ BaseRecalibrator """
     shell:
         """
@@ -40,6 +42,8 @@ rule apply_bqsr:
         config["files_path"]["log_dir"] + "/{sample}-bqsr.e"
     benchmark:
         config["files_path"]["benchmark"] + "{sample}_bqsr.tsv"
+    envmodules:
+        "gatk/4.1.9.0"
     threads: 1
     resources:
         mem_mb=get_resources_from_jvm(config['java_opts']['opt2x'])

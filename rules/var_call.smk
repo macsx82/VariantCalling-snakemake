@@ -28,6 +28,8 @@ rule gatk_hap_caller:
         mem_mb=get_resources_from_jvm(config['java_opts']['opt2x'])
     benchmark:
         config["files_path"]["benchmark"] + "{sample}_{interval_name}.tsv"
+    envmodules:
+        "gatk/4.1.9.0"
     message: """ HaplotypeCaller """
     run:
         print({params.sample_sex})

@@ -46,6 +46,8 @@ rule bwa_mem:
         config["files_path"]["log_dir"] + "/{sample}-mapping.e"
     benchmark:
         config["files_path"]["benchmark"] + "{sample}_mapping.tsv"
+    envmodules:
+        "bwa-mem2/2.1/gnu/9.3.0"
     threads:
         config["rules"]["bwa_mem"]["threads"]
     resources:
@@ -53,7 +55,6 @@ rule bwa_mem:
     message: """ Generating a mapped bam file to be merged with the unmapped one, to not lose information."""
     shell:
         """
-        module load bwa-mem2/2.1/gnu/9.3.0
         {params.bwa} mem -R \"@RG\tID:{params.rg_tag[PU1]}.{params.rg_tag[PU2]}\tSM:{wildcards.sample}\tLB:{params.LB}\tPL:{params.PL}\" -K 10000000 -v 3 -t {threads} -Y {params.ref_genome} {input.r1} {input.r2} | {params.samtools} view -1 -o {output[0]}
         {params.sambamba} sort --tmpdir={params.tmp} -t {threads} --sort-picard --out={output[1]} {output[0]}
         """
@@ -98,6 +99,8 @@ rule mark_dup:
         config["files_path"]["log_dir"] + "/{sample}-mark_dup.e"
     benchmark:
         config["files_path"]["benchmark"] + "{sample}_mark_dup.tsv"
+    envmodules:
+        "sambamba/0.8.0"
     threads:
         config["rules"]["mark_dup"]["threads"]
     resources:
@@ -127,6 +130,9 @@ rule sort_bam:
         config["files_path"]["log_dir"] + "/{sample}-mark_dup.e"
     benchmark:
         config["files_path"]["benchmark"] + "{sample}_mark_dup.tsv"
+    envmodules:
+        "sambamba/0.8.0",
+        "samtools/1.11"
     threads:
         config["rules"]["sort_bam"]["threads"]
     resources:
