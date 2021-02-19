@@ -35,6 +35,7 @@ rule bwa_mem:
     params:
         bwa=config['ALIGN_TOOL'],
         sambamba=config['SAMBAMBA_TOOL'],
+        samtools=config['SAMTOOLS'],
         tmp=os.path.join(BASE_OUT,config.get("files_path").get("tmp")),
         LB=config['lb'],
         PL=config['pl'],
