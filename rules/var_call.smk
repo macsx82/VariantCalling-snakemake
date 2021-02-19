@@ -3,8 +3,7 @@ rule gatk_hap_caller:
     wildcard_constraints:
         interval_name='wgs_calling_regions_.+.interval_list'
     output:
-        BASE_OUT + "/" + config["rules"]["gatk_hap_caller"]["out_dir"] + "/{sample}_{interval_name}_g.vcf.gz"
-        # PaoloPlate-24_wgs_calling_regions_chr14.hg38.interval_list_g.vcf.gz
+        BASE_OUT + "/" + config["rules"]["gatk_hap_caller"]["out_dir"] + "/{sample}/{sample}_{interval_name}_g.vcf.gz"
     input:
         cram=rules.apply_bqsr.output[0]
         # crai=rules.apply_bqsr.output[1]

@@ -27,8 +27,8 @@
 
 rule bwa_mem:
     output:
-        BASE_OUT +"/" + config["rules"]["bwa_mem"]["out_dir"] + "/{sample}_map.bam",
-        BASE_OUT +"/" + config["rules"]["bwa_mem"]["out_dir"] + "/{sample}_map_sorted.bam"
+        BASE_OUT +"/" + config["rules"]["bwa_mem"]["out_dir"] + "/{sample}/{sample}_map.bam",
+        BASE_OUT +"/" + config["rules"]["bwa_mem"]["out_dir"] + "/{sample}/{sample}_map_sorted.bam"
     input:
         r1 = lambda wc: samples_df[samples_df.SAMPLE_ID == (wc.sample).split(sep="_")[0]].fq1,
         r2 = lambda wc: samples_df[samples_df.SAMPLE_ID == (wc.sample).split(sep="_")[0]].fq2
@@ -88,7 +88,7 @@ rule bwa_mem:
 
 rule mark_dup:
     output:
-        BASE_OUT +"/" + config["rules"]["mark_dup"]["out_dir"] + "/{sample}_mapped_md.bam"
+        BASE_OUT +"/" + config["rules"]["mark_dup"]["out_dir"] + "/{sample}/{sample}_mapped_md.bam"
     input:
         rules.bwa_mem.output[1]
         # rules.map_unmap_merge.output
@@ -115,8 +115,8 @@ rule mark_dup:
 
 rule sort_bam:
     output:
-        BASE_OUT +"/" + config["rules"]["sort_bam"]["out_dir"] + "/{sample}_mapped_md_sorted.cram",
-        BASE_OUT +"/" + config["rules"]["sort_bam"]["out_dir"] + "/{sample}_mapped_md_sorted.crai"
+        BASE_OUT +"/" + config["rules"]["sort_bam"]["out_dir"] + "/{sample}/{sample}_mapped_md_sorted.cram",
+        BASE_OUT +"/" + config["rules"]["sort_bam"]["out_dir"] + "/{sample}/{sample}_mapped_md_sorted.crai"
     input:
         rules.mark_dup.output
     params:

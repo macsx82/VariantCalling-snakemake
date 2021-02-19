@@ -1,6 +1,6 @@
 rule bqsr_proc:
     output:
-        BASE_OUT + "/" + config["rules"]["bqsr_proc"]["out_dir"] + "/{sample}_recaldata.csv"
+        BASE_OUT + "/" + config["rules"]["bqsr_proc"]["out_dir"] + "/{sample}/{sample}_recaldata.csv"
     input:
         rules.sort_bam.output[0]
     params:
@@ -24,12 +24,12 @@ rule bqsr_proc:
     message: """ BaseRecalibrator """
     shell:
         """
-        {params.gatk} --java-options {params.java_opt} BaseRecalibrator -R {params.ref_genome} -I {input} --use-original-qualities --showHidden --tmp-dir {params.tmp}/ -O {output} --known-sites {params.DBSNP_latest} --known-sites {params.INDELS} --known-sites {params.mills}
+        {params.gatk} --java-options {params.java_opt} BaseRecalibrator -R {params.ref_genome} -I {input} --use-original-qualities --showHidden --tmp-dir {params.tmp}/ -O {output} --known-sites {params.DBSNP_latest} --known-sites {params.INDELS} --known-sites {params.mills} 2> {log[1]} 1> {log[0]}
         """
 
 rule apply_bqsr:
     output:
-        BASE_OUT +"/" + config["rules"]["apply_bqsr"]["out_dir"] + "/{sample}_bqsr.cram"
+        BASE_OUT +"/" + config["rules"]["apply_bqsr"]["out_dir"] + "/{sample}/{sample}_bqsr.cram"
     input:
         rules.sort_bam.output[0],rules.bqsr_proc.output
     params:
@@ -50,6 +50,6 @@ rule apply_bqsr:
     message: """ ApplyBQSR """
     shell:
         """
-        {params.gatk} --java-options {params.java_opt} ApplyBQSR -R {params.ref_genome} -I {input[0]} -O {output} -bqsr {input[1]} --static-quantized-quals 10 --static-quantized-quals 20 --static-quantized-quals 30 --add-output-sam-program-record --create-output-bam-md5 --use-original-qualities
+        {params.gatk} --java-options {params.java_opt} ApplyBQSR -R {params.ref_genome} -I {input[0]} -O {output} -bqsr {input[1]} --static-quantized-quals 10 --static-quantized-quals 20 --static-quantized-quals 30 --add-output-sam-program-record --create-output-bam-md5 --use-original-qualities 2> {log[1]} 1> {log[0]}
         """
 
