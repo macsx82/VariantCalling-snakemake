@@ -34,7 +34,6 @@ rule bwa_mem:
         r2 = lambda wc: samples_df[samples_df.SAMPLE_ID == (wc.sample).split(sep="_")[0]].fq2
     params:
         bwa=config['ALIGN_TOOL'],
-        samtools=config['SAMTOOLS'],
         sambamba=config['SAMBAMBA_TOOL'],
         tmp=os.path.join(BASE_OUT,config.get("files_path").get("tmp")),
         LB=config['lb'],
@@ -47,7 +46,9 @@ rule bwa_mem:
     benchmark:
         config["files_path"]["benchmark"] + "{sample}_mapping.tsv"
     envmodules:
-        "bwa-mem2/2.1/gnu/9.3.0"
+        "bwa-mem2/2.1/gnu/9.3.0",
+        "sambamba/0.8.0",
+        "samtools/1.11"
     threads:
         config["rules"]["bwa_mem"]["threads"]
     resources:
