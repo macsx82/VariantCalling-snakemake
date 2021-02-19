@@ -53,7 +53,7 @@ rules:
   bwa_mem:
     out_dir: "1.ALIGNMENT"
     threads: 12
-    mem: 10000
+    mem: 60000
   map_unmap_merge:
     out_dir: "1.ALIGNMENT"
   mark_dup:
