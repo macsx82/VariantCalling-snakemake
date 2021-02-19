@@ -17,7 +17,7 @@ from snakemake.utils import validate, min_version
 min_version("5.31.0")
 
 ##### load config file #####
-configfile: "config.yaml"
+# configfile: "config.yaml"
 #read samplesheet
 # samples_df = pd.read_table(samples, sep=" ", header=0, dtype='object')
 samples_df = pd.read_table(config["samples"], sep=" ", header=0, dtype='object')
