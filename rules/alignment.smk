@@ -36,10 +36,10 @@ rule bwa_mem:
         bwa=config['ALIGN_TOOL'],
         samtools=config['SAMTOOLS'],
         sambamba=config['SAMBAMBA_TOOL'],
-        tmp=config['files_path']['tmp'],
+        tmp=os.path.join(BASE_OUT,config.get("files_path").get("tmp")),
         LB=config['lb'],
         PL=config['pl'],
-        ref_genome=config['genome_fasta'],
+        ref_genome=resolve_single_filepath(*references_abs_path(), config.get("genome_fasta")),
         rg_tag=get_rg_id_data
     log:
         config["files_path"]["log_dir"] + "/{sample}-mapping.log",
@@ -92,7 +92,7 @@ rule mark_dup:
         # rules.map_unmap_merge.output
     params:
         sambamba=config['SAMBAMBA_TOOL'],
-        tmp=config['files_path']['tmp'],
+        tmp=os.path.join(BASE_OUT,config.get("files_path").get("tmp")),
         cl=config['cl']
     log:
         config["files_path"]["log_dir"] + "/{sample}-mark_dup.log",
@@ -120,11 +120,10 @@ rule sort_bam:
     params:
         sambamba=config['SAMBAMBA_TOOL'],
         samtools=config['SAMTOOLS'],
-        tmp=config['files_path']['tmp'],
+        tmp=os.path.join(BASE_OUT,config.get("files_path").get("tmp")),
         cl=config['cl'],
         java_opt=config['java_opts']['opt2x'],
-        ref_genome=config['genome_fasta']
-        # s_threads=int(config["rules"]["sort_bam"]["threads"]/2)
+        ref_genome=resolve_single_filepath(*references_abs_path(), config.get("genome_fasta"))
     log:
         config["files_path"]["log_dir"] + "/{sample}-mark_dup.log",
         config["files_path"]["log_dir"] + "/{sample}-mark_dup.e"

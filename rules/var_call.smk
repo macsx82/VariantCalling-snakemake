@@ -3,7 +3,7 @@ rule gatk_hap_caller:
     wildcard_constraints:
         interval_name='wgs_calling_regions_.+.interval_list'
     output:
-        BASE_OUT + "/" + config["rules"]["gatk_hap_caller_autosomal"]["out_dir"] + "/{sample}_{interval_name}_g.vcf.gz"
+        BASE_OUT + "/" + config["rules"]["gatk_hap_caller"]["out_dir"] + "/{sample}_{interval_name}_g.vcf.gz"
         # PaoloPlate-24_wgs_calling_regions_chr14.hg38.interval_list_g.vcf.gz
     input:
         cram=rules.apply_bqsr.output[0]
@@ -11,7 +11,7 @@ rule gatk_hap_caller:
         # interval=config["callable_intervals"]+"/{interval_name}.interval_list"
     params:
         gatk=config['GATK_TOOL'],
-        tmp=config['files_path']['tmp'],
+        tmp=os.path.join(BASE_OUT,config.get("files_path").get("tmp")),
         java_opt=config['java_opts']['opt2x'],
         ref_genome=resolve_single_filepath(*references_abs_path(), config.get("genome_fasta")),
         ip1=config['ip1'],
