@@ -23,7 +23,7 @@ rule gatk_hap_caller:
     log:
         config["files_path"]["log_dir"] + "/{sample}-{interval_name}.log",
         config["files_path"]["log_dir"] + "/{sample}-{interval_name}.e"
-    threads: 1
+    threads: 2
     resources:
         mem_mb=get_resources_from_jvm(config['java_opts']['opt2x'])
     benchmark:
