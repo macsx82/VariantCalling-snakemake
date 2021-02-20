@@ -57,7 +57,7 @@ rule bwa_mem:
     message: """ Generating a mapped bam file to be merged with the unmapped one, to not lose information."""
     shell:
         """
-        {params.bwa} mem -R \"@RG\tID:{params.rg_tag[PU1]}.{params.rg_tag[PU2]}\tSM:{wildcards.sample}\tLB:{params.LB}\tPL:{params.PL}\" -K 10000000 -v 3 -t {threads} -Y {params.ref_genome} {input.r1} {input.r2} | {params.samtools} view -1 -o {output[0]} 2> {log[1]} 1> {log[0]}
+        ({params.bwa} mem -R \"@RG\tID:{params.rg_tag[PU1]}.{params.rg_tag[PU2]}\tSM:{wildcards.sample}\tLB:{params.LB}\tPL:{params.PL}\" -K 10000000 -v 3 -t {threads} -Y {params.ref_genome} {input.r1} {input.r2} | {params.samtools} view -1 -o {output[0]}) 2> {log[1]} 1> {log[0]}
         {params.sambamba} sort --tmpdir={params.tmp} -t {threads} --sort-picard --out={output[1]} {output[0]} 2> {log[1]} 1> {log[0]}
         """
 
@@ -100,7 +100,7 @@ rule mark_dup:
         config["files_path"]["log_dir"] + "/{sample}-mark_dup.log",
         config["files_path"]["log_dir"] + "/{sample}-mark_dup.e"
     benchmark:
-        config["files_path"]["benchmark"] + "{sample}_mark_dup.tsv"
+        config["files_path"]["benchmark"] + "/{sample}_mark_dup.tsv"
     envmodules:
         "sambamba/0.8.0"
     threads:
@@ -130,7 +130,7 @@ rule sort_bam:
         config["files_path"]["log_dir"] + "/{sample}-mark_dup.log",
         config["files_path"]["log_dir"] + "/{sample}-mark_dup.e"
     benchmark:
-        config["files_path"]["benchmark"] + "{sample}_mark_dup.tsv"
+        config["files_path"]["benchmark"] + "/{sample}_mark_dup.tsv"
     envmodules:
         "sambamba/0.8.0",
         "samtools/1.11"
@@ -141,7 +141,7 @@ rule sort_bam:
     message: """ Sort BAM file by coordinate order and generate the CRAM file: CRAM recalculates MD and NM tags on the fly, so we don't need to calculate them. """
     shell:
         """
-        {params.sambamba} sort -t {threads} -m 1G --tmpdir={params.tmp}/ --out=/dev/stdout {input} | {params.samtools} view -@ {threads} -h -T {params.ref_genome} -C -o {output[0]} 2> {log[1]} 1> {log[0]}
+        ({params.sambamba} sort -t {threads} -m 1G --tmpdir={params.tmp}/ --out=/dev/stdout {input} | {params.samtools} view -@ {threads} -h -T {params.ref_genome} -C -o {output[0]}) 2> {log[1]} 1> {log[0]}
         {params.samtools} index {output[0]} {output[1]} 2> {log[1]} 1> {log[0]}
         """
 
