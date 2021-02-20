@@ -24,7 +24,7 @@ rule bqsr_proc:
     message: """ BaseRecalibrator """
     shell:
         """
-        {params.gatk} --java-options {params.java_opt} BaseRecalibrator -R {params.ref_genome} -I {input} --use-original-qualities --showHidden --tmp-dir {params.tmp}/ -O {output} --known-sites {params.DBSNP_latest} --known-sites {params.INDELS} --known-sites {params.mills} 2> {log[1]} 1> {log[0]}
+        {params.gatk} --java-options "{params.java_opt}" BaseRecalibrator -R {params.ref_genome} -I {input} --use-original-qualities --showHidden --tmp-dir {params.tmp}/ -O {output} --known-sites {params.DBSNP_latest} --known-sites {params.INDELS} --known-sites {params.mills} 2> {log[1]} 1> {log[0]}
         """
 
 rule apply_bqsr:
@@ -50,6 +50,6 @@ rule apply_bqsr:
     message: """ ApplyBQSR """
     shell:
         """
-        {params.gatk} --java-options {params.java_opt} ApplyBQSR -R {params.ref_genome} -I {input[0]} -O {output} -bqsr {input[1]} --static-quantized-quals 10 --static-quantized-quals 20 --static-quantized-quals 30 --add-output-sam-program-record --create-output-bam-md5 --use-original-qualities 2> {log[1]} 1> {log[0]}
+        {params.gatk} --java-options "{params.java_opt}" ApplyBQSR -R {params.ref_genome} -I {input[0]} -O {output} -bqsr {input[1]} --static-quantized-quals 10 --static-quantized-quals 20 --static-quantized-quals 30 --add-output-sam-program-record --create-output-bam-md5 --use-original-qualities 2> {log[1]} 1> {log[0]}
         """
 
