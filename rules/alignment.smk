@@ -45,7 +45,7 @@ rule bwa_mem:
         config["files_path"]["log_dir"] + "/{sample}-mapping.log",
         config["files_path"]["log_dir"] + "/{sample}-mapping.e"
     benchmark:
-        config["files_path"]["benchmark"] + "{sample}_mapping.tsv"
+        config["files_path"]["benchmark"] + "/{sample}_mapping.tsv"
     envmodules:
         "bwa-mem2/2.1/gnu/9.3.0",
         "sambamba/0.8.0",
@@ -58,7 +58,7 @@ rule bwa_mem:
     shell:
         """
         ({params.bwa} mem -R \"@RG\tID:{params.rg_tag[PU1]}.{params.rg_tag[PU2]}\tSM:{wildcards.sample}\tLB:{params.LB}\tPL:{params.PL}\" -K 10000000 -v 3 -t {threads} -Y {params.ref_genome} {input.r1} {input.r2} | {params.samtools} view -1 -o {output[0]}) 2> {log[1]} 1> {log[0]}
-        {params.sambamba} sort --tmpdir={params.tmp} -t {threads} --sort-picard --out={output[1]} {output[0]} 2> {log[1]} 1> {log[0]}
+        {params.sambamba} sort --tmpdir={params.tmp} -t {threads} --sort-picard --out={output[1]} {output[0]} 2>> {log[1]} 1>> {log[0]}
         """
 
 # rule map_unmap_merge:
@@ -142,6 +142,6 @@ rule sort_bam:
     shell:
         """
         ({params.sambamba} sort -t {threads} -m 1G --tmpdir={params.tmp}/ --out=/dev/stdout {input} | {params.samtools} view -@ {threads} -h -T {params.ref_genome} -C -o {output[0]}) 2> {log[1]} 1> {log[0]}
-        {params.samtools} index {output[0]} {output[1]} 2> {log[1]} 1> {log[0]}
+        {params.samtools} index {output[0]} {output[1]} 2>> {log[1]} 1>> {log[0]}
         """
 
