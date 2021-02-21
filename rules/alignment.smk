@@ -27,8 +27,8 @@
 
 rule bwa_mem:
     output:
-        BASE_OUT +"/" + config["rules"]["bwa_mem"]["out_dir"] + "/{sample}/{sample}_map.bam",
-        BASE_OUT +"/" + config["rules"]["bwa_mem"]["out_dir"] + "/{sample}/{sample}_map_sorted.bam"
+        temp(BASE_OUT +"/" + config["rules"]["bwa_mem"]["out_dir"] + "/{sample}/{sample}_map.bam"),
+        temp(BASE_OUT +"/" + config["rules"]["bwa_mem"]["out_dir"] + "/{sample}/{sample}_map_sorted.bam")
     input:
         r1 = lambda wc: samples_df[samples_df.SAMPLE_ID == (wc.sample).split(sep="_")[0]].fq1,
         r2 = lambda wc: samples_df[samples_df.SAMPLE_ID == (wc.sample).split(sep="_")[0]].fq2
