@@ -38,8 +38,8 @@ rule apply_bqsr:
         tmp=os.path.join(BASE_OUT,config.get("files_path").get("tmp")),
         ref_genome=resolve_single_filepath(*references_abs_path(), config.get("genome_fasta"))
     log:
-        config["files_path"]["log_dir"] + "/{sample}-bqsr.log",
-        config["files_path"]["log_dir"] + "/{sample}-bqsr.e"
+        config["files_path"]["log_dir"] + "/{sample}-apply-bqsr.log",
+        config["files_path"]["log_dir"] + "/{sample}-apply-bqsr.e"
     benchmark:
         config["files_path"]["benchmark"] + "/{sample}_apply_bqsr.tsv"
     envmodules:

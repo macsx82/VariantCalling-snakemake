@@ -39,16 +39,16 @@ rule gatk_hap_caller:
         #but we need to skip chrY calls
             if [[ ${{current_chr}} != "chrY" ]];then
                 echo "Job submitted for female sample on non Y chromosome."
-                {params.gatk} --java-options "{params.java_opt}" HaplotypeCaller -R {params.ref_genome} -I {input.cram} -O ${output} -L {params.intervals_file} -ip {params.ip1} --max-alternate-alleles {params.maa} -ERC GVCF --native-pair-hmm-threads 1 --output-mode EMIT_ALL_CONFIDENT_SITES -G StandardAnnotation -G AS_StandardAnnotation -G StandardHCAnnotation 2> {log[1]} 1> {log[0]}
+                {params.gatk} --java-options "{params.java_opt}" HaplotypeCaller -R {params.ref_genome} -I {input.cram} -O {output} -L {params.intervals_file} -ip {params.ip1} --max-alternate-alleles {params.maa} -ERC GVCF --native-pair-hmm-threads 1 --output-mode EMIT_ALL_CONFIDENT_SITES -G StandardAnnotation -G AS_StandardAnnotation -G StandardHCAnnotation 2> {log[1]} 1> {log[0]}
             fi
         else
             #we are working with a male sample
             if [[ ${{chr_mode}} == "SEXUAL" ]];then
                 echo "Job submitted for male sample on sexual chromosome."
-                {params.gatk} --java-options "{params.java_opt}" HaplotypeCaller -R {params.ref_genome} -I {input.cram} -O ${output} -L {params.intervals_file} -ip {params.ip1} -ploidy {params.sample_sex} --max-alternate-alleles {params.maa} -ERC GVCF --native-pair-hmm-threads 1 --output-mode EMIT_ALL_CONFIDENT_SITES -G StandardAnnotation -G AS_StandardAnnotation -G StandardHCAnnotation 2> {log[1]} 1> {log[0]}
+                {params.gatk} --java-options "{params.java_opt}" HaplotypeCaller -R {params.ref_genome} -I {input.cram} -O {output} -L {params.intervals_file} -ip {params.ip1} -ploidy {params.sample_sex} --max-alternate-alleles {params.maa} -ERC GVCF --native-pair-hmm-threads 1 --output-mode EMIT_ALL_CONFIDENT_SITES -G StandardAnnotation -G AS_StandardAnnotation -G StandardHCAnnotation 2> {log[1]} 1> {log[0]}
             else 
                 echo "Job submitted for male sample on non sexual chromosome."
-                {params.gatk} --java-options "{params.java_opt}" HaplotypeCaller -R {params.ref_genome} -I {input.cram} -O ${output} -L {params.intervals_file} -ip {params.ip1} --max-alternate-alleles {params.maa} -ERC GVCF --native-pair-hmm-threads 1 --output-mode EMIT_ALL_CONFIDENT_SITES -G StandardAnnotation -G AS_StandardAnnotation -G StandardHCAnnotation 2> {log[1]} 1> {log[0]}
+                {params.gatk} --java-options "{params.java_opt}" HaplotypeCaller -R {params.ref_genome} -I {input.cram} -O {output} -L {params.intervals_file} -ip {params.ip1} --max-alternate-alleles {params.maa} -ERC GVCF --native-pair-hmm-threads 1 --output-mode EMIT_ALL_CONFIDENT_SITES -G StandardAnnotation -G AS_StandardAnnotation -G StandardHCAnnotation 2> {log[1]} 1> {log[0]}
             fi
         fi
         """
