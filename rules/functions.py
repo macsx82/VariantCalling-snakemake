@@ -2,6 +2,9 @@ import os.path
 import gzip 
 import re
 import sys
+import errno
+import multiprocessing
+import psutil
 
 def get_rg_id_data(wildcards):
     fastq= list(samples_df[samples_df.SAMPLE_ID == (wildcards.sample).split(sep="_")[0]].fq1)[0]
@@ -40,6 +43,12 @@ def get_input_fasta(wildcards):
     # N 	Y if the read is filtered, N otherwise
     # 0 	0 when none of the control bits are on, otherwise it is an even number
     # NGTACG 	index sequence 
+def cpu_count():
+    return multiprocessing.cpu_count()
+
+def conservative_cpu_count(reserve_cores=1, max_cores=5):
+    cores = max_cores if cpu_count() > max_cores else cpu_count()
+    return max(cores - reserve_cores, 1)    
 
 #get resources in mb from java options
 def get_resources_from_jvm(jvm_option):
