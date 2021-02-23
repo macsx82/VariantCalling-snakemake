@@ -41,7 +41,7 @@ rule apply_bqsr:
         config["files_path"]["log_dir"] + "/{sample}-bqsr.log",
         config["files_path"]["log_dir"] + "/{sample}-bqsr.e"
     benchmark:
-        config["files_path"]["benchmark"] + "/{sample}_bqsr.tsv"
+        config["files_path"]["benchmark"] + "/{sample}_apply_bqsr.tsv"
     envmodules:
         "gatk/4.1.9.0"
     threads: conservative_cpu_count(reserve_cores=2, max_cores=6)
