@@ -6,8 +6,6 @@ rule gatk_hap_caller:
         BASE_OUT + "/" + config["rules"]["gatk_hap_caller"]["out_dir"] + "/{sample}/{sample}_{interval_name}_g.vcf.gz"
     input:
         cram=rules.apply_bqsr.output[0]
-        # crai=rules.apply_bqsr.output[1]
-        # interval=config["callable_intervals"]+"/{interval_name}.interval_list"
     params:
         gatk=config['GATK_TOOL'],
         tmp=os.path.join(BASE_OUT,config.get("files_path").get("tmp")),
@@ -26,7 +24,7 @@ rule gatk_hap_caller:
     resources:
         mem_mb=get_resources_from_jvm(config['java_opts']['opt2x'])
     benchmark:
-        config["files_path"]["benchmark"] + "{sample}_{interval_name}.tsv"
+        config["files_path"]["benchmark"] + "/{sample}_{interval_name}.tsv"
     envmodules:
         "gatk/4.1.9.0"
     message: """ HaplotypeCaller """

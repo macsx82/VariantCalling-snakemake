@@ -36,7 +36,7 @@ call_chr: ["12","20"]
 
 
 known_variants:
-  dbsnp_latest: "/storage/burlo/cocca/resources/dbSNP/human_9606_b154_GRCh37p13/GCF_000001405.25.vcf.gz"
+  dbsnp_latest: "/storage/burlo/cocca/resources/dbSNP/human_9606_b154_GRCh38p12/GCF_000001405.38.vcf.gz"
   dbsnp: "/storage/burlo/cocca/resources/gatk4hg38db/dbsnp_151.hg38.vcf.gz"
   hapmap: "/storage/burlo/cocca/resources/gatk4hg38db/hapmap_3.3.hg38.vcf.gz"
   g1k: "/storage/burlo/cocca/resources/gatk4hg38db/1000G_phase1.snps.high_confidence.hg38.vcf.gz"
