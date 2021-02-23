@@ -14,7 +14,7 @@ rule bqsr_proc:
     log:
         config["files_path"]["log_dir"] + "/{sample}-bqsr.log",
         config["files_path"]["log_dir"] + "/{sample}-bqsr.e"
-    threads: 1
+    threads: conservative_cpu_count(reserve_cores=2, max_cores=6)
     resources:
         mem_mb=get_resources_from_jvm(config['java_opts']['opt2x'])
     benchmark:
@@ -44,7 +44,7 @@ rule apply_bqsr:
         config["files_path"]["benchmark"] + "/{sample}_bqsr.tsv"
     envmodules:
         "gatk/4.1.9.0"
-    threads: 1
+    threads: conservative_cpu_count(reserve_cores=2, max_cores=6)
     resources:
         mem_mb=get_resources_from_jvm(config['java_opts']['opt2x'])
     message: """ ApplyBQSR """
