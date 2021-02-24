@@ -54,6 +54,7 @@ rule bwa_mem:
         config["rules"]["bwa_mem"]["threads"]
     resources:
         mem_mb=config["rules"]["bwa_mem"]["mem"]
+    priority: 50
     message: """ Generating a mapped bam file to be merged with the unmapped one, to not lose information."""
     shell:
         """
@@ -107,6 +108,7 @@ rule mark_dup:
         config["rules"]["mark_dup"]["threads"]
     resources:
         mem_mb=config["rules"]["mark_dup"]["mem"]
+    priority: 49
     message: """ Mark duplicate reads to avoid counting non-independent observations"""
     shell:
         """
@@ -138,6 +140,7 @@ rule sort_bam:
         config["rules"]["sort_bam"]["threads"]
     resources:
         mem_mb=get_resources_from_jvm(config['java_opts']['opt2x'])
+    priority: 48
     message: """ Sort BAM file by coordinate order and generate the CRAM file: CRAM recalculates MD and NM tags on the fly, so we don't need to calculate them. """
     shell:
         """

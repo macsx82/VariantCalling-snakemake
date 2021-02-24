@@ -21,6 +21,7 @@ rule bqsr_proc:
         config["files_path"]["benchmark"] + "/{sample}_bqsr.tsv"
     envmodules:
         "gatk/4.1.9.0"
+    priority: 47
     message: """ BaseRecalibrator """
     shell:
         """
@@ -47,6 +48,7 @@ rule apply_bqsr:
     threads: conservative_cpu_count(reserve_cores=2, max_cores=6)
     resources:
         mem_mb=get_resources_from_jvm(config['java_opts']['opt2x'])
+    priority: 46
     message: """ ApplyBQSR """
     shell:
         """
