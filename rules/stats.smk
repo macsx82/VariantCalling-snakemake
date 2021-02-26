@@ -68,7 +68,7 @@ rule picard_InsertSizeMetrics:
     message: """ extract insert size metrics """
     shell:
         """
-        {params.picard} {params.custom_jvm} CollectInsertSizeMetrics -R {params.ref_genome} -I {input} -O {output[0]} -H {output[1]} 2> {log[1]} 1> {log[0]}
+        java {params.custom_jvm} -jar {params.picard} CollectInsertSizeMetrics -R {params.ref_genome} -I {input} -O {output[0]} -H {output[1]} 2> {log[1]} 1> {log[0]}
         """
 
 rule picard_WGSMetrics:
@@ -94,5 +94,5 @@ rule picard_WGSMetrics:
     message: """ extract WGSMetrics """
     shell:
         """
-        {params.picard} {params.custom_jvm} CollectWgsMetrics {params.arguments} -I {input} -O {output} -R {params.ref_genome} 2> {log[1]} 1> {log[0]}
+        java {params.custom_jvm} -jar {params.picard} CollectWgsMetrics {params.arguments} -I {input} -O {output} -R {params.ref_genome} 2> {log[1]} 1> {log[0]}
         """
