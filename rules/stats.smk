@@ -61,7 +61,8 @@ rule picard_InsertSizeMetrics:
     benchmark:
         config["files_path"]["benchmark"] + "/{sample}_ismetrics.tsv"
     envmodules:
-        "picard/2.24.0"
+        "picard/2.24.0",
+        "R/4.0.3"
     threads: 2
     resources:
         mem_mb=get_resources_from_jvm(config['java_opts']['opt2x'])
@@ -87,7 +88,8 @@ rule picard_WGSMetrics:
     benchmark:
         config["files_path"]["benchmark"] + "/{sample}_wgsmetrics.tsv"
     envmodules:
-        "picard/2.24.0"
+        "picard/2.24.0",
+        "R/4.0.3"
     threads: 2
     resources:
         mem_mb=get_resources_from_jvm(config['java_opts']['opt2x'])
