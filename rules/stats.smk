@@ -96,5 +96,5 @@ rule picard_WGSMetrics:
     message: """ extract WGSMetrics """
     shell:
         """
-        java {params.custom_jvm} -jar {params.picard} CollectWgsMetrics {params.arguments} -I {input} -O {output} -R {params.ref_genome} 2> {log[1]} 1> {log[0]}
+        java {params.custom_jvm} -jar {params.picard} CollectWgsMetrics {params.arguments} I={input} O={output} R={params.ref_genome} 2> {log[1]} 1> {log[0]}
         """
