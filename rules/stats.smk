@@ -21,6 +21,30 @@ rule sam_validate:
         {params.samtools} quickcheck -vvv {input} > {output} 2> {log[1]}
         """
 
+rule sam_stats:
+    output:
+        BASE_OUT +"/" + config["rules"]["stats"]["out_dir"] + "/{sample}_stats.txt"
+    input:
+        rules.apply_bqsr.output
+    params:
+        samtools=config['SAMTOOLS'],
+        ref_genome=resolve_single_filepath(*references_abs_path(), config.get("genome_fasta"))
+    log:
+        config["files_path"]["log_dir"] + "/{sample}-stats.log",
+        config["files_path"]["log_dir"] + "/{sample}-stats.e"
+    threads: 1
+    resources:
+        mem_mb=config['rules']['stats']['mem']
+    benchmark:
+        config["files_path"]["benchmark"] + "/{sample}_stats.tsv"
+    envmodules:
+        "samtools/1.11"
+    message: """ Samtools stats for bqsr'ed files """
+    shell:
+        """
+        {params.samtools} stats -r {params.ref_genome} {input} > {output} 2> {log[1]}
+        """
+
 
 rule sam_flagstats:
     output:
