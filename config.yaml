@@ -1,5 +1,5 @@
 #Parameter file for fastq preprocesing step
-samples: "/large/___HOME___/burlo/cocca/analyses/FVG_HC_WGS/VAR_CALL/20210219/alignment_samples_test.txt"
+samples: "VARCALL_SAMPLE_FILE_PATH"
 
 #prject name
 proj_name : "WGS_VarCalling"
@@ -84,7 +84,7 @@ mail: ""
 ### - GENERAL PATHS - ###
 ### - PATH FILE - ###
 files_path:
-  base_out: "/large/___SCRATCH___/burlo/cocca/WGS_HC/FVG/VarCall/20210219"
+  base_out: "VARCALL_OUT_FOLDER"
   tmp: "localtemp"
   log_dir: "Log"
   benchmark: "benchmarks"
