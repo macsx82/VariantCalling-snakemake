@@ -14,7 +14,7 @@ from snakemake.exceptions import print_exception, WorkflowError
 from snakemake.utils import validate, min_version
 
 ##### set minimum snakemake version #####
-min_version("5.31.0")
+min_version("5.32.0")
 
 ##### load config file #####
 # configfile: "config.yaml"
@@ -40,9 +40,6 @@ call_intervals=expand("wgs_calling_regions_{chr}.GRCh38.p13.interval_list", chr=
 ##### local rules #####
 localrules: all
 
-#set minimum snakemake version#
-min_version("5.32.0")
-
 # Definition of helper functions
 # def get_vcfs():
 # vcf_files = list(pd.read_table(config["vcf_files"]).vcf_file)
@@ -62,8 +59,8 @@ rule all:
         expand(BASE_OUT + "/"+ config["rules"]["stats"]["out_dir"] + "/{sample}_flagstat.txt", sample=sample_names),
         expand(BASE_OUT +"/" +config["rules"]["stats"]["out_dir"] + "/{sample}_ismetrics.txt", sample=sample_names),
         expand(BASE_OUT +"/" +config["rules"]["stats"]["out_dir"] + "/{sample}_stats.txt", sample=sample_names),
-        expand(BASE_OUT +"/" +config["rules"]["stats"]["out_dir"] + "/{sample}_wgsmetrics.txt", sample=sample_names)
-
+        expand(BASE_OUT +"/" +config["rules"]["stats"]["out_dir"] + "/{sample}_wgsmetrics.txt", sample=sample_names),
+        expand(BASE_OUT + "/" + config["files_path"]["base_joint_call_path"] + "/{sample}/{sample}_{interval_name}_g.vcf.gz",sample=sample_names,interval_name=call_intervals)
         # [(BASE_OUT + "/"+ config["rules"]["ubam_gen"]["out_dir"]+"/" + "{sample}_unmap.bam").format(sample=sample_id) for sample_id in sample_names]
         # BASE_OUT + config["rules"]["bwa_mem"]["out_dir"] + "{sample}_map.bam"
 

@@ -1,3 +1,21 @@
+######PIPELINE OPTIONS#######
+# This first set of parameters is meant to be used to select the pipeline execution mode
+# Options are:
+# - BATCH
+# - JOINT_CALL
+#
+# BATCH mode is meant to be used to run the pipeline splitting the samples in different batches from
+# alignment to HaplotypeCaller 
+#
+# JOINT_CALL mode is meant to be the subsequent step, where we collect all gVCF and perform 
+# - joint variant calling
+# - VQSR filtering
+# - variant annotation
+#
+#
+##############################
+pipe_mode : "BATCH" #change to "JOINT_CALL" to work in joint call mode.
+
 #Parameter file for fastq preprocesing step
 samples: "VARCALL_SAMPLE_FILE_PATH"
 
@@ -77,6 +95,17 @@ rules:
     mem: 1000
   picard_WGSMetrics:
     arguments: "MINIMUM_MAPPING_QUALITY=-1 MINIMUM_BASE_QUALITY=-1 READ_LENGTH=150 COUNT_UNPAIRED=true"
+  #if running in BATCH mode, all the following paths will not be used, so, no need to specify
+  gatk_genomics_db_import:
+    out_dir: "5.DbImport"
+  gatk_genotype_gvcfs:
+    out_dir: "6.GenotypeGVC"
+
+  vqsr_path: ""
+  annotation_path: ""
+  release_path: ""
+
+
 #########SET UP YOUR EMAIL HERE ##############
 mail: ""
 #########SET UP YOUR EMAIL HERE ##############
@@ -88,6 +117,13 @@ files_path:
   tmp: "localtemp"
   log_dir: "Log"
   benchmark: "benchmarks"
+  base_joint_call_path : "[...]" #this folder should be located in a different path, so that can be accessed by all concurrent batch instances of the pipeline, to create symlink to gvcf files. Than, it could be read in joint call mode and used to perform DbImport and all other steps
+  #if running in BATCH mode, all the following paths will not be used, so, no need to specify
+  db_import_path: ""
+  vqsr_path: ""
+  annotation_path: ""
+  release_path: ""
+
 
 ### - PATH TOOL - ###
 ALIGN_TOOL: "bwa-mem2"
@@ -97,3 +133,4 @@ SAMTOOLS: "samtools"
 BCFTOOLS: "bcftools"
 GATK_TOOL: "gatk"
 BEDTOOLS: "bedtools"
+
