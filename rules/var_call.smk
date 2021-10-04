@@ -62,7 +62,7 @@ rule gvcf_link:
         BASE_OUT + "/" + config["files_path"]["base_joint_call_path"] + "/{sample}/{sample}_{interval_name}_g.vcf.gz"
     input:
         # expand(BASE_OUT + "/" + config["rules"]["gatk_hap_caller"]["out_dir"] + "/{sample}/{sample}_{interval_name}_g.vcf.gz",sample=sample_names,interval_name=call_intervals)
-        output.gatk_hap_caller
+        rules.gatk_hap_caller.output
     # params:
     log:
         config["files_path"]["log_dir"] + "/gvcf_link_{sample}-{interval_name}.log",
