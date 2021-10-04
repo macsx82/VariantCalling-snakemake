@@ -59,7 +59,7 @@ rule gvcf_link:
     wildcard_constraints:
         interval_name='wgs_calling_regions_.+.interval_list'
     output:
-        BASE_OUT + "/" + config["files_path"]["base_joint_call_path"] + "/{sample}/{sample}_{interval_name}_g.vcf.gz"
+        config["files_path"]["base_joint_call_path"] + "/{sample}/{sample}_{interval_name}_g.vcf.gz"
     input:
         # expand(BASE_OUT + "/" + config["rules"]["gatk_hap_caller"]["out_dir"] + "/{sample}/{sample}_{interval_name}_g.vcf.gz",sample=sample_names,interval_name=call_intervals)
         rules.gatk_hap_caller.output
