@@ -59,7 +59,8 @@ rule gvcf_link:
     wildcard_constraints:
         interval_name='wgs_calling_regions_.+.interval_list'
     output:
-        config["files_path"]["base_joint_call_path"] + "/{sample}/{sample}_{interval_name}_g.vcf.gz"
+        config["files_path"]["base_joint_call_path"] + "/{sample}/{sample}_{interval_name}_g.vcf.gz",
+        config["files_path"]["base_joint_call_path"] + "/{sample}/{sample}_{interval_name}_g.vcf.gz.tbi"
     input:
         # expand(BASE_OUT + "/" + config["rules"]["gatk_hap_caller"]["out_dir"] + "/{sample}/{sample}_{interval_name}_g.vcf.gz",sample=sample_names,interval_name=call_intervals)
         rules.gatk_hap_caller.output
@@ -75,5 +76,6 @@ rule gvcf_link:
     message: """ Link gvcf files for joint variant calling """
     shell:
         """
-        ln -s {input} {output}
+        ln -s {input} {output[0]}
+        ln -s {input}.tbi {output[1]}
         """
