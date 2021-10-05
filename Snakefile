@@ -76,14 +76,14 @@ include:
     include_prefix + "/stats.smk"
 include:
     include_prefix + "/var_call.smk"
+include:
+    include_prefix + "/joint_call.smk"
 # include:
 #     include_prefix + "/picard.smk"
 # include:
 #     include_prefix + "/picard_stats.smk"
 # include:
 #     include_prefix + "/call_variants.smk"
-# include:
-#     include_prefix + "/joint_call.smk"
 # include:
 #     include_prefix + "/qc.smk"
 # include:
