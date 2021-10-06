@@ -18,14 +18,20 @@ min_version("5.32.0")
 
 ##### load config file #####
 # configfile: "config.yaml"
+
+# define scatter parameter
+SCATTER_COUNT = 100
+scattergather:
+    split=SCATTER_COUNT
+
 #read samplesheet
 # samples_df = pd.read_table(samples, sep=" ", header=0, dtype='object')
 samples_df = pd.read_table(config["samples"], sep=" ", header=0, dtype='object')
 #get samples ids from tablesheet
 sample_names = list(samples_df.SAMPLE_ID)
 # we need file names for R1 and R2
-R1 = [ os.path.splitext(os.path.splitext(os.path.basename(fq1))[0])[0] for fq1 in samples_df.fq1]
-R2 = [ os.path.splitext(os.path.splitext(os.path.basename(fq2))[0])[0] for fq2 in samples_df.fq2]
+R1 = [ os.path.splitext(os.path.splitext(os.path.basename(fq1))[0])[0] for fq1 in samples_df.fq1 ]
+R2 = [ os.path.splitext(os.path.splitext(os.path.basename(fq2))[0])[0] for fq2 in samples_df.fq2 ]
 # print(sample_names)
 # print(R1)
 # print(R2)
