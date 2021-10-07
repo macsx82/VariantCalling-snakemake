@@ -6,7 +6,7 @@ rule gatk_genomics_db_import:
     input:
         # gvcfs=expand("variant_calling/{sample.sample}.{{interval}}.g.vcf.gz",
         #              sample=samples.reset_index().itertuples())
-        gvcfs=expand(config["files_path"]["base_joint_call_path"] + "/{{sample}}/{{sample}}_{{interval_name}}_g.vcf.gz")
+        gvcfs=expand(config["files_path"]["base_joint_call_path"] + "/{sample}/{sample}_{{interval_name}}_g.vcf.gz", sample=sample_names )
         # gvcfs=expand(config["files_path"]["base_joint_call_path"] + "/{sample}/{sample}_wgs_calling_regions_chr{chr}.GRCh38.p13.interval_list_g.vcf.gz")
     output:
         touch(os.path.join(config.get("files_path").get("base_joint_call_path"),config.get("rules").get("gatk_genomics_db_import").get("out_dir"),"{interval}"))
