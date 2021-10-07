@@ -9,7 +9,7 @@ rule gatk_genomics_db_import:
         gvcfs=expand(config["files_path"]["base_joint_call_path"] + "/{sample}/{sample}_{{interval_name}}_g.vcf.gz", sample=sample_names )
         # gvcfs=expand(config["files_path"]["base_joint_call_path"] + "/{sample}/{sample}_wgs_calling_regions_chr{chr}.GRCh38.p13.interval_list_g.vcf.gz")
     output:
-        touch(os.path.join(config.get("files_path").get("base_joint_call_path"),config.get("rules").get("gatk_genomics_db_import").get("out_dir"),"{interval}"))
+        touch(os.path.join(config.get("files_path").get("base_joint_call_path"),config.get("rules").get("gatk_genomics_db_import").get("out_dir"),"{interval_name}"))
     params:
         # custom=java_params(tmp_dir=config.get("tmp_dir"), multiply_by=2),
         # genome=resolve_single_filepath(*references_abs_path(), config.get("genome_fasta")),
