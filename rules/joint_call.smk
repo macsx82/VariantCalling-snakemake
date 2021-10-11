@@ -5,7 +5,8 @@ rule split_intervals:
     wildcard_constraints:
         interval_name='wgs_calling_regions_.+.interval_list'
     output:
-        scatter.split(os.path.join(config.get("files_path").get("base_joint_call_path"),config.get("rules").get("split_intervals").get("out_dir")) + "/{interval_name}_{scatteritem}")
+        # scatter.split(os.path.join(config.get("files_path").get("base_joint_call_path"),config.get("rules").get("split_intervals").get("out_dir")) + "/{interval_name}_{scatteritem}")
+        scatter.split(os.path.join(config.get("files_path").get("base_joint_call_path"),config.get("rules").get("split_intervals").get("out_dir")))
     input:
         get_interval_file
         # "wgs_calling_regions_chr12.GRCh38.p13.interval_list"
