@@ -108,11 +108,6 @@ rules:
   gatk_genotype_gvcfs:
     out_dir: "7.GenotypeGVC"
 
-  vqsr_path: ""
-  annotation_path: ""
-  release_path: ""
-
-
 #########SET UP YOUR EMAIL HERE ##############
 mail: ""
 #########SET UP YOUR EMAIL HERE ##############
