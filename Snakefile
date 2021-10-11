@@ -20,7 +20,7 @@ min_version("5.32.0")
 # configfile: "config.yaml"
 
 # define scatter parameter
-SCATTER_COUNT = 100
+SCATTER_COUNT = config['rules']['split_intervals']['scatter_count']
 scattergather:
     split=SCATTER_COUNT
 

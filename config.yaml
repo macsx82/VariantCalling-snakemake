@@ -40,6 +40,8 @@ java_opts:
   opt3x: '-Xms25g -Xmx25g -XX:+UseSerialGC'    #memoria java       # 19
   opt4x: '-Xms100g -Xmx100g -XX:+UseSerialGC'   #memoria java       # 20
 
+#################################################################################
+#paths and subfolders containing data we need for the pipeline to run
 references:
   # basepath: "/home/max/Work/OTHER_PJS/HQ_WGS_QC/pipeline_tests/test_files/resources"
   basepath: "/storage/burlo/cocca/resources"
@@ -48,6 +50,8 @@ references:
 
 genome_fasta: "GCA_000001405.15_GRCh38_full_plus_hs38d1_analysis_set.fna"
 callable_intervals: "wgs_intervals"
+#################################################################################
+
 call_chr: ["chr1","chr2","chr3","chr4","chr5","chr6","chr7","chr8","chr9","chr10","chr11","chr12","chr13","chr14","chr15","chr16","chr17","chr18","chr19","chr20","chr21","chr22","chrX_PAR","chrX_NONPAR","chrY"]
 # call_chr: ["chrX_PAR","chrX_NONPAR"]
 # call_chr: ["12","20"]
@@ -98,8 +102,11 @@ rules:
   #if running in BATCH mode, all the following paths will not be used, so, no need to specify
   gatk_genomics_db_import:
     out_dir: "5.DbImport"
+  split_intervals:
+    scatter_count: "25"
+    out_dir: "6.SplittedIntervals"
   gatk_genotype_gvcfs:
-    out_dir: "6.GenotypeGVC"
+    out_dir: "7.GenotypeGVC"
 
   vqsr_path: ""
   annotation_path: ""
