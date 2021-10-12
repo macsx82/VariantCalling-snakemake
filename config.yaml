@@ -100,11 +100,11 @@ rules:
   picard_WGSMetrics:
     arguments: "MINIMUM_MAPPING_QUALITY=-1 MINIMUM_BASE_QUALITY=-1 READ_LENGTH=150 COUNT_UNPAIRED=true"
   #if running in BATCH mode, all the following paths will not be used, so, no need to specify
-  gatk_genomics_db_import:
-    out_dir: "5.DbImport"
   split_intervals:
-    scatter_count: "25"
-    out_dir: "6.SplittedIntervals"
+    scatter_count: 25
+    out_dir: "5.SplittedIntervals"
+  gatk_genomics_db_import:
+    out_dir: "6.DbImport"
   gatk_genotype_gvcfs:
     out_dir: "7.GenotypeGVC"
 
