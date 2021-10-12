@@ -8,7 +8,7 @@ rule split_intervals:
         # scatter.split(os.path.join(config.get('files_path').get('base_joint_call_path'),config.get('rules').get('split_intervals').get('out_dir')) + '/{interval_name}_{scatteritem}')
         # scatter.split(config.get("files_path").get("base_joint_call_path") + "/" + config.get("rules").get("split_intervals").get("out_dir") + "/{interval_name}_{scatteritem}")
         # scatter.split(config["files_path"]["base_joint_call_path"] + "/" + config["rules"]["split_intervals"]["out_dir"] + "/{interval_name}_{scatteritem}")
-        scatter.split("/large/___SCRATCH___/burlo/cocca/JOINT_CALL_TEST_20210930/JOINT_CALL/6.SplittedIntervals/{scatteritem}")
+        scatter.split("/large/___SCRATCH___/burlo/cocca/JOINT_CALL_TEST_20210930/JOINT_CALL/6.SplittedIntervals/{interval_name}")
         # scatter.split(config["files_path"]["base_joint_call_path"])
     input:
         get_interval_file
