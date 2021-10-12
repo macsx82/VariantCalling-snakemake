@@ -35,7 +35,7 @@ rule split_intervals:
     #     "gatk/4.2.2.0"
     message: """ Split intervals """
     run:
-        gatk_split_intervals_cmd="module load conda;module load gatk/4.2.2.0;%s SplitIntervals --java-options %s -R %s -L %s --scatter-count %s -O %s --extension \"_%s\" > %s 2> %s" %(params.gatk,params.java_opt,params.ref_genome,input,params.scatter_count,params.output_folder,wildcards.interval_name,log[0], log[1])
+        gatk_split_intervals_cmd="module load conda;module load gatk/4.2.2.0;%s SplitIntervals --java-options \"%s\" -R %s -L %s --scatter-count %s -O %s --extension \"_%s\" > %s 2> %s" %(params.gatk,params.java_opt,params.ref_genome[0],input,params.scatter_count,params.output_folder,wildcards.interval_name,log[0], log[1])
         shell(gatk_split_intervals_cmd)
 
         for scattered_item in output:
