@@ -48,7 +48,7 @@ rule split_intervals:
         # -L {input} --scatter-count {params.scatter_count} -O {params.output_folder} --extension "_{scatteritem}"
     shell:
         """
-        {params.gatk} SplitIntervals --java-options "{params.java_opt}" -R {params.ref_genome} -L {input} --scatter-count {params.scatter_count} -O {params.output_folder} --extension "_{wildcards.interval_name} > {log[0]} 2> {log[1]}"
+        {params.gatk} SplitIntervals --java-options "{params.java_opt}" -R {params.ref_genome} -L {input} --scatter-count {params.scatter_count} -O {params.output_folder} --extension "_{wildcards.interval_name}" > {log[0]} 2> {log[1]}
         """
     
 
