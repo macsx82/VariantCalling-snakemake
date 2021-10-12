@@ -36,9 +36,9 @@ rule split_intervals:
     message: """ Split intervals """
     shell:
         """
-        {params.gatk} SplitIntervals --java-options "{params.java_opt}" -R {params.ref_genome} \
-        -L {input} --scatter-count {params.scatter_count} -O {params.output_folder} --extension "_{scatteritem}"
+        {params.gatk} SplitIntervals --java-options "{params.java_opt}" -R {params.ref_genome} -L {input} --scatter-count {params.scatter_count} -O {params.output_folder}
         """
+        # -L {input} --scatter-count {params.scatter_count} -O {params.output_folder} --extension "_{scatteritem}"
 
 # Start DBImport: the best would be to generate 5mb chunks on each chromosome, but this could end up in a lot of jobs
 rule gatk_genomics_db_import:
