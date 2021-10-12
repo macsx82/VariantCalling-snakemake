@@ -104,6 +104,7 @@ rules:
     scatter_count: 25
     out_dir: "5.SplittedIntervals"
   gatk_genomics_db_import:
+    arguments: "--genomicsdb-shared-posixfs-optimizations=true --batch-size=100"
     out_dir: "6.DbImport"
   gatk_genotype_gvcfs:
     out_dir: "7.GenotypeGVC"

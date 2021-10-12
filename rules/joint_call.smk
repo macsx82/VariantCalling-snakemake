@@ -46,7 +46,6 @@ rule split_intervals:
             print(gatk_out)
             os.rename(gatk_out,scattered_item)
 
-        # -L {input} --scatter-count {params.scatter_count} -O {params.output_folder} --extension "_{scatteritem}"
     # shell:
     #     """
     #     {params.gatk} SplitIntervals --java-options "{params.java_opt}" -R {params.ref_genome} -L {input} --scatter-count {params.scatter_count} -O {params.output_folder} --extension "_{wildcards.interval_name}" > {log[0]} 2> {log[1]}
@@ -64,32 +63,33 @@ rule gatk_genomics_db_import:
         import_interval=os.path.join(config.get('files_path').get('base_joint_call_path'),config.get('rules').get('split_intervals').get('out_dir')) + '/{scatteritem}_{interval_name}'
         # gvcfs=expand(config["files_path"]["base_joint_call_path"] + "/{sample}/{sample}_wgs_calling_regions_chr{chr}.GRCh38.p13.interval_list_g.vcf.gz")
     output:
-        directory(os.path.join(config.get("files_path").get("base_joint_call_path"),config.get("rules").get("gatk_genomics_db_import").get("out_dir"),"{scatteritem}_{interval_name}")),
-        os.path.join(config.get("files_path").get("base_joint_call_path"),config.get("rules").get("gatk_genomics_db_import").get("out_dir"),"{scatteritem}_{interval_name}/pippo.txt")
+        directory(os.path.join(config.get("files_path").get("base_joint_call_path"),config.get("rules").get("gatk_genomics_db_import").get("out_dir"),"{scatteritem}_{interval_name}"))
+        # os.path.join(config.get("files_path").get("base_joint_call_path"),config.get("rules").get("gatk_genomics_db_import").get("out_dir"),"{scatteritem}_{interval_name}/pippo.txt")
     params:
         gatk=config['GATK_TOOL'],
         ref_genome=resolve_single_filepath(*references_abs_path(), config.get("genome_fasta")),
-        # custom=java_params(tmp_dir=config.get("tmp_dir"), multiply_by=2),
-        # genome=resolve_single_filepath(*references_abs_path(), config.get("genome_fasta")),
-        # gvcfs=_multi_flag_dbi("-V", expand("variant_calling/{sample.sample}.{{interval}}.g.vcf.gz",sample=samples.reset_index().itertuples()))
+        java_opt=config['java_opts']['opt3x'],
+        fixed_args=config.get("rules").get("gatk_genomics_db_import").get("arguments"),
+        tmp=os.path.join(BASE_OUT,config.get("files_path").get("tmp")),
+        gvcf_args=" -V ".join(expand(config["files_path"]["base_joint_call_path"] + "/{sample}/{sample}_{{interval_name}}_g.vcf.gz", sample=sample_names))
     log:
         config["files_path"]["log_dir"] + "/{interval_name}-{scatteritem}-genomics_db_import.log",
         config["files_path"]["log_dir"] + "/{interval_name}-{scatteritem}-genomics_db_import.e"
-    threads: 2
-    # resources:
-    #     mem_mb=get_resources_from_jvm(config['java_opts']['opt2x'])
-    # benchmark:
-    #     config["files_path"]["benchmark"] + "/{interval}_genomics_db_import.tsv"
+    threads: 4
+    resources:
+        mem_mb=get_resources_from_jvm(config['java_opts']['opt3x'])
+    benchmark:
+        config["files_path"]["benchmark"] + "/{interval_name}_{scatteritem}_genomics_db_import.tsv"
     envmodules:
         "gatk/4.2.2.0"
     message: """ GenomicsDBImport """
     shell:
         """
         echo "Let\'s do stuff with {input.import_interval}...."
-
-        echo "{input.gvcfs}" > {output[1]}
+        {params.gatk} --java-options "{params.java_opt}" GenomicsDBImport --genomicsdb-workspace-path {output[0]} {params.fixed_args} -L {input.import_interval} {params.gvcf_args} --tmp-dir={params.tmp} > {log[0]} 2> {log[1]}
         """
         # """
+        # echo "{input.gvcfs}" > {output[1]}
         # echo {input.gvcfs}
         # mkdir -p db;
 
@@ -135,7 +135,7 @@ rule test_gather:
     output:
         touch(os.path.join(config.get("files_path").get("base_joint_call_path"),config.get("rules").get("gatk_genomics_db_import").get("out_dir"),"{interval_name}_pippo2.txt"))
     input:
-        gather.split(os.path.join(config.get("files_path").get("base_joint_call_path"),config.get("rules").get("gatk_genomics_db_import").get("out_dir"),"{scatteritem}_{{interval_name}}/pippo.txt"))
+        gather.split(os.path.join(config.get("files_path").get("base_joint_call_path"),config.get("rules").get("gatk_genomics_db_import").get("out_dir"),"{scatteritem}_{{interval_name}}"))
     message: """This si just a test gather rule!"""
     shell:
         """
