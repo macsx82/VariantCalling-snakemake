@@ -60,8 +60,8 @@ rule gatk_genomics_db_import:
         # genome=resolve_single_filepath(*references_abs_path(), config.get("genome_fasta")),
         # gvcfs=_multi_flag_dbi("-V", expand("variant_calling/{sample.sample}.{{interval}}.g.vcf.gz",sample=samples.reset_index().itertuples()))
     log:
-        config["files_path"]["log_dir"] + "/{interval_name}-{wildcards.scatteritem}-genomics_db_import.log",
-        config["files_path"]["log_dir"] + "/{interval_name}-{wildcards.scatteritem}-genomics_db_import.e"
+        config["files_path"]["log_dir"] + "/{interval_name}-{scatteritem}-genomics_db_import.log",
+        config["files_path"]["log_dir"] + "/{interval_name}-{scatteritem}-genomics_db_import.e"
     threads: 2
     # resources:
     #     mem_mb=get_resources_from_jvm(config['java_opts']['opt2x'])
