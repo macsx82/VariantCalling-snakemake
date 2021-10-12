@@ -36,7 +36,7 @@ rule split_intervals:
     message: """ Split intervals """
     shell:
         """
-        {params.gatk} SplitIntervals --java-options "{params.java_opt}" -R {params.ref_genome} -L {input} --scatter-count {params.scatter_count} -O {params.output_folder} --extension "_{interval_name}"
+        {params.gatk} SplitIntervals --java-options "{params.java_opt}" -R {params.ref_genome} -L {input} --scatter-count {params.scatter_count} -O {params.output_folder} --extension "_{wildcards.interval_name}"
         """
         # -L {input} --scatter-count {params.scatter_count} -O {params.output_folder} --extension "_{scatteritem}"
 
