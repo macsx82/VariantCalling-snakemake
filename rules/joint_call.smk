@@ -41,44 +41,48 @@ rule split_intervals:
         """
 
 # Start DBImport: the best would be to generate 5mb chunks on each chromosome, but this could end up in a lot of jobs
-# rule gatk_genomics_db_import:
-#     wildcard_constraints:
-#         interval_name='wgs_calling_regions_.+.interval_list'
-#     input:
-#         # gvcfs=expand("variant_calling/{sample.sample}.{{interval}}.g.vcf.gz",
-#         #              sample=samples.reset_index().itertuples())
-#         gvcfs=expand(config["files_path"]["base_joint_call_path"] + "/{sample}/{sample}_{{interval_name}}_g.vcf.gz", sample=sample_names )
-#         # gvcfs=expand(config["files_path"]["base_joint_call_path"] + "/{sample}/{sample}_wgs_calling_regions_chr{chr}.GRCh38.p13.interval_list_g.vcf.gz")
-#     output:
-#         touch(os.path.join(config.get("files_path").get("base_joint_call_path"),config.get("rules").get("gatk_genomics_db_import").get("out_dir"),"{interval_name}"))
-#     params:
-#         gatk=config['GATK_TOOL'],
-#         ref_genome=resolve_single_filepath(*references_abs_path(), config.get("genome_fasta")),
-#         # custom=java_params(tmp_dir=config.get("tmp_dir"), multiply_by=2),
-#         # genome=resolve_single_filepath(*references_abs_path(), config.get("genome_fasta")),
-#         # gvcfs=_multi_flag_dbi("-V", expand("variant_calling/{sample.sample}.{{interval}}.g.vcf.gz",sample=samples.reset_index().itertuples()))
-#     log:
-#         config["files_path"]["log_dir"] + "/{interval_name}-genomics_db_import.log",
-#         config["files_path"]["log_dir"] + "/{interval_name}-genomics_db_import.e"
-#     threads: 2
-#     # resources:
-#     #     mem_mb=get_resources_from_jvm(config['java_opts']['opt2x'])
-#     # benchmark:
-#     #     config["files_path"]["benchmark"] + "/{interval}_genomics_db_import.tsv"
-#     envmodules:
-#         "gatk/4.2.2.0"
-#     message: """ GenomicsDBImport """
-#     shell:
-#         """
-#         echo {input.gvcfs}
-#         mkdir -p db;
+rule gatk_genomics_db_import:
+    wildcard_constraints:
+        interval_name='wgs_calling_regions_.+.interval_list'
+    input:
+        # gvcfs=expand("variant_calling/{sample.sample}.{{interval}}.g.vcf.gz",
+        #              sample=samples.reset_index().itertuples())
+        gvcfs=expand(config["files_path"]["base_joint_call_path"] + "/{sample}/{sample}_{{interval_name}}_g.vcf.gz", sample=sample_names )
+        # gvcfs=expand(config["files_path"]["base_joint_call_path"] + "/{sample}/{sample}_wgs_calling_regions_chr{chr}.GRCh38.p13.interval_list_g.vcf.gz")
+    output:
+        directory(os.path.join(config.get("files_path").get("base_joint_call_path"),config.get("rules").get("gatk_genomics_db_import").get("out_dir"),"{interval_name}_{scatteritem}")),
+        touch(os.path.join(config.get("files_path").get("base_joint_call_path"),config.get("rules").get("gatk_genomics_db_import").get("out_dir"),"{interval_name}_{scatteritem}/pippo.txt"))
+    params:
+        gatk=config['GATK_TOOL'],
+        ref_genome=resolve_single_filepath(*references_abs_path(), config.get("genome_fasta")),
+        # custom=java_params(tmp_dir=config.get("tmp_dir"), multiply_by=2),
+        # genome=resolve_single_filepath(*references_abs_path(), config.get("genome_fasta")),
+        # gvcfs=_multi_flag_dbi("-V", expand("variant_calling/{sample.sample}.{{interval}}.g.vcf.gz",sample=samples.reset_index().itertuples()))
+    log:
+        config["files_path"]["log_dir"] + "/{interval_name}-genomics_db_import.log",
+        config["files_path"]["log_dir"] + "/{interval_name}-genomics_db_import.e"
+    threads: 2
+    # resources:
+    #     mem_mb=get_resources_from_jvm(config['java_opts']['opt2x'])
+    # benchmark:
+    #     config["files_path"]["benchmark"] + "/{interval}_genomics_db_import.tsv"
+    envmodules:
+        "gatk/4.2.2.0"
+    message: """ GenomicsDBImport """
+    shell:
+        """
+        echo "Let\'s do stuff...."
+        """
+        # """
+        # echo {input.gvcfs}
+        # mkdir -p db;
 
-#         {params.gatk} GenomicsDBImport --java-options {params.custom}
-#         {params.gvcfs}
-#         --genomicsdb-workspace-path db/{wildcards.interval}
-#         -L split/{wildcards.interval}-scattered.interval_list
-#         >& {log}
-#         """
+        # {params.gatk} GenomicsDBImport --java-options {params.custom}
+        # {params.gvcfs}
+        # --genomicsdb-workspace-path db/{wildcards.interval}
+        # -L split/{wildcards.interval}-scattered.interval_list
+        # >& {log}
+        # """
 
 
 
