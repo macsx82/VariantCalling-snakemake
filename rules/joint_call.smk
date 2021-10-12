@@ -87,7 +87,7 @@ rule gatk_genomics_db_import:
         """
         echo "Let\'s do stuff with {input.import_interval}...."
 
-        echo "{input.gvcfs}" > {output[0]}
+        echo "{input.gvcfs}" > {output[1]}
         """
         # """
         # echo {input.gvcfs}
