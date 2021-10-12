@@ -31,11 +31,11 @@ rule split_intervals:
         mem_mb=get_resources_from_jvm(config['java_opts']['opt2x'])
     benchmark:
         config["files_path"]["benchmark"] + "/{interval_name}_split_intervals.tsv"
-    envmodules:
-        "gatk/4.2.2.0"
+    # envmodules:
+    #     "gatk/4.2.2.0"
     message: """ Split intervals """
     run:
-        gatk_split_intervals_cmd="%s SplitIntervals --java-options %s -R %s -L %s --scatter-count %s -O %s --extension \"_%s\" > %s 2> %s" %(params.gatk,params.java_opt,params.ref_genome,input,params.scatter_count,params.output_folder,wildcards.interval_name,log[0], log[1])
+        gatk_split_intervals_cmd="module load conda;module load gatk/4.2.2.0;%s SplitIntervals --java-options %s -R %s -L %s --scatter-count %s -O %s --extension \"_%s\" > %s 2> %s" %(params.gatk,params.java_opt,params.ref_genome,input,params.scatter_count,params.output_folder,wildcards.interval_name,log[0], log[1])
         shell(gatk_split_intervals_cmd)
 
         for scattered_item in output:
@@ -45,11 +45,12 @@ rule split_intervals:
             gatk_out="%s/%s_%s" %(params.output_folder,'{num:04d}'.format(num=scattered_index),wildcards.interval_name)
             os.rename(gatk_out,scattered_item)
 
+        # -L {input} --scatter-count {params.scatter_count} -O {params.output_folder} --extension "_{scatteritem}"
     # shell:
     #     """
     #     {params.gatk} SplitIntervals --java-options "{params.java_opt}" -R {params.ref_genome} -L {input} --scatter-count {params.scatter_count} -O {params.output_folder} --extension "_{wildcards.interval_name}"
     #     """
-        # -L {input} --scatter-count {params.scatter_count} -O {params.output_folder} --extension "_{scatteritem}"
+    
 
 # Start DBImport: the best would be to generate 5mb chunks on each chromosome, but this could end up in a lot of jobs
 rule gatk_genomics_db_import:
