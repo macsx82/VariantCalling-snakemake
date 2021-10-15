@@ -88,56 +88,78 @@ rule gatk_genomics_db_import:
         echo "Let\'s do stuff with {input.import_interval}...."
         {params.gatk} --java-options "{params.java_opt}" GenomicsDBImport --genomicsdb-workspace-path {output[0]} {params.fixed_args} -L {input.import_interval} -V {params.gvcf_args} --tmp-dir {params.tmp} > {log[0]} 2> {log[1]}
         """
-        # """
-        # echo "{input.gvcfs}" > {output[1]}
-        # echo {input.gvcfs}
-        # mkdir -p db;
 
-        # {params.gatk} GenomicsDBImport --java-options {params.custom}
-        # {params.gvcfs}
-        # --genomicsdb-workspace-path db/{wildcards.interval}
-        # -L split/{wildcards.interval}-scattered.interval_list
-        # >& {log}
-        # """
+#perform joint genotyping
+rule gatk_genotype_gvcfs:
+    input:
+        import_db=rules.gatk_genomics_db_import.output,
+        import_interval=os.path.join(config.get('files_path').get('base_joint_call_path'),config.get('rules').get('split_intervals').get('out_dir')) + '/{scatteritem}_{interval_name}'
+        # "db/imports/{interval}"
+    output:
+        protected(os.path.join(config.get("files_path").get("base_joint_call_path"),config.get("rules").get("gatk_genotype_gvcfs").get("out_dir"),"{scatteritem}_{interval_name}/all.{scatteritem}_{interval_name}.vcf.gz"))
+        # protected("variant_calling/all.{scatteritem}_{interval_name}.vcf.gz")
+    params:
+        gatk=config['GATK_TOOL'],
+        ref_genome=resolve_single_filepath(*references_abs_path(), config.get("genome_fasta")),
+        java_opt=config['java_opts']['opt3x'],
+        fixed_args=config.get("rules").get("gatk_genotype_gvcfs").get("arguments"),
+        tmp=os.path.join(BASE_OUT,config.get("files_path").get("tmp"))
+    log:
+        config["files_path"]["log_dir"] + "/{interval_name}-{scatteritem}-genotype_gvcfs.log",
+        config["files_path"]["log_dir"] + "/{interval_name}-{scatteritem}-genotype_gvcfs.e"
+    threads: 4
+    resources:
+        mem_mb=get_resources_from_jvm(config['java_opts']['opt3x'])
+    benchmark:
+        config["files_path"]["benchmark"] + "/{interval_name}-{scatteritem}_genotype_gvcfs.tsv"
+    envmodules:
+        "gatk/4.2.2.0"
+    message: """ GenotypeGVCFs """
+    shell:
+        """
+        {params.gatk} --java-option "{params.java_opt}" GenotypeGVCFs -R {params.ref_genome} -L {input.import_interval} -V gendb://{input.import_db} -O {output} {params.fixed_args} > {log[0]} 2> {log[1]}
+        """
 
-
-# rule gatk_genotype_gvcfs:
-#     input:
-#         "db/imports/{interval}"
-#     output:
-#         protected("variant_calling/all.{interval}.vcf.gz")
-#     envmodules:
-#         "gatk/4.2.2.0"
-#         # "gatk/4.1.9.0"
-#     params:
-#         custom=java_params(tmp_dir=config.get("tmp_dir"), multiply_by=2),
-#         genome=resolve_single_filepath(*references_abs_path(), config.get("genome_fasta"))
-#     log:
-#         config["files_path"]["log_dir"] + "/{interval}-genotype_gvcfs.log",
-#         config["files_path"]["log_dir"] + "/{interval}-genotype_gvcfs.e"
-#     threads: 2
-#     resources:
-#         mem_mb=get_resources_from_jvm(config['java_opts']['opt2x'])
-#     benchmark:
-#         config["files_path"]["benchmark"] + "/{interval}_genotype_gvcfs.tsv"
-#     shell:
-#         "gatk GenotypeGVCFs --java-options {params.custom} "
-#         "-R {params.genome} "
-#         "-V gendb://db/{wildcards.interval} "
-#         "-G StandardAnnotation "
-#         "-O {output} "
-#         ">& {log} "
 
 # this rule should be then expanded to be the rule that concat the vcf back together, after genotyping
-rule test_gather:
+rule chrom_intervals_gather:
     wildcard_constraints:
         interval_name='wgs_calling_regions_.+.interval_list'
     output:
-        touch(os.path.join(config.get("files_path").get("base_joint_call_path"),config.get("rules").get("gatk_genomics_db_import").get("out_dir"),"{interval_name}_pippo2.txt"))
+        protected(os.path.join(config.get("files_path").get("base_joint_call_path"),config.get("rules").get("gatk_genotype_gvcfs").get("out_dir"),"all.{interval_name}.vcf.gz")),
+        protected(os.path.join(config.get("files_path").get("base_joint_call_path"),config.get("rules").get("gatk_genotype_gvcfs").get("out_dir"),"all.{interval_name}.vcf.gz.tbi"))
     input:
-        gather.split(os.path.join(config.get("files_path").get("base_joint_call_path"),config.get("rules").get("gatk_genomics_db_import").get("out_dir"),"{scatteritem}_{{interval_name}}"))
-    message: """This si just a test gather rule!"""
+        gather.split(os.path.join(config.get("files_path").get("base_joint_call_path"),config.get("rules").get("gatk_genotype_gvcfs").get("out_dir"),"{scatteritem}_{{interval_name}}/all.{scatteritem}_{{interval_name}}.vcf.gz"))
+    params:
+        bcftools=config['BCFTOOLS'],
+        tmp=os.path.join(BASE_OUT,config.get("files_path").get("tmp"))
+    log:
+        config["files_path"]["log_dir"] + "/{interval_name}-chrom_intervals_gather.log",
+        config["files_path"]["log_dir"] + "/{interval_name}-chrom_intervals_gather.e"
+    benchmark:
+        config["files_path"]["benchmark"] + "/{interval_name}_chrom_intervals_gather.tsv"
+    envmodules:
+        "bcftools/1.11"
+    message: """Let\'s gather things together, by chromosome, basically!"""
     shell:
         """
-        echo "{input}" > {output}
+        {params.bcftools} concat {input} | bcftools sort -T {params.tmp} -O z -o {output[0]} > {log[0]} 2> {log[1]}
+        tabix -p vcf {output[0]}
         """
+
+# rule concatVcfs:
+#     input:
+#         vcfs=expand("variant_calling/all.{interval}.vcf.gz",
+#                     interval=[str(i).zfill(4) for i in
+#                         range(0, int(config.get('rules').get
+#                         ('gatk_SplitIntervals').get('scatter-count')))])
+#     output:
+#         "variant_calling/all.vcf.gz"
+#     conda:
+#         "../envs/bcftools.yaml"
+#     benchmark:
+#         "benchmarks/bcftools/concat/all.txt"
+#     threads: config.get("rules").get("concatVcfs").get("threads")
+#     shell:
+#          "bcftools concat -a {input.vcfs} | bgzip -cf > {output};"
+#          "tabix -p vcf {output}"
