@@ -114,11 +114,11 @@ rule gatk_genotype_gvcfs:
     benchmark:
         config["files_path"]["benchmark"] + "/{interval_name}-{scatteritem}_genotype_gvcfs.tsv"
     envmodules:
-        "gatk/4.2.2.0"
+        "gatk/4.1.9.0"
     message: """ GenotypeGVCFs """
     shell:
         """
-        {params.gatk} --java-options "{params.java_opt}" GenotypeGVCFs -R {params.ref_genome} -V gendb:/{input.import_db} -O {output[0]} {params.fixed_args} > {log[0]} 2> {log[1]}
+        {params.gatk} --java-options "{params.java_opt}" GenotypeGVCFs -R {params.ref_genome} -V gendb://{input.import_db} -O {output[0]} {params.fixed_args} > {log[0]} 2> {log[1]}
         """
 
         # {params.gatk} --java-options "{params.java_opt}" GenotypeGVCFs -R {params.ref_genome} -L {input.import_interval} -V gendb://{input.import_db} -O {output[0]} {params.fixed_args} > {log[0]} 2> {log[1]}
