@@ -117,7 +117,7 @@ rule gatk_genotype_gvcfs:
     message: """ GenotypeGVCFs """
     shell:
         """
-        {params.gatk} --java-option "{params.java_opt}" GenotypeGVCFs -R {params.ref_genome} -L {input.import_interval} -V gendb://{input.import_db} -O {output} {params.fixed_args} > {log[0]} 2> {log[1]}
+        {params.gatk} --java-options "{params.java_opt}" GenotypeGVCFs -R {params.ref_genome} -L {input.import_interval} -V gendb://{input.import_db} -O {output} {params.fixed_args} > {log[0]} 2> {log[1]}
         """
 
 
