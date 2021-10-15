@@ -96,7 +96,8 @@ rule gatk_genotype_gvcfs:
         import_interval=os.path.join(config.get('files_path').get('base_joint_call_path'),config.get('rules').get('split_intervals').get('out_dir')) + '/{scatteritem}_{interval_name}'
         # "db/imports/{interval}"
     output:
-        protected(os.path.join(config.get("files_path").get("base_joint_call_path"),config.get("rules").get("gatk_genotype_gvcfs").get("out_dir"),"{scatteritem}_{interval_name}/all.{scatteritem}_{interval_name}.vcf.gz"))
+        protected(os.path.join(config.get("files_path").get("base_joint_call_path"),config.get("rules").get("gatk_genotype_gvcfs").get("out_dir"),"{scatteritem}_{interval_name}/all.{scatteritem}_{interval_name}.vcf.gz")),
+        protected(os.path.join(config.get("files_path").get("base_joint_call_path"),config.get("rules").get("gatk_genotype_gvcfs").get("out_dir"),"{scatteritem}_{interval_name}/all.{scatteritem}_{interval_name}.vcf.gz.tbi"))
         # protected("variant_calling/all.{scatteritem}_{interval_name}.vcf.gz")
     params:
         gatk=config['GATK_TOOL'],
@@ -117,7 +118,7 @@ rule gatk_genotype_gvcfs:
     message: """ GenotypeGVCFs """
     shell:
         """
-        {params.gatk} --java-options "{params.java_opt}" GenotypeGVCFs -R {params.ref_genome} -L {input.import_interval} -V gendb://{input.import_db} -O {output} {params.fixed_args} > {log[0]} 2> {log[1]}
+        {params.gatk} --java-options "{params.java_opt}" GenotypeGVCFs -R {params.ref_genome} -L {input.import_interval} -V gendb://{input.import_db} -O {output[0]} {params.fixed_args} > {log[0]} 2> {log[1]}
         """
 
 
