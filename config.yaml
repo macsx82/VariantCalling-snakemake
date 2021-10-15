@@ -107,7 +107,7 @@ rules:
     arguments: "--genomicsdb-shared-posixfs-optimizations true --batch-size 100"
     out_dir: "6.DbImport"
   gatk_genotype_gvcfs:
-    arguments: "--genomicsdb-shared-posixfs-optimizations -G StandardAnnotation -G AS_StandardAnnotation -G StandardHCAnnotation --include-non-variant-sites --only-output-calls-starting-in-intervals"
+    arguments: "--genomicsdb-shared-posixfs-optimizations -G StandardAnnotation -G AS_StandardAnnotation -G StandardHCAnnotation --include-non-variant-sites"
     out_dir: "7.GenotypeGVCFs"
   gatk_variant_recalibrator:
     out_dir: "8.VQSR"
