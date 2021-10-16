@@ -134,8 +134,8 @@ rule chrom_intervals_gather:
         gather.split(os.path.join(config.get("files_path").get("base_joint_call_path"),config.get("rules").get("gatk_genotype_gvcfs").get("out_dir"),"{scatteritem}_{{interval_name}}/all.{scatteritem}_{{interval_name}}.vcf.gz"))
     params:
         bcftools=config['BCFTOOLS'],
-        tmp=os.path.join(BASE_OUT,config.get("files_path").get("tmp"))
-        ref_genome=resolve_single_filepath(*references_abs_path(), config.get("genome_fasta")),
+        tmp=os.path.join(BASE_OUT,config.get("files_path").get("tmp")),
+        ref_genome=resolve_single_filepath(*references_abs_path(), config.get("genome_fasta"))
     log:
         config["files_path"]["log_dir"] + "/{interval_name}-chrom_intervals_gather.log",
         config["files_path"]["log_dir"] + "/{interval_name}-chrom_intervals_gather.e"
