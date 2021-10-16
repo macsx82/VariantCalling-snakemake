@@ -135,6 +135,7 @@ rule chrom_intervals_gather:
     params:
         bcftools=config['BCFTOOLS'],
         tmp=os.path.join(BASE_OUT,config.get("files_path").get("tmp"))
+        ref_genome=resolve_single_filepath(*references_abs_path(), config.get("genome_fasta")),
     log:
         config["files_path"]["log_dir"] + "/{interval_name}-chrom_intervals_gather.log",
         config["files_path"]["log_dir"] + "/{interval_name}-chrom_intervals_gather.e"
@@ -145,7 +146,7 @@ rule chrom_intervals_gather:
     message: """Let\'s gather things together, by chromosome, basically!"""
     shell:
         """
-        {params.bcftools} concat {input} | bcftools sort -T {params.tmp} -O z -o {output[0]} > {log[0]} 2> {log[1]}
+        {params.bcftools} concat {input} | {params.bcftools} sort -T {params.tmp}|{params.bcftools} norm -f {params.ref_genome} -O z -o {output[0]} > {log[0]} 2> {log[1]}
         tabix -p vcf {output[0]}
         """
 
