@@ -86,11 +86,11 @@ include:
 include:
     include_prefix + "/bqsr.smk"
 include:
-    include_prefix + "/stats.smk"
-include:
     include_prefix + "/var_call.smk"
 include:
     include_prefix + "/joint_call.smk"
+include:
+    include_prefix + "/stats.smk"
 # include:
 #     include_prefix + "/picard.smk"
 # include:
