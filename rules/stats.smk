@@ -138,7 +138,7 @@ rule vcf_stats:
     envmodules:
         "bcftools/1.11"
     message: """ VCF stats before VQSR """
-    sell:
+    shell:
         """
         {params.bcftools} stats -v {input} > {output} 2> {log[1]}
         """

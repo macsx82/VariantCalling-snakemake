@@ -71,8 +71,8 @@ rule all:
         # expand(os.path.join(config.get("files_path").get("base_joint_call_path"),config.get("rules").get("gatk_genomics_db_import").get("out_dir"),"{interval_name}_{{scatteritem}}/pippo.txt"),interval_name=call_intervals)
         # expand(os.path.join(config.get("files_path").get("base_joint_call_path"),config.get("rules").get("gatk_genomics_db_import").get("out_dir"),"{interval_name}_pippo2.txt"),interval_name=call_intervals)
         expand(os.path.join(config.get("files_path").get("base_joint_call_path"),config.get("rules").get("gatk_genotype_gvcfs").get("out_dir"),"all.{interval_name}.vcf.gz"),interval_name=call_intervals),
-        expand(os.path.join(config.get("files_path").get("base_joint_call_path"),config.get("rules").get("gatk_genotype_gvcfs").get("out_dir"),"all.{interval_name}.vcf.gz.tbi"),interval_name=call_intervals)
-
+        expand(os.path.join(config.get("files_path").get("base_joint_call_path"),config.get("rules").get("gatk_genotype_gvcfs").get("out_dir"),"all.{interval_name}.vcf.gz.tbi"),interval_name=call_intervals),
+        expand(os.path.join(config.get("files_path").get("base_joint_call_path"),config.get("rules").get("gatk_genotype_gvcfs").get("out_dir"),"all.{interval_name}.stats"),interval_name=call_intervals)
 
         # [(BASE_OUT + "/"+ config["rules"]["ubam_gen"]["out_dir"]+"/" + "{sample}_unmap.bam").format(sample=sample_id) for sample_id in sample_names]
         # BASE_OUT + config["rules"]["bwa_mem"]["out_dir"] + "{sample}_map.bam"
