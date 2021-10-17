@@ -109,13 +109,15 @@ rules:
   gatk_genotype_gvcfs:
     arguments: "--genomicsdb-shared-posixfs-optimizations -G StandardAnnotation -G AS_StandardAnnotation -G StandardHCAnnotation --include-non-variant-sites --only-output-calls-starting-in-intervals"
     out_dir: "7.GenotypeGVCFs"
+  pre_vqsr_rules:
+    out_dir: "8.VQSR_input"
   gatk_variant_recalibrator:
     arguments: ""
-    out_dir: "8.VQSR"
+    out_dir: "9.VQSR"
     threads: 20
   gatk_apply_VQSR:
     arguments: ""
-    out_dir: "9.Apply_VQSR"
+    out_dir: "10.Apply_VQSR"
     threads: 20
 
 

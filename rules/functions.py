@@ -116,3 +116,22 @@ def get_sex_chr_from_interval(wildcards):
     return chr_mode
 
 
+def _get_recal_params(wildcards):
+    known_variants = resolve_multi_filepath(*references_abs_path(), config["known_variants"])
+    if wildcards.type == "snp":
+        return (
+            "-mode SNP "
+            "-an DP -an QD -an MQ -an MQRankSum -an ReadPosRankSum -an FS -an SOR "
+            "--resource:hapmap,known=false,training=true,truth=true,prior=15.0 {hapmap} "
+            "--resource:omni,known=false,training=true,truth=true,prior=12.0 {omni} "
+            "--resource:1000G,known=false,training=true,truth=false,prior=10.0 {g1k} "
+            "--resource:dbsnp,known=true,training=false,truth=false,prior=2.0 {dbsnp} "
+        ).format(**known_variants)
+    else:
+        return (
+            "-mode INDEL "
+            "-an DP -an QD -an FS -an SOR -an MQRankSum -an ReadPosRankSum "
+            "--max-gaussians 4 "
+            "--resource:dbsnp,known=true,training=false,truth=false,prior=2.0 {dbsnp} "
+            "--resource:mills,known=false,training=true,truth=true,prior=12.0 {mills} "
+        ).format(**known_variants)

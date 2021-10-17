@@ -139,6 +139,7 @@ rule chrom_intervals_gather:
     log:
         config["files_path"]["log_dir"] + "/{interval_name}-chrom_intervals_gather.log",
         config["files_path"]["log_dir"] + "/{interval_name}-chrom_intervals_gather.e"
+    threads: 3
     benchmark:
         config["files_path"]["benchmark"] + "/{interval_name}_chrom_intervals_gather.tsv"
     envmodules:
@@ -147,22 +148,5 @@ rule chrom_intervals_gather:
     shell:
         """
         {params.bcftools} concat {input} | {params.bcftools} sort -T {params.tmp}|{params.bcftools} norm -f {params.ref_genome} -O z -o {output[0]} > {log[0]} 2> {log[1]}
-        tabix -p vcf {output[0]}
+        {params.bcftools} index -t {output[0]}
         """
-
-# rule concatVcfs:
-#     input:
-#         vcfs=expand("variant_calling/all.{interval}.vcf.gz",
-#                     interval=[str(i).zfill(4) for i in
-#                         range(0, int(config.get('rules').get
-#                         ('gatk_SplitIntervals').get('scatter-count')))])
-#     output:
-#         "variant_calling/all.vcf.gz"
-#     conda:
-#         "../envs/bcftools.yaml"
-#     benchmark:
-#         "benchmarks/bcftools/concat/all.txt"
-#     threads: config.get("rules").get("concatVcfs").get("threads")
-#     shell:
-#          "bcftools concat -a {input.vcfs} | bgzip -cf > {output};"
-#          "tabix -p vcf {output}"
