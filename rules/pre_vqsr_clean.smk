@@ -57,7 +57,8 @@ rule concat_vcfs:
     wildcard_constraints:
         interval_name='wgs_calling_regions_.+.interval_list'
     input:
-        expand(os.path.join(config.get("files_path").get("base_joint_call_path"),config.get("rules").get("pre_vqsr_rules").get("out_dir"),"all.{interval_name}.CLEAN.SITES_ONLY.vcf.gz"))
+        expand(os.path.join(config.get("files_path").get("base_joint_call_path"),config.get("rules").get("pre_vqsr_rules").get("out_dir"),"all.{{interval_name}}.CLEAN.SITES_ONLY.vcf.gz"))
+        # expand(os.path.join(config.get("files_path").get("base_joint_call_path"),config.get("rules").get("pre_vqsr_rules").get("out_dir"),"all.{interval_name}.CLEAN.SITES_ONLY.vcf.gz"), interval_name=call_intervals)
     output:
         os.path.join(config.get("files_path").get("base_joint_call_path"),config.get("rules").get("pre_vqsr_rules").get("out_dir"),"ALL.CLEAN.SITES_ONLY.vcf.gz"),
         os.path.join(config.get("files_path").get("base_joint_call_path"),config.get("rules").get("pre_vqsr_rules").get("out_dir"),"ALL.CLEAN.SITES_ONLY.vcf.gz.tbi")
