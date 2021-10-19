@@ -33,8 +33,8 @@ rule rsid_annotation:
         os.path.join(config.get("files_path").get("base_joint_call_path"),config.get("rules").get("rsid_annotation").get("out_dir"),"/{current_chr}.PASS_rsID.vcf.gz"),
         # os.path.join(config.get("files_path").get("base_joint_call_path"),config.get("rules").get("rsid_annotation").get("out_dir"),"/{current_chr}.PASS_rsID.vcf.gz.tbi")
     input:
-        rules.recal_pass_filter.output[0]
-        # os.path.join(config.get("files_path").get("base_joint_call_path"),config.get("rules").get("recal_pass_filter").get("out_dir"),"/all.{interval_name}.PASS.vcf.gz"),
+        # rules.recal_pass_filter.output[0]
+        os.path.join(config.get("files_path").get("base_joint_call_path"),config.get("rules").get("recal_pass_filter").get("out_dir"),"/all.{interval_name}.PASS.vcf.gz"),
         # os.path.join(config.get("files_path").get("base_joint_call_path"),config.get("rules").get("recal_pass_filter").get("out_dir"),"/all.wgs_calling_regions_{current_chr}.+.interval_list.PASS.vcf.gz"),
     params:
         bcftools=config["BCFTOOLS"],
