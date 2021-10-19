@@ -71,8 +71,8 @@ def get_chr_from_interval_list(wildcards):
     return interval_chr
 
 #get the chromosome name from the input vcf file
-def get_chr_from_vcf(wildcards):
-    vcf_filename=wildcards.input
+def get_chr_from_vcf(vcf):
+    vcf_filename=vcf
     # for line in open(vcf_filename, 'r'):
     for line in gzip.open(vcf_filename, 'r') if vcf_filename.endswith('.gz') else open(vcf_filename, 'r'):
         if not(re.match('#', line.strip())):
