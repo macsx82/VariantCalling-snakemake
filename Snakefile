@@ -91,7 +91,11 @@ include:
 include:
     include_prefix + "/joint_call.smk"
 include:
-    include_prefix + "/pre_vqsr_clean.smk"    
+    include_prefix + "/pre_vqsr_clean.smk"
+include:
+    include_prefix + "/vqsr.smk"    
+include:
+    include_prefix + "/variant_annotation.smk"    
 include:
     include_prefix + "/stats.smk"
 # include:

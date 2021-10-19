@@ -31,8 +31,7 @@ rule sites_only_vcf:
     wildcard_constraints:
         interval_name='wgs_calling_regions_.+.interval_list'
     output:
-        os.path.join(config.get("files_path").get("base_joint_call_path"),config.get("rules").get("pre_vqsr_rules").get("out_dir"),"all.{interval_name}.CLEAN.SITES_ONLY.vcf.gz"),
-        os.path.join(config.get("files_path").get("base_joint_call_path"),config.get("rules").get("pre_vqsr_rules").get("out_dir"),"all.{interval_name}.CLEAN.SITES_ONLY.vcf.gz.tbi")
+        os.path.join(config.get("files_path").get("base_joint_call_path"),config.get("rules").get("pre_vqsr_rules").get("out_dir"),"all.{interval_name}.CLEAN.SITES_ONLY.vcf.gz")
     input:
         rules.clean_and_excess_het_filter.output
     params:
@@ -48,7 +47,6 @@ rule sites_only_vcf:
     shell:
         """
         {params.bcftools} view -G {input} -O z -o {output[0]} > {log[0]} 2> {log[1]}
-        {params.bcftools} index -t {output[0]}
 
         """
 
@@ -75,6 +73,6 @@ rule concat_vcfs:
     message: """Concat sites only files!"""
     shell:
         """
-        {params.bcftools} concat {input} | {params.bcftools} sort -T {params.tmp} -O z -o {output[0]} > {log[0]} 2> {log[1]}
+        {params.bcftools} concat {input} | {params.bcftools} sort -T {params.tmp} -O z -o {output[0]} 1> {log[0]} 2> {log[1]}
         {params.bcftools} index -t {output[0]}
         """

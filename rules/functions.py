@@ -70,6 +70,17 @@ def get_chr_from_interval_list(wildcards):
 
     return interval_chr
 
+#get the chromosome name from the input vcf file
+def get_chr_from_vcf(wildcards):
+    vcf_filename=wildcards.input
+    # for line in open(vcf_filename, 'r'):
+    for line in gzip.open(vcf_filename, 'r') if vcf_filename.endswith('.gz') else open(vcf_filename, 'r'):
+        if not(re.match('#', line.strip())):
+            vcf_chr=line.strip().split("\t")[0]
+            break
+
+    return vcf_chr
+
 
 def references_abs_path(ref='references'):
     references = config.get(ref)
@@ -81,6 +92,11 @@ def references_abs_path(ref='references'):
 
 def resolve_single_filepath(basepath, filename):
     return [os.path.join(basepath, filename)]
+
+def resolve_multi_filepath(basepath, dictionary):
+    for k, v in dictionary.items():
+        dictionary[k] = os.path.join(basepath, v)
+    return dictionary
 
 def get_interval_file(wildcards):
     interval_file=os.path.join(*references_abs_path(), config.get("callable_intervals"),wildcards.interval_name)
@@ -116,22 +132,21 @@ def get_sex_chr_from_interval(wildcards):
     return chr_mode
 
 
+#function to get parameters needed to perform VQSR step with GATK
 def _get_recal_params(wildcards):
-    known_variants = resolve_multi_filepath(*references_abs_path(), config["known_variants"])
+    known_variants = resolve_multi_filepath("", config["known_variants"])
     if wildcards.type == "snp":
-        return (
-            "-mode SNP "
-            "-an DP -an QD -an MQ -an MQRankSum -an ReadPosRankSum -an FS -an SOR "
-            "--resource:hapmap,known=false,training=true,truth=true,prior=15.0 {hapmap} "
-            "--resource:omni,known=false,training=true,truth=true,prior=12.0 {omni} "
-            "--resource:1000G,known=false,training=true,truth=false,prior=10.0 {g1k} "
-            "--resource:dbsnp,known=true,training=false,truth=false,prior=2.0 {dbsnp} "
-        ).format(**known_variants)
+        base_params=("--resource:hapmap,known=false,training=true,truth=true,prior=15.0 {hapmap} --resource:omni,known=false,training=true,truth=true,prior=12.0 {omni} --resource:1000G,known=false,training=true,truth=false,prior=10.0 {g1k} --resource:dbsnp,known=true,training=false,truth=false,prior=7.0 {dbsnp}").format(**known_variants)
+        tranches=config["rules"]["gatk_variant_recalibrator"]["SNP"]["tranches"]
+        annotations=config["rules"]["gatk_variant_recalibrator"]["SNP"]["annotations"]
+        arguments=config["rules"]["gatk_variant_recalibrator"]["SNP"]["arguments"]
     else:
-        return (
-            "-mode INDEL "
-            "-an DP -an QD -an FS -an SOR -an MQRankSum -an ReadPosRankSum "
-            "--max-gaussians 4 "
-            "--resource:dbsnp,known=true,training=false,truth=false,prior=2.0 {dbsnp} "
-            "--resource:mills,known=false,training=true,truth=true,prior=12.0 {mills} "
-        ).format(**known_variants)
+        base_params=("--resource:mills,known=false,training=true,truth=true,prior=12.0 {mills} --resource:axiomPoly,known=false,training=true,truth=false,prior=10 {axiom} --resource:dbsnp,known=true,training=false,truth=false,prior=2.0 {dbsnp}").format(**known_variants)
+        tranches=config["rules"]["gatk_variant_recalibrator"]["INDEL"]["tranches"]
+        annotations=config["rules"]["gatk_variant_recalibrator"]["INDEL"]["annotations"]
+        arguments=config["rules"]["gatk_variant_recalibrator"]["INDEL"]["arguments"]
+    return "%s %s %s %s" %(base_params, tranches,annotations,arguments)
+
+
+
+

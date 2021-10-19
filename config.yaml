@@ -65,6 +65,7 @@ known_variants:
   omni: "/storage/burlo/cocca/resources/gatk4hg38db/1000G_omni2.5.hg38.vcf.gz"
   mills: "/storage/burlo/cocca/resources/gatk4hg38db/Mills_and_1000G_gold_standard.indels.hg38.vcf.gz"
   indels: "/storage/burlo/cocca/resources/gatk4hg38db/Homo_sapiens_assembly38.known_indels.vcf.gz"
+  axiom: "/storage/burlo/cocca/resources/gatk4hg38db/Axiom_Exome_Plus.genotypes.all_populations.poly.hg38.vcf.gz"
 
 ############################################
 #Template to pre-process fastq files
@@ -112,13 +113,27 @@ rules:
   pre_vqsr_rules:
     out_dir: "8.VQSR_input"
   gatk_variant_recalibrator:
-    arguments: ""
+    SNP:
+      tranches: "-tranche 100.0 -tranche 99.99 -tranche 99.98 -tranche 99.97 -tranche 99.96 -tranche 99.95 -tranche 99.94 -tranche 99.93 -tranche 99.92 -tranche 99.91 -tranche 99.9 -tranche 99.85 -tranche 99.8 -tranche 99.75 -tranche 99.7 -tranche 99.65 -tranche 99.6 -tranche 99.5 -tranche 99.4 -tranche 99.3 -tranche 99.0 -tranche 98.0 -tranche 97.0 -tranche 90.0"
+      annotations: "-an QD -an MQRankSum -an ReadPosRankSum -an FS -an MQ -an SOR -an DP"
+      arguments: "--max-gaussians 6"
+    INDEL:
+      tranches: "-tranche 100.0 -tranche 99.99 -tranche 99.98 -tranche 99.97 -tranche 99.96 -tranche 99.95 -tranche 99.8 -tranche 99.7 -tranche 99.6 -tranche 99.5 -tranche 99.0 -tranche 97.0 -tranche 96.0 -tranche 95.0 -tranche 94.0 -tranche 93.5 -tranche 93.0 -tranche 92.0 -tranche 91.0 -tranche 90.0"
+      annotations: "-an FS -an ReadPosRankSum -an MQRankSum -an QD -an SOR -an DP"
+      arguments: "--max-gaussians 4"
     out_dir: "9.VQSR"
     threads: 20
   gatk_apply_VQSR:
-    arguments: ""
+    SNP:
+      arguments: "--truth-sensitivity-filter-level 99.99 --create-output-variant-index true"
+    INDEL:
+      arguments: "--truth-sensitivity-filter-level 95.0 --create-output-variant-index true"
     out_dir: "10.Apply_VQSR"
-    threads: 20
+    threads: 5
+  recal_pass_filter:
+    out_dir: "10.Apply_VQSR"
+  rsid_annotation:
+    out_dir: "11.rsID_annotation"
 
 
 #########SET UP YOUR EMAIL HERE ##############

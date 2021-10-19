@@ -12,7 +12,6 @@ rule split_intervals:
         # scatter.split(config["files_path"]["base_joint_call_path"])
     input:
         get_interval_file
-        # "wgs_calling_regions_chr12.GRCh38.p13.interval_list"
     params:
         gatk=config['GATK_TOOL'],
         ref_genome=resolve_single_filepath(*references_abs_path(), config.get("genome_fasta")),
@@ -96,8 +95,8 @@ rule gatk_genotype_gvcfs:
         import_interval=os.path.join(config.get('files_path').get('base_joint_call_path'),config.get('rules').get('split_intervals').get('out_dir')) + '/{scatteritem}_{interval_name}'
         # "db/imports/{interval}"
     output:
-        protected(os.path.join(config.get("files_path").get("base_joint_call_path"),config.get("rules").get("gatk_genotype_gvcfs").get("out_dir"),"{scatteritem}_{interval_name}/all.{scatteritem}_{interval_name}.vcf.gz")),
-        protected(os.path.join(config.get("files_path").get("base_joint_call_path"),config.get("rules").get("gatk_genotype_gvcfs").get("out_dir"),"{scatteritem}_{interval_name}/all.{scatteritem}_{interval_name}.vcf.gz.tbi"))
+        os.path.join(config.get("files_path").get("base_joint_call_path"),config.get("rules").get("gatk_genotype_gvcfs").get("out_dir"),"{scatteritem}_{interval_name}/all.{scatteritem}_{interval_name}.vcf.gz"),
+        os.path.join(config.get("files_path").get("base_joint_call_path"),config.get("rules").get("gatk_genotype_gvcfs").get("out_dir"),"{scatteritem}_{interval_name}/all.{scatteritem}_{interval_name}.vcf.gz.tbi")
         # protected("variant_calling/all.{scatteritem}_{interval_name}.vcf.gz")
     params:
         gatk=config['GATK_TOOL'],
@@ -128,8 +127,8 @@ rule chrom_intervals_gather:
     wildcard_constraints:
         interval_name='wgs_calling_regions_.+.interval_list'
     output:
-        protected(os.path.join(config.get("files_path").get("base_joint_call_path"),config.get("rules").get("gatk_genotype_gvcfs").get("out_dir"),"all.{interval_name}.vcf.gz")),
-        protected(os.path.join(config.get("files_path").get("base_joint_call_path"),config.get("rules").get("gatk_genotype_gvcfs").get("out_dir"),"all.{interval_name}.vcf.gz.tbi"))
+        os.path.join(config.get("files_path").get("base_joint_call_path"),config.get("rules").get("gatk_genotype_gvcfs").get("out_dir"),"all.{interval_name}.vcf.gz"),
+        os.path.join(config.get("files_path").get("base_joint_call_path"),config.get("rules").get("gatk_genotype_gvcfs").get("out_dir"),"all.{interval_name}.vcf.gz.tbi")
     input:
         gather.split(os.path.join(config.get("files_path").get("base_joint_call_path"),config.get("rules").get("gatk_genotype_gvcfs").get("out_dir"),"{scatteritem}_{{interval_name}}/all.{scatteritem}_{{interval_name}}.vcf.gz"))
     params:
@@ -147,6 +146,6 @@ rule chrom_intervals_gather:
     message: """Let\'s gather things together, by chromosome, basically!"""
     shell:
         """
-        {params.bcftools} concat {input} | {params.bcftools} sort -T {params.tmp}|{params.bcftools} norm -f {params.ref_genome} -O z -o {output[0]} > {log[0]} 2> {log[1]}
+        {params.bcftools} concat {input} | {params.bcftools} sort -T {params.tmp} | {params.bcftools} norm -f {params.ref_genome} -O z -o {output[0]} > {log[0]} 2> {log[1]}
         {params.bcftools} index -t {output[0]}
         """
