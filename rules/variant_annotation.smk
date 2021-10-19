@@ -39,7 +39,7 @@ rule rsid_annotation:
     params:
         bcftools=config["BCFTOOLS"],
         dbsnp_latest=config.get("known_variants").get("dbsnp_latest"),
-        current_chr=lambda wildcards, input : get_chr_from_vcf(input),
+        # current_chr=lambda wildcards, input : get_chr_from_vcf(input),
         out_folder=os.path.join(config.get("files_path").get("base_joint_call_path"),config.get("rules").get("rsid_annotation").get("out_dir"))
     log:
         config["files_path"]["log_dir"] + "/all.{interval_name}-rsid_annotation.log",
