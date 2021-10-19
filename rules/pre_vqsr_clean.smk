@@ -73,6 +73,8 @@ rule concat_vcfs:
     message: """Concat sites only files!"""
     shell:
         """
-        {params.bcftools} concat {input} | {params.bcftools} sort -T {params.tmp} -O z -o {output[0]} 1> {log[0]} 2> {log[1]}
+        temp=$(mktemp -u -d -p {params.tmp})
+
+        {params.bcftools} concat {input} | {params.bcftools} sort -T ${{temp}} -O z -o {output[0]} 1> {log[0]} 2> {log[1]}
         {params.bcftools} index -t {output[0]}
         """

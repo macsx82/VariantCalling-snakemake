@@ -146,6 +146,8 @@ rule chrom_intervals_gather:
     message: """Let\'s gather things together, by chromosome, basically!"""
     shell:
         """
-        {params.bcftools} concat {input} | {params.bcftools} sort -T {params.tmp} | {params.bcftools} norm -f {params.ref_genome} -O z -o {output[0]} > {log[0]} 2> {log[1]}
+        temp=$(mktemp -u -d -p {params.tmp})
+
+        {params.bcftools} concat {input} | {params.bcftools} sort -T ${{temp}} | {params.bcftools} norm -f {params.ref_genome} -O z -o {output[0]} > {log[0]} 2> {log[1]}
         {params.bcftools} index -t {output[0]}
         """
