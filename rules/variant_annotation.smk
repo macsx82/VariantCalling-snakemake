@@ -26,10 +26,10 @@ rule recal_pass_filter:
 
 
 rule rsid_annotation:
-    # wildcard_constraints:
-    #     interval_name='wgs_calling_regions_.+.interval_list'
+    wildcard_constraints:
+        interval_name='wgs_calling_regions_.+.interval_list'
     output:
-        directory(os.path.join(config.get("files_path").get("base_joint_call_path"),config.get("rules").get("rsid_annotation").get("out_dir")))
+        directory(os.path.join(config.get("files_path").get("base_joint_call_path"),config.get("rules").get("rsid_annotation").get("out_dir"),"{interval_name}"))
         # os.path.join(config.get("files_path").get("base_joint_call_path"),config.get("rules").get("rsid_annotation").get("out_dir"),"/{current_chr}.PASS_rsID.vcf.gz"),
         # os.path.join(config.get("files_path").get("base_joint_call_path"),config.get("rules").get("rsid_annotation").get("out_dir"),"/{current_chr}.PASS_rsID.vcf.gz.tbi")
     input:
