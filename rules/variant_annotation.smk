@@ -1,4 +1,6 @@
 rule recal_pass_filter:
+    wildcard_constraints:
+        interval_name='wgs_calling_regions_.+.interval_list'
     output:
         os.path.join(config.get("files_path").get("base_joint_call_path"),config.get("rules").get("recal_pass_filter").get("out_dir"),"/all.{interval_name}.PASS.vcf.gz"),
         os.path.join(config.get("files_path").get("base_joint_call_path"),config.get("rules").get("recal_pass_filter").get("out_dir"),"/all.{interval_name}.PASS.vcf.gz.tbi")
@@ -25,10 +27,11 @@ rule recal_pass_filter:
 
 rule rsid_annotation:
     output:
-        os.path.join(config.get("files_path").get("base_joint_call_path"),config.get("rules").get("rsid_annotation").get("out_dir"),"/{current_chr}.PASS_rsID.vcf.gz"),
-        os.path.join(config.get("files_path").get("base_joint_call_path"),config.get("rules").get("rsid_annotation").get("out_dir"),"/{current_chr}.PASS_rsID.vcf.gz.tbi")
+        os.path.join(config.get("files_path").get("base_joint_call_path"),config.get("rules").get("rsid_annotation").get("out_dir"),"/{params.current_chr}.PASS_rsID.vcf.gz"),
+        os.path.join(config.get("files_path").get("base_joint_call_path"),config.get("rules").get("rsid_annotation").get("out_dir"),"/{params.current_chr}.PASS_rsID.vcf.gz.tbi")
     input:
         rules.recal_pass_filter.output[0]
+        # os.path.join(config.get("files_path").get("base_joint_call_path"),config.get("rules").get("recal_pass_filter").get("out_dir"),"/all.{interval_name}.PASS.vcf.gz"),
     params:
         bcftools=config["BCFTOOLS"],
         dbsnp_latest=config.get("known_variants").get("dbsnp_latest"),
