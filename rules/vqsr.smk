@@ -39,10 +39,10 @@ rule gatk_apply_VQSR:
         os.path.join(config.get("files_path").get("base_joint_call_path"),config.get("rules").get("gatk_apply_VQSR").get("out_dir"),"/all.{interval_name}.indel_recalibrated.snp_recalibrated.vcf.gz")
     input:
         vcf=rules.clean_and_excess_het_filter.output,
-        recal_s=os.path.join(config.get("files_path").get("base_joint_call_path"),config.get("rules").get("gatk_variant_recalibrator").get("out_dir"),"variant_calling/{prefix}.snp.recal"),
-        recal_i=os.path.join(config.get("files_path").get("base_joint_call_path"),config.get("rules").get("gatk_variant_recalibrator").get("out_dir"),"variant_calling/{prefix}.indel.recal"),
-        tranches_s=os.path.join(config.get("files_path").get("base_joint_call_path"),config.get("rules").get("gatk_variant_recalibrator").get("out_dir"),"variant_calling/{prefix}.snp.tranches"),
-        tranches_i=os.path.join(config.get("files_path").get("base_joint_call_path"),config.get("rules").get("gatk_variant_recalibrator").get("out_dir"),"variant_calling/{prefix}.indel.tranches")
+        recal_s=os.path.join(config.get("files_path").get("base_joint_call_path"),config.get("rules").get("gatk_variant_recalibrator").get("out_dir"),"variant_calling/ALL.CLEAN.SITES_ONLY.snp.recal"),
+        recal_i=os.path.join(config.get("files_path").get("base_joint_call_path"),config.get("rules").get("gatk_variant_recalibrator").get("out_dir"),"variant_calling/ALL.CLEAN.SITES_ONLY.indel.recal"),
+        tranches_s=os.path.join(config.get("files_path").get("base_joint_call_path"),config.get("rules").get("gatk_variant_recalibrator").get("out_dir"),"variant_calling/ALL.CLEAN.SITES_ONLY.snp.tranches"),
+        tranches_i=os.path.join(config.get("files_path").get("base_joint_call_path"),config.get("rules").get("gatk_variant_recalibrator").get("out_dir"),"variant_calling/ALL.CLEAN.SITES_ONLY.indel.tranches")
     params:
         gatk=config['GATK_TOOL'],
         java_opt=config['java_opts']['opt3x'],
