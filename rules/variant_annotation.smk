@@ -2,8 +2,8 @@ rule recal_pass_filter:
     wildcard_constraints:
         interval_name='wgs_calling_regions_.+.interval_list'
     output:
-        os.path.join(config.get("files_path").get("base_joint_call_path"),config.get("rules").get("recal_pass_filter").get("out_dir"),"/all.{interval_name}.PASS.vcf.gz"),
-        os.path.join(config.get("files_path").get("base_joint_call_path"),config.get("rules").get("recal_pass_filter").get("out_dir"),"/all.{interval_name}.PASS.vcf.gz.tbi")
+        os.path.join(config.get("files_path").get("base_joint_call_path"),config.get("rules").get("recal_pass_filter").get("out_dir"),"all.{interval_name}.PASS.vcf.gz"),
+        os.path.join(config.get("files_path").get("base_joint_call_path"),config.get("rules").get("recal_pass_filter").get("out_dir"),"all.{interval_name}.PASS.vcf.gz.tbi")
     input:
         rules.gatk_apply_VQSR.output[1]
     params:
@@ -30,11 +30,11 @@ rule rsid_annotation:
         interval_name='wgs_calling_regions_.+.interval_list'
     output:
         # directory(os.path.join(config.get("files_path").get("base_joint_call_path"),config.get("rules").get("rsid_annotation").get("out_dir"),"{interval_name}"))
-        os.path.join(config.get("files_path").get("base_joint_call_path"),config.get("rules").get("rsid_annotation").get("out_dir"),"/{interval_name}.PASS_rsID.vcf.gz"),
-        os.path.join(config.get("files_path").get("base_joint_call_path"),config.get("rules").get("rsid_annotation").get("out_dir"),"/{interval_name}.PASS_rsID.vcf.gz.tbi")
+        os.path.join(config.get("files_path").get("base_joint_call_path"),config.get("rules").get("rsid_annotation").get("out_dir"),"{interval_name}.PASS_rsID.vcf.gz"),
+        os.path.join(config.get("files_path").get("base_joint_call_path"),config.get("rules").get("rsid_annotation").get("out_dir"),"{interval_name}.PASS_rsID.vcf.gz.tbi")
     input:
         # rules.recal_pass_filter.output[0]
-        os.path.join(config.get("files_path").get("base_joint_call_path"),config.get("rules").get("recal_pass_filter").get("out_dir"),"/all.{interval_name}.PASS.vcf.gz"),
+        os.path.join(config.get("files_path").get("base_joint_call_path"),config.get("rules").get("recal_pass_filter").get("out_dir"),"all.{interval_name}.PASS.vcf.gz"),
         # os.path.join(config.get("files_path").get("base_joint_call_path"),config.get("rules").get("recal_pass_filter").get("out_dir"),"/all.wgs_calling_regions_{current_chr}.+.interval_list.PASS.vcf.gz"),
     params:
         bcftools=config["BCFTOOLS"],

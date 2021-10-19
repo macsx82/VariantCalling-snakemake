@@ -1,9 +1,9 @@
 
 rule gatk_variant_recalibrator:
     output:
-        recal=os.path.join(config.get("files_path").get("base_joint_call_path"),config.get("rules").get("gatk_variant_recalibrator").get("out_dir"),"/ALL.CLEAN.SITES_ONLY.{type,(snp|indel)}.recal"),
-        tranches=os.path.join(config.get("files_path").get("base_joint_call_path"),config.get("rules").get("gatk_variant_recalibrator").get("out_dir"),"/ALL.CLEAN.SITES_ONLY.{type,(snp|indel)}.tranches"),
-        plotting=os.path.join(config.get("files_path").get("base_joint_call_path"),config.get("rules").get("gatk_variant_recalibrator").get("out_dir"),"/ALL.CLEAN.SITES_ONLY.{type,(snp|indel)}.plotting.R")
+        recal=os.path.join(config.get("files_path").get("base_joint_call_path"),config.get("rules").get("gatk_variant_recalibrator").get("out_dir"),"ALL.CLEAN.SITES_ONLY.{type,(snp|indel)}.recal"),
+        tranches=os.path.join(config.get("files_path").get("base_joint_call_path"),config.get("rules").get("gatk_variant_recalibrator").get("out_dir"),"ALL.CLEAN.SITES_ONLY.{type,(snp|indel)}.tranches"),
+        plotting=os.path.join(config.get("files_path").get("base_joint_call_path"),config.get("rules").get("gatk_variant_recalibrator").get("out_dir"),"ALL.CLEAN.SITES_ONLY.{type,(snp|indel)}.plotting.R")
     input:
         resolve_multi_filepath(*references_abs_path(), config["known_variants"]).values(),
         # vcf=os.path.join(config.get("files_path").get("base_joint_call_path"),config.get("rules").get("pre_vqsr_rules").get("out_dir"),"ALL.{prefix}.vcf.gz")
