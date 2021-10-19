@@ -29,8 +29,9 @@ rule rsid_annotation:
     # wildcard_constraints:
     #     interval_name='wgs_calling_regions_.+.interval_list'
     output:
-        os.path.join(config.get("files_path").get("base_joint_call_path"),config.get("rules").get("rsid_annotation").get("out_dir"),"/{current_chr}.PASS_rsID.vcf.gz"),
-        os.path.join(config.get("files_path").get("base_joint_call_path"),config.get("rules").get("rsid_annotation").get("out_dir"),"/{current_chr}.PASS_rsID.vcf.gz.tbi")
+        directory(os.path.join(config.get("files_path").get("base_joint_call_path"),config.get("rules").get("rsid_annotation").get("out_dir")),
+        # os.path.join(config.get("files_path").get("base_joint_call_path"),config.get("rules").get("rsid_annotation").get("out_dir"),"/{current_chr}.PASS_rsID.vcf.gz"),
+        # os.path.join(config.get("files_path").get("base_joint_call_path"),config.get("rules").get("rsid_annotation").get("out_dir"),"/{current_chr}.PASS_rsID.vcf.gz.tbi")
     input:
         rules.recal_pass_filter.output[0]
         # os.path.join(config.get("files_path").get("base_joint_call_path"),config.get("rules").get("recal_pass_filter").get("out_dir"),"/all.{interval_name}.PASS.vcf.gz"),
@@ -41,10 +42,10 @@ rule rsid_annotation:
         current_chr=lambda wildcards, input : get_chr_from_vcf(input),
         out_folder=os.path.join(config.get("files_path").get("base_joint_call_path"),config.get("rules").get("rsid_annotation").get("out_dir"))
     log:
-        config["files_path"]["log_dir"] + "/all.{current_chr}-rsid_annotation.log",
-        config["files_path"]["log_dir"] + "/all.{current_chr}-rsid_annotation.e"
+        config["files_path"]["log_dir"] + "/all.{interval_name}-rsid_annotation.log",
+        config["files_path"]["log_dir"] + "/all.{interval_name}-rsid_annotation.e"
     benchmark:
-        config["files_path"]["benchmark"] + "/all.{current_chr}_rsid_annotation.tsv"
+        config["files_path"]["benchmark"] + "/all.{interval_name}_rsid_annotation.tsv"
     envmodules:
         "bcftools/1.11"
     threads: 2
@@ -53,6 +54,6 @@ rule rsid_annotation:
         """
         echo "working on chromosome {params.current_chr}"
 
-        {params.bcftools} annotate -a {params.dbsp_latest} -c ID {input} | {params.bcftools} +fill-tags -O z -o {params.outfolder}/{params.current_chr}.PASS_rsID.vcf.gz
-        {params.bcftools} index -t {params.outfolder}/{params.current_chr}.PASS_rsID.vcf.gz
+        {params.bcftools} annotate -a {params.dbsp_latest} -c ID {input} | {params.bcftools} +fill-tags -O z -o {output}/{params.current_chr}.PASS_rsID.vcf.gz
+        {params.bcftools} index -t {output}/{params.current_chr}.PASS_rsID.vcf.gz
         """
