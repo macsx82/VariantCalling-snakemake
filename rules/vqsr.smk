@@ -1,9 +1,9 @@
 
 rule gatk_variant_recalibrator:
     output:
-        recal=os.path.join(config.get("files_path").get("base_joint_call_path"),config.get("rules").get("gatk_variant_recalibrator").get("out_dir"),"/ALL.{prefix}.{type,(snp|indel)}.recal"),
-        tranches=os.path.join(config.get("files_path").get("base_joint_call_path"),config.get("rules").get("gatk_variant_recalibrator").get("out_dir"),"/ALL.{prefix}.{type,(snp|indel)}.tranches"),
-        plotting=os.path.join(config.get("files_path").get("base_joint_call_path"),config.get("rules").get("gatk_variant_recalibrator").get("out_dir"),"/ALL.{prefix}.{type,(snp|indel)}.plotting.R")
+        recal=os.path.join(config.get("files_path").get("base_joint_call_path"),config.get("rules").get("gatk_variant_recalibrator").get("out_dir"),"/ALL.CLEAN.SITES_ONLY.{type,(snp|indel)}.recal"),
+        tranches=os.path.join(config.get("files_path").get("base_joint_call_path"),config.get("rules").get("gatk_variant_recalibrator").get("out_dir"),"/ALL.CLEAN.SITES_ONLY.{type,(snp|indel)}.tranches"),
+        plotting=os.path.join(config.get("files_path").get("base_joint_call_path"),config.get("rules").get("gatk_variant_recalibrator").get("out_dir"),"/ALL.CLEAN.SITES_ONLY.{type,(snp|indel)}.plotting.R")
     input:
         resolve_multi_filepath(*references_abs_path(), config["known_variants"]).values(),
         # vcf=os.path.join(config.get("files_path").get("base_joint_call_path"),config.get("rules").get("pre_vqsr_rules").get("out_dir"),"ALL.{prefix}.vcf.gz")
@@ -14,13 +14,13 @@ rule gatk_variant_recalibrator:
         genome=resolve_single_filepath(*references_abs_path(), config.get("genome_fasta")),
         recal=_get_recal_params
     log:
-        config["files_path"]["log_dir"] + "/ALL.{prefix}.{type}-gatk_variant_recalibrator.log",
-        config["files_path"]["log_dir"] + "/ALL.{prefix}.{type}-gatk_variant_recalibrator.e"
+        config["files_path"]["log_dir"] + "/ALL.CLEAN.SITES_ONLY.{type}-gatk_variant_recalibrator.log",
+        config["files_path"]["log_dir"] + "/ALL.CLEAN.SITES_ONLY.{type}-gatk_variant_recalibrator.e"
     threads: config.get("rules").get("gatk_variant_recalibrator").get("threads")
     resources:
         mem_mb=get_resources_from_jvm(config['java_opts']['opt3x'])
     benchmark:
-        config["files_path"]["benchmark"] + "/ALL.{prefix}.{type}_gatk_variant_recalibrator.tsv"
+        config["files_path"]["benchmark"] + "/ALL.CLEAN.SITES_ONLY.{type}_gatk_variant_recalibrator.tsv"
     envmodules:
         "gatk/4.2.2.0"
     message: """ VariantRecalibrator """
