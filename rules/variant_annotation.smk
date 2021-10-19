@@ -52,7 +52,7 @@ rule rsid_annotation:
     message: """ Add rsID using latest dbSNP information """
     shell:
         """
-        echo "working on chromosome {params.current_chr}"
+        # echo "working on chromosome {params.current_chr}"
 
         # {params.bcftools} annotate -a {params.dbsp_latest} -c ID {input} | {params.bcftools} +fill-tags -O z -o {params.outfolder}/{params.current_chr}.PASS_rsID.vcf.gz
         # {params.bcftools} index -t {params.outfolder}/{params.current_chr}.PASS_rsID.vcf.gz
