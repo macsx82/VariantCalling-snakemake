@@ -38,10 +38,10 @@ rule rsid_annotation:
         current_chr=lambda wildcards, input : get_chr_from_vcf(input),
         out_folder=os.path.join(config.get("files_path").get("base_joint_call_path"),config.get("rules").get("rsid_annotation").get("out_dir"))
     log:
-        config["files_path"]["log_dir"] + "/all.{interval_name}-rsid_annotation.log",
-        config["files_path"]["log_dir"] + "/all.{interval_name}-rsid_annotation.e"
+        config["files_path"]["log_dir"] + "/all.{current_chr}-rsid_annotation.log",
+        config["files_path"]["log_dir"] + "/all.{current_chr}-rsid_annotation.e"
     benchmark:
-        config["files_path"]["benchmark"] + "/all.{interval_name}_rsid_annotation.tsv"
+        config["files_path"]["benchmark"] + "/all.{current_chr}_rsid_annotation.tsv"
     envmodules:
         "bcftools/1.11"
     threads: 2
