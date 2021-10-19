@@ -46,8 +46,8 @@ rule gatk_apply_VQSR:
         gatk=config['GATK_TOOL'],
         java_opt=config['java_opts']['opt3x'],
         genome=resolve_single_filepath(*references_abs_path(), config.get("genome_fasta")),
-        args_snp= config.get("gatk_apply_VQSR").get("SNP").get("arguments"),
-        args_indel= config.get("gatk_apply_VQSR").get("INDEL").get("arguments")
+        args_snp= config.get("rules").get("gatk_apply_VQSR").get("SNP").get("arguments"),
+        args_indel= config.get("rules").get("gatk_apply_VQSR").get("INDEL").get("arguments")
         # mode=lambda wildcards: wildcards.type.upper()
     log:
         config["files_path"]["log_dir"] + "/all.{interval_name}-gatk_variant_recalibrator.log",
