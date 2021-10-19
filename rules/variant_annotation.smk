@@ -39,7 +39,7 @@ rule rsid_annotation:
     params:
         bcftools=config["BCFTOOLS"],
         dbsnp_latest=config.get("known_variants").get("dbsnp_latest"),
-        current_chr=lambda input : get_chr_from_vcf(input[0]),
+        current_chr=lambda wildcards, input : get_chr_from_vcf(input[0]),
         out_folder=os.path.join(config.get("files_path").get("base_joint_call_path"),config.get("rules").get("rsid_annotation").get("out_dir"))
     log:
         config["files_path"]["log_dir"] + "/all.{interval_name}-rsid_annotation.log",
@@ -52,7 +52,7 @@ rule rsid_annotation:
     message: """ Add rsID using latest dbSNP information """
     shell:
         """
-        # echo "working on chromosome {params.current_chr}"
+        echo "working on chromosome {params.current_chr}"
         {params.bcftools} annotate -a {params.dbsnp_latest} -c ID {input} | {params.bcftools} +fill-tags -O z -o {output[0]}
         {params.bcftools} index -t {output[0]}
         """
