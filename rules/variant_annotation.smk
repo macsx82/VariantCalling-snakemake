@@ -26,6 +26,8 @@ rule recal_pass_filter:
 
 
 rule rsid_annotation:
+    wildcard_constraints:
+        interval_name='wgs_calling_regions_.+.interval_list'
     output:
         os.path.join(config.get("files_path").get("base_joint_call_path"),config.get("rules").get("rsid_annotation").get("out_dir"),"/{current_chr}.PASS_rsID.vcf.gz"),
         os.path.join(config.get("files_path").get("base_joint_call_path"),config.get("rules").get("rsid_annotation").get("out_dir"),"/{current_chr}.PASS_rsID.vcf.gz.tbi")
@@ -49,7 +51,7 @@ rule rsid_annotation:
     shell:
         """
         echo "working on chromosome {params.current_chr}"
-        
+
         {params.bcftools} annotate -a {params.dbsp_latest} -c ID {input} | {params.bcftools} +fill-tags -O z -o {params.outfolder}/{params.current_chr}.PASS_rsID.vcf.gz
         {params.bcftools} index -t {params.outfolder}/{params.current_chr}.PASS_rsID.vcf.gz
         """
