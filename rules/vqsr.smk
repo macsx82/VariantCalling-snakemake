@@ -6,7 +6,8 @@ rule gatk_variant_recalibrator:
         plotting=os.path.join(config.get("files_path").get("base_joint_call_path"),config.get("rules").get("gatk_variant_recalibrator").get("out_dir"),"/ALL.{prefix}.{type,(snp|indel)}.plotting.R")
     input:
         resolve_multi_filepath(*references_abs_path(), config["known_variants"]).values(),
-        vcf=os.path.join(config.get("files_path").get("base_joint_call_path"),config.get("rules").get("pre_vqsr_rules").get("out_dir"),"ALL.{prefix}.vcf.gz")
+        # vcf=os.path.join(config.get("files_path").get("base_joint_call_path"),config.get("rules").get("pre_vqsr_rules").get("out_dir"),"ALL.{prefix}.vcf.gz")
+        vcf=rules.concat_vcfs.output[0]
     params:
         gatk=config['GATK_TOOL'],
         java_opt=config['java_opts']['opt3x'],
