@@ -46,6 +46,10 @@ BASE_OUT=config["files_path"]["base_out"]
 #which allows us to define the interval list based on sample's sex
 call_intervals=expand("wgs_calling_regions_{chr}.GRCh38.p13.interval_list", chr=config["call_chr"])
 
+##### functions #####
+include_prefix="rules"
+include:
+    include_prefix + "/functions.py"
 
 ##### local rules #####
 localrules: all
@@ -87,9 +91,9 @@ rule all:
         # BASE_OUT + config["rules"]["bwa_mem"]["out_dir"] + "{sample}_map.bam"
 
 ##### Modules #####
-include_prefix="rules"
-include:
-    include_prefix + "/functions.py"
+# include_prefix="rules"
+# include:
+#     include_prefix + "/functions.py"
 include:
     include_prefix + "/alignment.smk"
 include:
