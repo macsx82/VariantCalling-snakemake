@@ -70,7 +70,7 @@ def get_intervals_by_sex(wildcards):
     return sex_aware_call_intervals
 
 #define the input combination for each sample in the all rule for the variant calling, based on sex
-def call_variants_by_sex():
+def call_variants_by_sex(base_path):
     sample_names = list(samples_df.SAMPLE_ID)
     # call_intervals=expand("wgs_calling_regions_{chr}.GRCh38.p13.interval_list", chr=config["call_chr"])
     all_samples_to_call =[]
@@ -87,7 +87,7 @@ def call_variants_by_sex():
         sex_aware_call_intervals=[ "wgs_calling_regions_%s.GRCh38.p13.interval_list" %(chrom) for chrom in chrs]
         # print(len(sex_aware_call_intervals))
         # all_samples_to_call.append(expand("/{sample}/{sample}_{interval_name}_g.vcf.gz",sample=sample,interval_name=sex_aware_call_intervals))
-        all_samples_to_call.append(expand(BASE_OUT + "/" + config["rules"]["gatk_hap_caller"]["out_dir"] + "/{sample}/{sample}_{interval_name}_g.vcf.gz",sample=sample,interval_name=sex_aware_call_intervals))
+        all_samples_to_call.append(expand(base_path + "/{sample}/{sample}_{interval_name}_g.vcf.gz",sample=sample,interval_name=sex_aware_call_intervals))
     all_samples_intervals = [sample_interval for sample_intervals in all_samples_to_call for sample_interval in sample_intervals]
 
     return all_samples_intervals
