@@ -68,7 +68,7 @@ rule all:
         # [(BASE_OUT +"/"+ config["fastqc_pre_dir"] + "/{sample_fs1}_fastqc.html").format(sample_fs1=r1_strand) for r1_strand in R1]
         # expand(BASE_OUT + "/"+ config["rules"]["ubam_gen"]["out_dir"]+"/" + "{sample}_unmap.bam", sample=sample_names),
         # expand(BASE_OUT + "/"+ config["rules"]["bwa_mem"]["out_dir"]+"/" + "{sample}_map.bam", sample=sample_names)
-        call_variants_by_sex,
+        call_variants_by_sex(),
         # expand(BASE_OUT + "/" + config["rules"]["gatk_hap_caller"]["out_dir"] + "/{sample}/{sample}_{interval_name}_g.vcf.gz",sample=sample_names,interval_name=get_intervals_by_sex),
         # expand(BASE_OUT + "/" + config["rules"]["gatk_hap_caller"]["out_dir"] + "/{sample}/{sample}_{interval_name}_g.vcf.gz",sample=sample_names,interval_name=call_intervals),
         expand(BASE_OUT + "/"+ config["rules"]["stats"]["out_dir"] + "/{sample}_validate.txt", sample=sample_names),
