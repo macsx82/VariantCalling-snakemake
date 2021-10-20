@@ -24,7 +24,7 @@ rule clean_and_excess_het_filter:
     message: """Let\'s clean a little bit, by chromosome!"""
     shell:
         """
-        {params.bcftools} view -i "ALT!='.'" {input} | {params.bcftools} filter -s ExcessHet -e "ExcessHet > 54.69"  -O z -o {output} > {log[0]} 2> {log[1]}
+        {params.bcftools} view -i "ALT!='.'" {input} | {params.bcftools} filter -s ExcessHet -e "ExcessHet > 54.69"  -O z -o {output[0]} > {log[0]} 2> {log[1]}
         {params.bcftools} index -t {output[0]}
         """
 
@@ -79,6 +79,6 @@ rule concat_vcfs:
         """
         temp=$(mktemp -u -d -p {params.tmp})
 
-        {params.bcftools} concat {input} | {params.bcftools} sort -T ${{temp}} -O z -o {output[0]} 1> {log[0]} 2> {log[1]}
+        {params.bcftools} concat {input} | {params.bcftools} sort -T ${{temp}} -O z -o {output[0]} > {log[0]} 2> {log[1]}
         {params.bcftools} index -t {output[0]}
         """
