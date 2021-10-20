@@ -22,7 +22,8 @@ rule gatk_variant_recalibrator:
     benchmark:
         config["files_path"]["benchmark"] + "/ALL.CLEAN.SITES_ONLY.{type}_gatk_variant_recalibrator.tsv"
     envmodules:
-        "gatk/4.2.2.0"
+        "gatk/4.1.9.0"
+        # "gatk/4.2.2.0"
     message: """ VariantRecalibrator """
     shell:
         """
