@@ -7,7 +7,8 @@ rule clean_and_excess_het_filter:
     wildcard_constraints:
         interval_name='wgs_calling_regions_.+.interval_list'
     output:
-        os.path.join(config.get("files_path").get("base_joint_call_path"),config.get("rules").get("pre_vqsr_rules").get("out_dir"),"all.{interval_name}.CLEAN.vcf.gz")
+        os.path.join(config.get("files_path").get("base_joint_call_path"),config.get("rules").get("pre_vqsr_rules").get("out_dir"),"all.{interval_name}.CLEAN.vcf.gz"),
+        os.path.join(config.get("files_path").get("base_joint_call_path"),config.get("rules").get("pre_vqsr_rules").get("out_dir"),"all.{interval_name}.CLEAN.vcf.gz.tbi")
     input:
         rules.chrom_intervals_gather.output[0]
     params:
@@ -24,6 +25,7 @@ rule clean_and_excess_het_filter:
     shell:
         """
         {params.bcftools} view -i "ALT!='.'" {input} | {params.bcftools} filter -s ExcessHet -e "ExcessHet > 54.69"  -O z -o {output} > {log[0]} 2> {log[1]}
+        {params.bcftools} index -t {output[0]}
         """
 
 #generate site only vcf files to pass to vqsr
@@ -31,9 +33,10 @@ rule sites_only_vcf:
     wildcard_constraints:
         interval_name='wgs_calling_regions_.+.interval_list'
     output:
-        os.path.join(config.get("files_path").get("base_joint_call_path"),config.get("rules").get("pre_vqsr_rules").get("out_dir"),"all.{interval_name}.CLEAN.SITES_ONLY.vcf.gz")
+        os.path.join(config.get("files_path").get("base_joint_call_path"),config.get("rules").get("pre_vqsr_rules").get("out_dir"),"all.{interval_name}.CLEAN.SITES_ONLY.vcf.gz"),
+        os.path.join(config.get("files_path").get("base_joint_call_path"),config.get("rules").get("pre_vqsr_rules").get("out_dir"),"all.{interval_name}.CLEAN.SITES_ONLY.vcf.gz.tbi")
     input:
-        rules.clean_and_excess_het_filter.output
+        rules.clean_and_excess_het_filter.output[0]
     params:
         bcftools=config['BCFTOOLS']
     log:
@@ -47,6 +50,7 @@ rule sites_only_vcf:
     shell:
         """
         {params.bcftools} view -G {input} -O z -o {output[0]} > {log[0]} 2> {log[1]}
+        {params.bcftools} index -t {output[0]}
 
         """
 

@@ -60,6 +60,16 @@ def get_sample_sex(wildcards):
     sex=list(samples_df[samples_df.SAMPLE_ID == (wildcards.sample).split(sep="_")[0]].sex)[0]
     return sex
 
+def get_intervals_by_sex(wildcards):
+    if get_sample_sex(wildcards.sample) == 2 :
+        chrs=config.get("call_chr").remove("chrY")
+    else :
+        chrs=config.get("call_chr")
+    
+    sex_aware_call_intervals=[ "wgs_calling_regions_%s.GRCh38.p13.interval_list" %(chrom) for chrom in chrs]
+    return sex_aware_call_intervals
+
+
 def get_chr_from_interval_list(wildcards):
     interval_filename=wildcards.interval_name
     interval_file=os.path.join(*references_abs_path(), config.get("callable_intervals"),interval_filename)
