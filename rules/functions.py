@@ -169,12 +169,12 @@ def get_sex_chr_from_interval(wildcards):
 def _get_recal_params(wildcards):
     known_variants = resolve_multi_filepath("", config["known_variants"])
     if wildcards.type == "snp":
-        base_params=("--resource:hapmap,known=false,training=true,truth=true,prior=15.0:{hapmap} --resource:omni,known=false,training=true,truth=true,prior=12.0:{omni} --resource:1000G,known=false,training=true,truth=false,prior=10.0:{g1k} --resource:dbsnp,known=true,training=false,truth=false,prior=7.0:{dbsnp}").format(**known_variants)
+        base_params=("--resource:hapmap,known=false,training=true,truth=true,prior=15.0 {hapmap} --resource:omni,known=false,training=true,truth=true,prior=12.0 {omni} --resource:1000G,known=false,training=true,truth=false,prior=10.0 {g1k} --resource:dbsnp,known=true,training=false,truth=false,prior=7.0 {dbsnp}").format(**known_variants)
         tranches=config["rules"]["gatk_variant_recalibrator"]["SNP"]["tranches"]
         annotations=config["rules"]["gatk_variant_recalibrator"]["SNP"]["annotations"]
         arguments=config["rules"]["gatk_variant_recalibrator"]["SNP"]["arguments"]
     else:
-        base_params=("--resource:mills,known=false,training=true,truth=true,prior=12.0:{mills} --resource:axiomPoly,known=false,training=true,truth=false,prior=10:{axiom} --resource:dbsnp,known=true,training=false,truth=false,prior=2.0:{dbsnp}").format(**known_variants)
+        base_params=("--resource:mills,known=false,training=true,truth=true,prior=12.0 {mills} --resource:axiomPoly,known=false,training=true,truth=false,prior=10 {axiom} --resource:dbsnp,known=true,training=false,truth=false,prior=2.0 {dbsnp}").format(**known_variants)
         tranches=config["rules"]["gatk_variant_recalibrator"]["INDEL"]["tranches"]
         annotations=config["rules"]["gatk_variant_recalibrator"]["INDEL"]["annotations"]
         arguments=config["rules"]["gatk_variant_recalibrator"]["INDEL"]["arguments"]
