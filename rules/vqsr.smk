@@ -1,7 +1,7 @@
 
 rule gatk_variant_recalibrator:
     output:
-        recal=os.path.join(config.get("files_path").get("base_joint_call_path"),config.get("rules").get("gatk_variant_recalibrator").get("out_dir"),"ALL.CLEAN.SITES_ONLY.{type,(snp|indel)}.recal"),
+        recal=os.path.join(config.get("files_path").get("base_joint_call_path"),config.get("rules").get("gatk_variant_recalibrator").get("out_dir"),"ALL.CLEAN.SITES_ONLY.{type,(snp|indel)}.recal.vcf"),
         tranches=os.path.join(config.get("files_path").get("base_joint_call_path"),config.get("rules").get("gatk_variant_recalibrator").get("out_dir"),"ALL.CLEAN.SITES_ONLY.{type,(snp|indel)}.tranches"),
         plotting=os.path.join(config.get("files_path").get("base_joint_call_path"),config.get("rules").get("gatk_variant_recalibrator").get("out_dir"),"ALL.CLEAN.SITES_ONLY.{type,(snp|indel)}.plotting.R")
     input:
@@ -22,8 +22,7 @@ rule gatk_variant_recalibrator:
     benchmark:
         config["files_path"]["benchmark"] + "/ALL.CLEAN.SITES_ONLY.{type}_gatk_variant_recalibrator.tsv"
     envmodules:
-        "gatk/4.1.9.0"
-        # "gatk/4.2.2.0"
+        "gatk/4.2.2.0"
     message: """ VariantRecalibrator """
     shell:
         """
@@ -40,8 +39,8 @@ rule gatk_apply_VQSR:
         os.path.join(config.get("files_path").get("base_joint_call_path"),config.get("rules").get("gatk_apply_VQSR").get("out_dir"),"/all.{interval_name}.indel_recalibrated.snp_recalibrated.vcf.gz")
     input:
         vcf=rules.clean_and_excess_het_filter.output,
-        recal_s=os.path.join(config.get("files_path").get("base_joint_call_path"),config.get("rules").get("gatk_variant_recalibrator").get("out_dir"),"ALL.CLEAN.SITES_ONLY.snp.recal"),
-        recal_i=os.path.join(config.get("files_path").get("base_joint_call_path"),config.get("rules").get("gatk_variant_recalibrator").get("out_dir"),"ALL.CLEAN.SITES_ONLY.indel.recal"),
+        recal_s=os.path.join(config.get("files_path").get("base_joint_call_path"),config.get("rules").get("gatk_variant_recalibrator").get("out_dir"),"ALL.CLEAN.SITES_ONLY.snp.recal.vcf"),
+        recal_i=os.path.join(config.get("files_path").get("base_joint_call_path"),config.get("rules").get("gatk_variant_recalibrator").get("out_dir"),"ALL.CLEAN.SITES_ONLY.indel.recal.vcf"),
         tranches_s=os.path.join(config.get("files_path").get("base_joint_call_path"),config.get("rules").get("gatk_variant_recalibrator").get("out_dir"),"ALL.CLEAN.SITES_ONLY.snp.tranches"),
         tranches_i=os.path.join(config.get("files_path").get("base_joint_call_path"),config.get("rules").get("gatk_variant_recalibrator").get("out_dir"),"ALL.CLEAN.SITES_ONLY.indel.tranches")
     params:

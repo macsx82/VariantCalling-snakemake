@@ -116,11 +116,11 @@ rules:
     SNP:
       tranches: "-tranche 100.0 -tranche 99.99 -tranche 99.98 -tranche 99.97 -tranche 99.96 -tranche 99.95 -tranche 99.94 -tranche 99.93 -tranche 99.92 -tranche 99.91 -tranche 99.9 -tranche 99.85 -tranche 99.8 -tranche 99.75 -tranche 99.7 -tranche 99.65 -tranche 99.6 -tranche 99.5 -tranche 99.4 -tranche 99.3 -tranche 99.0 -tranche 98.0 -tranche 97.0 -tranche 90.0"
       annotations: "-an QD -an MQRankSum -an ReadPosRankSum -an FS -an MQ -an SOR -an DP"
-      arguments: "--max-gaussians 6"
+      arguments: "-mode SNP --max-gaussians 6"
     INDEL:
       tranches: "-tranche 100.0 -tranche 99.99 -tranche 99.98 -tranche 99.97 -tranche 99.96 -tranche 99.95 -tranche 99.8 -tranche 99.7 -tranche 99.6 -tranche 99.5 -tranche 99.0 -tranche 97.0 -tranche 96.0 -tranche 95.0 -tranche 94.0 -tranche 93.5 -tranche 93.0 -tranche 92.0 -tranche 91.0 -tranche 90.0"
       annotations: "-an FS -an ReadPosRankSum -an MQRankSum -an QD -an SOR -an DP"
-      arguments: "--max-gaussians 4"
+      arguments: "-mode INDEL --max-gaussians 4"
     out_dir: "9.VQSR"
     threads: 20
   gatk_apply_VQSR:
