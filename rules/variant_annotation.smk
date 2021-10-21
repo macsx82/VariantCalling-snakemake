@@ -21,7 +21,7 @@ rule recal_pass_filter:
     shell:
         """
         {params.bcftools} view -i "FILTER=='PASS'" {input} | {params.bcftools} norm -f {params.ref_genome} -O z -o {output[0]}
-        {params.bcftools} intex -t {output[0]}
+        {params.bcftools} index -t {output[0]}
         """
 
 
