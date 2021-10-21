@@ -35,8 +35,8 @@ rule gatk_apply_VQSR:
     wildcard_constraints:
         interval_name='wgs_calling_regions_.+.interval_list'
     output:
-        os.path.join(config.get("files_path").get("base_joint_call_path"),config.get("rules").get("gatk_apply_VQSR").get("out_dir"),"/all.{interval_name}.indel_recalibrated.vcf.gz"),
-        os.path.join(config.get("files_path").get("base_joint_call_path"),config.get("rules").get("gatk_apply_VQSR").get("out_dir"),"/all.{interval_name}.indel_recalibrated.snp_recalibrated.vcf.gz")
+        os.path.join(config.get("files_path").get("base_joint_call_path"),config.get("rules").get("gatk_apply_VQSR").get("out_dir"),"all.{interval_name}.indel_recalibrated.vcf.gz"),
+        os.path.join(config.get("files_path").get("base_joint_call_path"),config.get("rules").get("gatk_apply_VQSR").get("out_dir"),"all.{interval_name}.indel_recalibrated.snp_recalibrated.vcf.gz")
     input:
         vcf=rules.clean_and_excess_het_filter.output[0],
         recal_s=os.path.join(config.get("files_path").get("base_joint_call_path"),config.get("rules").get("gatk_variant_recalibrator").get("out_dir"),"ALL.CLEAN.SITES_ONLY.snp.recal.vcf"),
@@ -64,9 +64,9 @@ rule gatk_apply_VQSR:
     shell:
         """
         echo "INDEL first..."
-        {params.gatk} --java-options "{params.java_opt}" ApplyVQSR -R {params.genome} -V {input.vcf} -mode INDEL --recal-file {input.recal_i} --tranches-file {input.tranches_i} {params.args_indel} -O {output[0]} 1> {log[0]} 2> {log[1]}
+        {params.gatk} --java-options "{params.java_opt}" ApplyVQSR -R {params.genome} -V {input.vcf} -mode INDEL --recal-file {input.recal_i} --tranches-file {input.tranches_i} {params.args_indel} -O {output[0]} > {log[0]} 2> {log[1]}
         
         echo "SNP now..."
-        {params.gatk} --java-options "{params.java_opt}" ApplyVQSR -R {params.genome} -V {output[0]} -mode SNP --recal-file {input.recal_s} --tranches-file {input.tranches_s} {params.args_snp} -O {output[1]} 1>> {log[0]} 2>> {log[1]}
+        {params.gatk} --java-options "{params.java_opt}" ApplyVQSR -R {params.genome} -V {output[0]} -mode SNP --recal-file {input.recal_s} --tranches-file {input.tranches_s} {params.args_snp} -O {output[1]} >> {log[0]} 2>> {log[1]}
         """
 
