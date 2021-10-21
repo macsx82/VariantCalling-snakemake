@@ -69,7 +69,7 @@ rule gatk_genomics_db_import:
         ref_genome=resolve_single_filepath(*references_abs_path(), config.get("genome_fasta")),
         java_opt=config['java_opts']['opt3x'],
         fixed_args=config.get("rules").get("gatk_genomics_db_import").get("arguments"),
-        tmp=os.path.join(BASE_OUT,config.get("files_path").get("tmp")),
+        tmp=os.path.join(config.get("files_path").get("base_joint_call_path"),config.get("files_path").get("tmp")),
         gvcf_args=" -V ".join(expand(config["files_path"]["base_joint_call_path"] + "/{sample}/{sample}_{{interval_name}}_g.vcf.gz", sample=sample_names))
     log:
         config["files_path"]["log_dir"] + "/{interval_name}-{scatteritem}-genomics_db_import.log",
@@ -103,7 +103,7 @@ rule gatk_genotype_gvcfs:
         ref_genome=resolve_single_filepath(*references_abs_path(), config.get("genome_fasta")),
         java_opt=config['java_opts']['opt3x'],
         fixed_args=config.get("rules").get("gatk_genotype_gvcfs").get("arguments"),
-        tmp=os.path.join(BASE_OUT,config.get("files_path").get("tmp"))
+        tmp=os.path.join(config.get("files_path").get("base_joint_call_path"),config.get("files_path").get("tmp"))
     log:
         config["files_path"]["log_dir"] + "/{interval_name}-{scatteritem}-genotype_gvcfs.log",
         config["files_path"]["log_dir"] + "/{interval_name}-{scatteritem}-genotype_gvcfs.e"
@@ -133,7 +133,7 @@ rule chrom_intervals_gather:
         gather.split(os.path.join(config.get("files_path").get("base_joint_call_path"),config.get("rules").get("gatk_genotype_gvcfs").get("out_dir"),"{scatteritem}_{{interval_name}}/all.{scatteritem}_{{interval_name}}.vcf.gz"))
     params:
         bcftools=config['BCFTOOLS'],
-        tmp=os.path.join(BASE_OUT,config.get("files_path").get("tmp")),
+        tmp=os.path.join(config.get("files_path").get("base_joint_call_path"),config.get("files_path").get("tmp")),
         ref_genome=resolve_single_filepath(*references_abs_path(), config.get("genome_fasta"))
     log:
         config["files_path"]["log_dir"] + "/{interval_name}-chrom_intervals_gather.log",

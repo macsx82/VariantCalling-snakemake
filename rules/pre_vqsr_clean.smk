@@ -65,7 +65,7 @@ rule concat_vcfs:
         os.path.join(config.get("files_path").get("base_joint_call_path"),config.get("rules").get("pre_vqsr_rules").get("out_dir"),"ALL.CLEAN.SITES_ONLY.vcf.gz.tbi")
     params:
         bcftools=config['BCFTOOLS'],
-        tmp=os.path.join(BASE_OUT,config.get("files_path").get("tmp"))
+        tmp=os.path.join(config.get("files_path").get("base_joint_call_path"),config.get("files_path").get("tmp"))
     log:
         config["files_path"]["log_dir"] + "/ALL-concat_vcfs.log",
         config["files_path"]["log_dir"] + "/ALL-concat_vcfs.e"
