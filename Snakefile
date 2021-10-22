@@ -119,6 +119,8 @@ if pipeline_mode == "BATCH" :
         include_prefix + "/bqsr.smk"
     include:
         include_prefix + "/var_call.smk"
+    include:
+        include_prefix + "/stats.smk"
 elif pipeline_mode == "JOINT_CALLING":
     include:
         include_prefix + "/joint_call.smk"
@@ -128,9 +130,8 @@ elif pipeline_mode == "JOINT_CALLING":
         include_prefix + "/vqsr.smk"    
     include:
         include_prefix + "/variant_annotation.smk"    
-#this module is used in all modes    
-include:
-    include_prefix + "/stats.smk"
+    include:
+        include_prefix + "/vcf_stats.smk"
 
 # include:
 #     include_prefix + "/picard.smk"
