@@ -66,24 +66,24 @@ else:
 if pipeline_mode == "BATCH":
     print(pipeline_mode)
     ##### local rules #####
-    localrules: all
+    # localrules: all
 
-    ##### Target rules #####
-    rule all:
-        input:
-            # [(BASE_OUT +"/"+ config["fastqc_pre_dir"] + "/{sample_fs1}_fastqc.html").format(sample_fs1=r1_strand) for r1_strand in R1]
-            # expand(BASE_OUT + "/"+ config["rules"]["ubam_gen"]["out_dir"]+"/" + "{sample}_unmap.bam", sample=sample_names),
-            # expand(BASE_OUT + "/"+ config["rules"]["bwa_mem"]["out_dir"]+"/" + "{sample}_map.bam", sample=sample_names)
-            #stuff needed for single sample processing
-            call_variants_by_sex(BASE_OUT + "/" + config["rules"]["gatk_hap_caller"]["out_dir"]),
-            # expand(BASE_OUT + "/" + config["rules"]["gatk_hap_caller"]["out_dir"] + "/{sample}/{sample}_{interval_name}_g.vcf.gz",sample=sample_names,interval_name=call_intervals),
-            # expand(BASE_OUT + "/" + config["rules"]["gatk_hap_caller"]["out_dir"] + "/{sample}/{sample}_{interval_name}_g.vcf.gz")
-            expand(BASE_OUT + "/"+ config["rules"]["stats"]["out_dir"] + "/{sample}_validate.txt", sample=sample_names),
-            expand(BASE_OUT + "/"+ config["rules"]["stats"]["out_dir"] + "/{sample}_flagstat.txt", sample=sample_names),
-            expand(BASE_OUT +"/" +config["rules"]["stats"]["out_dir"] + "/{sample}_ismetrics.txt", sample=sample_names),
-            expand(BASE_OUT +"/" +config["rules"]["stats"]["out_dir"] + "/{sample}_stats.txt", sample=sample_names),
-            expand(BASE_OUT +"/" +config["rules"]["stats"]["out_dir"] + "/{sample}_wgsmetrics.txt", sample=sample_names),
-            call_variants_by_sex(config["files_path"]["base_joint_call_path"])
+    # ##### Target rules #####
+    # rule all:
+    #     input:
+    #         # [(BASE_OUT +"/"+ config["fastqc_pre_dir"] + "/{sample_fs1}_fastqc.html").format(sample_fs1=r1_strand) for r1_strand in R1]
+    #         # expand(BASE_OUT + "/"+ config["rules"]["ubam_gen"]["out_dir"]+"/" + "{sample}_unmap.bam", sample=sample_names),
+    #         # expand(BASE_OUT + "/"+ config["rules"]["bwa_mem"]["out_dir"]+"/" + "{sample}_map.bam", sample=sample_names)
+    #         #stuff needed for single sample processing
+    #         call_variants_by_sex(BASE_OUT + "/" + config["rules"]["gatk_hap_caller"]["out_dir"]),
+    #         # expand(BASE_OUT + "/" + config["rules"]["gatk_hap_caller"]["out_dir"] + "/{sample}/{sample}_{interval_name}_g.vcf.gz",sample=sample_names,interval_name=call_intervals),
+    #         # expand(BASE_OUT + "/" + config["rules"]["gatk_hap_caller"]["out_dir"] + "/{sample}/{sample}_{interval_name}_g.vcf.gz")
+    #         expand(BASE_OUT + "/"+ config["rules"]["stats"]["out_dir"] + "/{sample}_validate.txt", sample=sample_names),
+    #         expand(BASE_OUT + "/"+ config["rules"]["stats"]["out_dir"] + "/{sample}_flagstat.txt", sample=sample_names),
+    #         expand(BASE_OUT +"/" +config["rules"]["stats"]["out_dir"] + "/{sample}_ismetrics.txt", sample=sample_names),
+    #         expand(BASE_OUT +"/" +config["rules"]["stats"]["out_dir"] + "/{sample}_stats.txt", sample=sample_names),
+    #         expand(BASE_OUT +"/" +config["rules"]["stats"]["out_dir"] + "/{sample}_wgsmetrics.txt", sample=sample_names),
+    #         call_variants_by_sex(config["files_path"]["base_joint_call_path"])
             # expand(config["files_path"]["base_joint_call_path"] + "/{sample}/{sample}_{interval_name}_g.vcf.gz",sample=sample_names,interval_name=call_intervals),
             # expand(config["files_path"]["base_joint_call_path"] + "/{sample}/{sample}_{interval_name}_g.vcf.gz",sample=sample_names,interval_name=call_intervals),
             # expand(os.path.join(config.get('files_path').get('base_joint_call_path'),config.get('rules').get('split_intervals').get('out_dir')) + '/{interval_name}_{scatteritem}', interval_name=call_intervals)
@@ -93,24 +93,24 @@ if pipeline_mode == "BATCH":
 elif pipeline_mode=="JOINT_CALLING":
     print(pipeline_mode)
     ##### local rules #####
-    localrules: all
+    # localrules: all
 
-    ##### Target rules #####
+    # ##### Target rules #####
 
-    rule all:
-        input:
-            #stuff needed for joint call
-            expand(os.path.join(config.get("files_path").get("base_joint_call_path"),config.get("rules").get("gatk_genotype_gvcfs").get("out_dir"),"all.{interval_name}.vcf.gz"),interval_name=call_intervals),
-            expand(os.path.join(config.get("files_path").get("base_joint_call_path"),config.get("rules").get("gatk_genotype_gvcfs").get("out_dir"),"all.{interval_name}.vcf.gz.tbi"),interval_name=call_intervals),
-            expand(os.path.join(config.get("files_path").get("base_joint_call_path"),config.get("rules").get("gatk_genotype_gvcfs").get("out_dir"),"all.{interval_name}.stats"),interval_name=call_intervals),
-            os.path.join(config.get("files_path").get("base_joint_call_path"),config.get("rules").get("pre_vqsr_rules").get("out_dir"),"ALL.CLEAN.SITES_ONLY.vcf.gz"),
-            os.path.join(config.get("files_path").get("base_joint_call_path"),config.get("rules").get("pre_vqsr_rules").get("out_dir"),"ALL.CLEAN.SITES_ONLY.vcf.gz.tbi"),
-            # expand(os.path.join(config.get("files_path").get("base_joint_call_path"),config.get("rules").get("rsid_annotation").get("out_dir"),"/{chr}.PASS_rsID.vcf.gz"),chr=config["call_chr"]),
-            # expand(os.path.join(config.get("files_path").get("base_joint_call_path"),config.get("rules").get("rsid_annotation").get("out_dir"),"/{chr}.PASS_rsID.vcf.gz.tbi"),chr=config["call_chr"])
-            expand(os.path.join(config.get("files_path").get("base_joint_call_path"),config.get("rules").get("rsid_annotation").get("out_dir"),"{interval_name}.PASS_rsID.vcf.gz"),interval_name=call_intervals),
-            expand(os.path.join(config.get("files_path").get("base_joint_call_path"),config.get("rules").get("rsid_annotation").get("out_dir"),"{interval_name}.PASS_rsID.vcf.gz.tbi"),interval_name=call_intervals)
-            # [(BASE_OUT + "/"+ config["rules"]["ubam_gen"]["out_dir"]+"/" + "{sample}_unmap.bam").format(sample=sample_id) for sample_id in sample_names]
-            # BASE_OUT + config["rules"]["bwa_mem"]["out_dir"] + "{sample}_map.bam"
+    # rule all:
+    #     input:
+    #         #stuff needed for joint call
+    #         expand(os.path.join(config.get("files_path").get("base_joint_call_path"),config.get("rules").get("gatk_genotype_gvcfs").get("out_dir"),"all.{interval_name}.vcf.gz"),interval_name=call_intervals),
+    #         expand(os.path.join(config.get("files_path").get("base_joint_call_path"),config.get("rules").get("gatk_genotype_gvcfs").get("out_dir"),"all.{interval_name}.vcf.gz.tbi"),interval_name=call_intervals),
+    #         expand(os.path.join(config.get("files_path").get("base_joint_call_path"),config.get("rules").get("gatk_genotype_gvcfs").get("out_dir"),"all.{interval_name}.stats"),interval_name=call_intervals),
+    #         os.path.join(config.get("files_path").get("base_joint_call_path"),config.get("rules").get("pre_vqsr_rules").get("out_dir"),"ALL.CLEAN.SITES_ONLY.vcf.gz"),
+    #         os.path.join(config.get("files_path").get("base_joint_call_path"),config.get("rules").get("pre_vqsr_rules").get("out_dir"),"ALL.CLEAN.SITES_ONLY.vcf.gz.tbi"),
+    #         # expand(os.path.join(config.get("files_path").get("base_joint_call_path"),config.get("rules").get("rsid_annotation").get("out_dir"),"/{chr}.PASS_rsID.vcf.gz"),chr=config["call_chr"]),
+    #         # expand(os.path.join(config.get("files_path").get("base_joint_call_path"),config.get("rules").get("rsid_annotation").get("out_dir"),"/{chr}.PASS_rsID.vcf.gz.tbi"),chr=config["call_chr"])
+    #         expand(os.path.join(config.get("files_path").get("base_joint_call_path"),config.get("rules").get("rsid_annotation").get("out_dir"),"{interval_name}.PASS_rsID.vcf.gz"),interval_name=call_intervals),
+    #         expand(os.path.join(config.get("files_path").get("base_joint_call_path"),config.get("rules").get("rsid_annotation").get("out_dir"),"{interval_name}.PASS_rsID.vcf.gz.tbi"),interval_name=call_intervals)
+    #         # [(BASE_OUT + "/"+ config["rules"]["ubam_gen"]["out_dir"]+"/" + "{sample}_unmap.bam").format(sample=sample_id) for sample_id in sample_names]
+    #         # BASE_OUT + config["rules"]["bwa_mem"]["out_dir"] + "{sample}_map.bam"
 
 ##### Modules #####
 # include_prefix="rules"
