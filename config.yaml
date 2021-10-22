@@ -53,9 +53,6 @@ callable_intervals: "wgs_intervals"
 #################################################################################
 
 call_chr: ["chr1","chr2","chr3","chr4","chr5","chr6","chr7","chr8","chr9","chr10","chr11","chr12","chr13","chr14","chr15","chr16","chr17","chr18","chr19","chr20","chr21","chr22","chrX_PAR","chrX_NONPAR","chrY"]
-# call_chr: ["chrX_PAR","chrX_NONPAR"]
-# call_chr: ["12","20"]
-
 
 known_variants:
   dbsnp_latest: "/storage/burlo/cocca/resources/dbSNP/human_9606_b154_GRCh38p12/GCF_000001405.38.vcf.gz"
@@ -158,4 +155,3 @@ SAMTOOLS: "samtools"
 BCFTOOLS: "bcftools"
 GATK_TOOL: "gatk"
 BEDTOOLS: "bedtools"
-
