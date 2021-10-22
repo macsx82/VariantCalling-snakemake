@@ -58,6 +58,7 @@ include_prefix="rules"
 include:
     include_prefix + "/functions.py"
 
+print(pipeline_mode)
 
 if pipeline_mode == "BATCH":
     print(pipeline_mode)
