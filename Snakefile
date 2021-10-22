@@ -58,19 +58,12 @@ include_prefix="rules"
 include:
     include_prefix + "/functions.py"
 
-##### local rules #####
-localrules: all
-
-# Definition of helper functions
-# def get_vcfs():
-# vcf_files = list(pd.read_table(config["vcf_files"]).vcf_file)
-# vcf_names = dict([(ntpath.basename(vcf_file), vcf_file) for vcf_file in vcf_files])
-
-
-
-##### Target rules #####
 
 if pipeline_mode == "BATCH":
+    ##### local rules #####
+    localrules: all
+
+    ##### Target rules #####
     rule all:
         input:
             # [(BASE_OUT +"/"+ config["fastqc_pre_dir"] + "/{sample_fs1}_fastqc.html").format(sample_fs1=r1_strand) for r1_strand in R1]
@@ -93,6 +86,11 @@ if pipeline_mode == "BATCH":
             # expand(os.path.join(config.get("files_path").get("base_joint_call_path"),config.get("rules").get("gatk_genomics_db_import").get("out_dir"),"{interval_name}_pippo2.txt"),interval_name=call_intervals)
 
 elif pipeline_mode=="JOINT_CALLING":
+    ##### local rules #####
+    localrules: all
+
+    ##### Target rules #####
+
     rule all:
         input:
             #stuff needed for joint call
