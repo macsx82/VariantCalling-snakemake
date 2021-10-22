@@ -120,7 +120,7 @@ if pipeline_mode == "BATCH" :
         include_prefix + "/var_call.smk"
     include:
         include_prefix + "/stats.smk"
-elif pipeline_mode == "JOINT_CALLING":
+else :
     include:
         include_prefix + "/joint_call.smk"
     include:
