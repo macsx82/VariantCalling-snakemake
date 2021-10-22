@@ -90,7 +90,7 @@ if pipeline_mode == "BATCH":
             # expand(os.path.join(config.get("files_path").get("base_joint_call_path"),config.get("rules").get("gatk_genomics_db_import").get("out_dir"),"{interval_name}_{{scatteritem}}/pippo.txt"),interval_name=call_intervals)
             # expand(os.path.join(config.get("files_path").get("base_joint_call_path"),config.get("rules").get("gatk_genomics_db_import").get("out_dir"),"{interval_name}_pippo2.txt"),interval_name=call_intervals)
 
-elif pipeline_mode=="JOINT_CALLING":
+else :
     print(pipeline_mode)
     ##### local rules #####
     # localrules: all
