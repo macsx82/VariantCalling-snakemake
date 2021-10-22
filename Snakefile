@@ -46,6 +46,13 @@ BASE_OUT=config["files_path"]["base_out"]
 #which allows us to define the interval list based on sample's sex
 call_intervals=expand("wgs_calling_regions_{chr}.GRCh38.p13.interval_list", chr=config["call_chr"])
 
+##### 
+# since we want to use this pipeline in batch mode but also in joint call mode, we will try to use the value 
+# of the pipe_mode declaration in the config file. In BATCH mode, we will execute only some rules
+# in JOINT_CALL mode, we will execute only the relevant rules
+
+pipeline_mode = config["pipe_mode"]
+
 ##### functions #####
 include_prefix="rules"
 include:
@@ -69,53 +76,59 @@ rule all:
         # expand(BASE_OUT + "/"+ config["rules"]["ubam_gen"]["out_dir"]+"/" + "{sample}_unmap.bam", sample=sample_names),
         # expand(BASE_OUT + "/"+ config["rules"]["bwa_mem"]["out_dir"]+"/" + "{sample}_map.bam", sample=sample_names)
         #stuff needed for single sample processing
-        call_variants_by_sex(BASE_OUT + "/" + config["rules"]["gatk_hap_caller"]["out_dir"]),
-        # expand(BASE_OUT + "/" + config["rules"]["gatk_hap_caller"]["out_dir"] + "/{sample}/{sample}_{interval_name}_g.vcf.gz",sample=sample_names,interval_name=call_intervals),
-        # expand(BASE_OUT + "/" + config["rules"]["gatk_hap_caller"]["out_dir"] + "/{sample}/{sample}_{interval_name}_g.vcf.gz")
-        expand(BASE_OUT + "/"+ config["rules"]["stats"]["out_dir"] + "/{sample}_validate.txt", sample=sample_names),
-        expand(BASE_OUT + "/"+ config["rules"]["stats"]["out_dir"] + "/{sample}_flagstat.txt", sample=sample_names),
-        expand(BASE_OUT +"/" +config["rules"]["stats"]["out_dir"] + "/{sample}_ismetrics.txt", sample=sample_names),
-        expand(BASE_OUT +"/" +config["rules"]["stats"]["out_dir"] + "/{sample}_stats.txt", sample=sample_names),
-        expand(BASE_OUT +"/" +config["rules"]["stats"]["out_dir"] + "/{sample}_wgsmetrics.txt", sample=sample_names),
-        call_variants_by_sex(config["files_path"]["base_joint_call_path"]),
-        # expand(config["files_path"]["base_joint_call_path"] + "/{sample}/{sample}_{interval_name}_g.vcf.gz",sample=sample_names,interval_name=call_intervals),
-        # expand(config["files_path"]["base_joint_call_path"] + "/{sample}/{sample}_{interval_name}_g.vcf.gz",sample=sample_names,interval_name=call_intervals),
-        # expand(os.path.join(config.get('files_path').get('base_joint_call_path'),config.get('rules').get('split_intervals').get('out_dir')) + '/{interval_name}_{scatteritem}', interval_name=call_intervals)
-        # expand(os.path.join(config.get("files_path").get("base_joint_call_path"),config.get("rules").get("gatk_genomics_db_import").get("out_dir"),"{interval_name}_{{scatteritem}}/pippo.txt"),interval_name=call_intervals)
-        # expand(os.path.join(config.get("files_path").get("base_joint_call_path"),config.get("rules").get("gatk_genomics_db_import").get("out_dir"),"{interval_name}_pippo2.txt"),interval_name=call_intervals)
-        #stuff needed for joint call
-        expand(os.path.join(config.get("files_path").get("base_joint_call_path"),config.get("rules").get("gatk_genotype_gvcfs").get("out_dir"),"all.{interval_name}.vcf.gz"),interval_name=call_intervals),
-        expand(os.path.join(config.get("files_path").get("base_joint_call_path"),config.get("rules").get("gatk_genotype_gvcfs").get("out_dir"),"all.{interval_name}.vcf.gz.tbi"),interval_name=call_intervals),
-        expand(os.path.join(config.get("files_path").get("base_joint_call_path"),config.get("rules").get("gatk_genotype_gvcfs").get("out_dir"),"all.{interval_name}.stats"),interval_name=call_intervals),
-        os.path.join(config.get("files_path").get("base_joint_call_path"),config.get("rules").get("pre_vqsr_rules").get("out_dir"),"ALL.CLEAN.SITES_ONLY.vcf.gz"),
-        os.path.join(config.get("files_path").get("base_joint_call_path"),config.get("rules").get("pre_vqsr_rules").get("out_dir"),"ALL.CLEAN.SITES_ONLY.vcf.gz.tbi"),
-        # expand(os.path.join(config.get("files_path").get("base_joint_call_path"),config.get("rules").get("rsid_annotation").get("out_dir"),"/{chr}.PASS_rsID.vcf.gz"),chr=config["call_chr"]),
-        # expand(os.path.join(config.get("files_path").get("base_joint_call_path"),config.get("rules").get("rsid_annotation").get("out_dir"),"/{chr}.PASS_rsID.vcf.gz.tbi"),chr=config["call_chr"])
-        expand(os.path.join(config.get("files_path").get("base_joint_call_path"),config.get("rules").get("rsid_annotation").get("out_dir"),"{interval_name}.PASS_rsID.vcf.gz"),interval_name=call_intervals),
-        expand(os.path.join(config.get("files_path").get("base_joint_call_path"),config.get("rules").get("rsid_annotation").get("out_dir"),"{interval_name}.PASS_rsID.vcf.gz.tbi"),interval_name=call_intervals)
-        # [(BASE_OUT + "/"+ config["rules"]["ubam_gen"]["out_dir"]+"/" + "{sample}_unmap.bam").format(sample=sample_id) for sample_id in sample_names]
-        # BASE_OUT + config["rules"]["bwa_mem"]["out_dir"] + "{sample}_map.bam"
+        if pipeline_mode == "BATCH":
+            call_variants_by_sex(BASE_OUT + "/" + config["rules"]["gatk_hap_caller"]["out_dir"]),
+            # expand(BASE_OUT + "/" + config["rules"]["gatk_hap_caller"]["out_dir"] + "/{sample}/{sample}_{interval_name}_g.vcf.gz",sample=sample_names,interval_name=call_intervals),
+            # expand(BASE_OUT + "/" + config["rules"]["gatk_hap_caller"]["out_dir"] + "/{sample}/{sample}_{interval_name}_g.vcf.gz")
+            expand(BASE_OUT + "/"+ config["rules"]["stats"]["out_dir"] + "/{sample}_validate.txt", sample=sample_names),
+            expand(BASE_OUT + "/"+ config["rules"]["stats"]["out_dir"] + "/{sample}_flagstat.txt", sample=sample_names),
+            expand(BASE_OUT +"/" +config["rules"]["stats"]["out_dir"] + "/{sample}_ismetrics.txt", sample=sample_names),
+            expand(BASE_OUT +"/" +config["rules"]["stats"]["out_dir"] + "/{sample}_stats.txt", sample=sample_names),
+            expand(BASE_OUT +"/" +config["rules"]["stats"]["out_dir"] + "/{sample}_wgsmetrics.txt", sample=sample_names),
+            call_variants_by_sex(config["files_path"]["base_joint_call_path"]),
+            # expand(config["files_path"]["base_joint_call_path"] + "/{sample}/{sample}_{interval_name}_g.vcf.gz",sample=sample_names,interval_name=call_intervals),
+            # expand(config["files_path"]["base_joint_call_path"] + "/{sample}/{sample}_{interval_name}_g.vcf.gz",sample=sample_names,interval_name=call_intervals),
+            # expand(os.path.join(config.get('files_path').get('base_joint_call_path'),config.get('rules').get('split_intervals').get('out_dir')) + '/{interval_name}_{scatteritem}', interval_name=call_intervals)
+            # expand(os.path.join(config.get("files_path").get("base_joint_call_path"),config.get("rules").get("gatk_genomics_db_import").get("out_dir"),"{interval_name}_{{scatteritem}}/pippo.txt"),interval_name=call_intervals)
+            # expand(os.path.join(config.get("files_path").get("base_joint_call_path"),config.get("rules").get("gatk_genomics_db_import").get("out_dir"),"{interval_name}_pippo2.txt"),interval_name=call_intervals)
+        elif pipeline_mode=="JOINT_CALLING":
+            #stuff needed for joint call
+            expand(os.path.join(config.get("files_path").get("base_joint_call_path"),config.get("rules").get("gatk_genotype_gvcfs").get("out_dir"),"all.{interval_name}.vcf.gz"),interval_name=call_intervals),
+            expand(os.path.join(config.get("files_path").get("base_joint_call_path"),config.get("rules").get("gatk_genotype_gvcfs").get("out_dir"),"all.{interval_name}.vcf.gz.tbi"),interval_name=call_intervals),
+            expand(os.path.join(config.get("files_path").get("base_joint_call_path"),config.get("rules").get("gatk_genotype_gvcfs").get("out_dir"),"all.{interval_name}.stats"),interval_name=call_intervals),
+            os.path.join(config.get("files_path").get("base_joint_call_path"),config.get("rules").get("pre_vqsr_rules").get("out_dir"),"ALL.CLEAN.SITES_ONLY.vcf.gz"),
+            os.path.join(config.get("files_path").get("base_joint_call_path"),config.get("rules").get("pre_vqsr_rules").get("out_dir"),"ALL.CLEAN.SITES_ONLY.vcf.gz.tbi"),
+            # expand(os.path.join(config.get("files_path").get("base_joint_call_path"),config.get("rules").get("rsid_annotation").get("out_dir"),"/{chr}.PASS_rsID.vcf.gz"),chr=config["call_chr"]),
+            # expand(os.path.join(config.get("files_path").get("base_joint_call_path"),config.get("rules").get("rsid_annotation").get("out_dir"),"/{chr}.PASS_rsID.vcf.gz.tbi"),chr=config["call_chr"])
+            expand(os.path.join(config.get("files_path").get("base_joint_call_path"),config.get("rules").get("rsid_annotation").get("out_dir"),"{interval_name}.PASS_rsID.vcf.gz"),interval_name=call_intervals),
+            expand(os.path.join(config.get("files_path").get("base_joint_call_path"),config.get("rules").get("rsid_annotation").get("out_dir"),"{interval_name}.PASS_rsID.vcf.gz.tbi"),interval_name=call_intervals)
+            # [(BASE_OUT + "/"+ config["rules"]["ubam_gen"]["out_dir"]+"/" + "{sample}_unmap.bam").format(sample=sample_id) for sample_id in sample_names]
+            # BASE_OUT + config["rules"]["bwa_mem"]["out_dir"] + "{sample}_map.bam"
 
 ##### Modules #####
 # include_prefix="rules"
 # include:
 #     include_prefix + "/functions.py"
-include:
-    include_prefix + "/alignment.smk"
-include:
-    include_prefix + "/bqsr.smk"
-include:
-    include_prefix + "/var_call.smk"
-include:
-    include_prefix + "/joint_call.smk"
-include:
-    include_prefix + "/pre_vqsr_clean.smk"
-include:
-    include_prefix + "/vqsr.smk"    
-include:
-    include_prefix + "/variant_annotation.smk"    
+if pipeline_mode == "BATCH" :
+    include:
+        include_prefix + "/alignment.smk"
+    include:
+        include_prefix + "/bqsr.smk"
+    include:
+        include_prefix + "/var_call.smk"
+elif pipeline_mode == "JOINT_CALLING":
+    include:
+        include_prefix + "/joint_call.smk"
+    include:
+        include_prefix + "/pre_vqsr_clean.smk"
+    include:
+        include_prefix + "/vqsr.smk"    
+    include:
+        include_prefix + "/variant_annotation.smk"    
+#this module is used in all modes    
 include:
     include_prefix + "/stats.smk"
+
 # include:
 #     include_prefix + "/picard.smk"
 # include:
