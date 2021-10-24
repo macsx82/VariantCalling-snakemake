@@ -58,7 +58,7 @@ rule gatk_genomics_db_import:
     input:
         # gvcfs=expand("variant_calling/{sample.sample}.{{interval}}.g.vcf.gz",
         #              sample=samples.reset_index().itertuples())
-        gvcfs=expand(config["files_path"]["base_joint_call_path"] + "/{sample}/{sample}_{{interval_name}}_g.vcf.gz", sample=sample_names ),
+        gvcfs=expand(config["files_path"]["base_joint_call_path"] + "/{sample}/{sample}_{{interval_name}}_g.vcf.gz", sample=sample_names_from_interval),
         import_interval=os.path.join(config.get('files_path').get('base_joint_call_path'),config.get('rules').get('split_intervals').get('out_dir')) + '/{scatteritem}_{interval_name}'
         # gvcfs=expand(config["files_path"]["base_joint_call_path"] + "/{sample}/{sample}_wgs_calling_regions_chr{chr}.GRCh38.p13.interval_list_g.vcf.gz")
     output:
@@ -70,7 +70,7 @@ rule gatk_genomics_db_import:
         java_opt=config['java_opts']['opt3x'],
         fixed_args=config.get("rules").get("gatk_genomics_db_import").get("arguments"),
         tmp=os.path.join(config.get("files_path").get("base_joint_call_path"),config.get("files_path").get("tmp")),
-        gvcf_args=" -V ".join(expand(config["files_path"]["base_joint_call_path"] + "/{sample}/{sample}_{{interval_name}}_g.vcf.gz", sample=sample_names))
+        gvcf_args=" -V ".join(expand(config["files_path"]["base_joint_call_path"] + "/{sample}/{sample}_{{interval_name}}_g.vcf.gz", sample=sample_names_from_interval)
     log:
         config["files_path"]["log_dir"] + "/{interval_name}-{scatteritem}-genomics_db_import.log",
         config["files_path"]["log_dir"] + "/{interval_name}-{scatteritem}-genomics_db_import.e"
