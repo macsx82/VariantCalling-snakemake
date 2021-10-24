@@ -93,7 +93,6 @@ def call_variants_by_sex(base_path):
     return all_samples_intervals
 
 def sample_names_from_interval(interval_name):
-    print(interval_name)
     interval_filename=interval_name
     interval_file=os.path.join(*references_abs_path(), config.get("callable_intervals"),interval_filename)
     for line in open(interval_file, 'r'):
