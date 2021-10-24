@@ -70,7 +70,7 @@ rule gatk_genomics_db_import:
         java_opt=config['java_opts']['opt3x'],
         fixed_args=config.get("rules").get("gatk_genomics_db_import").get("arguments"),
         tmp=os.path.join(config.get("files_path").get("base_joint_call_path"),config.get("files_path").get("tmp")),
-        gvcf_args=lambda wildcards : " -V ".join(expand(config["files_path"]["base_joint_call_path"] + "/{sample}/{sample}_{{interval_name}}_g.vcf.gz", sample=sample_names_from_interval(wildcards.interval_name)))
+        gvcf_args=lambda wildcards : " -V ".join(expand(config["files_path"]["base_joint_call_path"] + "/{sample}/{sample}_{wildcards.interval_name}_g.vcf.gz", sample=sample_names_from_interval(wildcards.interval_name)))
     log:
         config["files_path"]["log_dir"] + "/{interval_name}-{scatteritem}-genomics_db_import.log",
         config["files_path"]["log_dir"] + "/{interval_name}-{scatteritem}-genomics_db_import.e"
@@ -117,7 +117,7 @@ rule gatk_genotype_gvcfs:
     message: """ GenotypeGVCFs """
     shell:
         """
-        {params.gatk} --java-options "{params.java_opt}" GenotypeGVCFs -R {params.ref_genome} -L {input.import_interval} -V gendb://{input.import_db} -O {output[0]} {params.fixed_args} > {log[0]} 2> {log[1]}
+        {params.gatk} --java-options "{params.java_opt}" GenotypeGVCFs -R {params.ref_genome} -L {input.import_interval} -V gendb://{input.import_db} -O {output[0]} {params.fixed_args} --tmp-dir {params.tmp} > {log[0]} 2> {log[1]}
         """
         # {params.gatk} --java-options "{params.java_opt}" GenotypeGVCFs -R {params.ref_genome} -V gendb://{input.import_db} -O {output[0]} {params.fixed_args} > {log[0]} 2> {log[1]}
 
