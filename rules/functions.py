@@ -96,7 +96,7 @@ def sample_names_from_interval(wildcards):
     current_chr=get_chr_from_interval_list
     if current_chr == "chrY" :
         samples=list(samples_df[samples_df.sex == '1'][0])
-    else
+    else :
         samples = list(samples_df.SAMPLE_ID)
 
     return samples
