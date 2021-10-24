@@ -93,7 +93,13 @@ def call_variants_by_sex(base_path):
     return all_samples_intervals
 
 def sample_names_from_interval(wildcards):
-    current_chr=get_chr_from_interval_list
+    interval_filename=wildcards.interval_name
+    interval_file=os.path.join(*references_abs_path(), config.get("callable_intervals"),interval_filename)
+    for line in open(interval_file, 'r'):
+        if not(re.match('@', line.strip())):
+            interval_chr=line.strip().split("\t")[0]
+            break
+    current_chr=interval_chr
     print(current_chr)
     if current_chr == "chrY" :
         samples=list(samples_df[samples_df.sex == '1'].SAMPLE_ID)
