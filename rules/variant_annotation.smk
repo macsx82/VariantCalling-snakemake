@@ -17,6 +17,8 @@ rule recal_pass_filter:
     envmodules:
         "bcftools/1.11"
     threads: 2
+    resources:
+        mem_mb=5000
     message: """ Filter only PASS variants after VQSR"""
     shell:
         """
@@ -50,6 +52,8 @@ rule rsid_annotation:
     envmodules:
         "bcftools/1.11"
     threads: 2
+    resources:
+        mem_mb=10000
     message: """ Add rsID using latest dbSNP information """
     shell:
         """

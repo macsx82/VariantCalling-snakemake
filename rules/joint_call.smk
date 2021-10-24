@@ -139,6 +139,8 @@ rule chrom_intervals_gather:
         config["files_path"]["log_dir"] + "/{interval_name}-chrom_intervals_gather.log",
         config["files_path"]["log_dir"] + "/{interval_name}-chrom_intervals_gather.e"
     threads: 3
+    resources:
+        mem_mb=5000
     benchmark:
         config["files_path"]["benchmark"] + "/{interval_name}_chrom_intervals_gather.tsv"
     envmodules:

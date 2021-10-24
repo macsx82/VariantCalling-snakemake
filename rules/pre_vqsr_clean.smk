@@ -17,6 +17,8 @@ rule clean_and_excess_het_filter:
         config["files_path"]["log_dir"] + "/{interval_name}-clean_vcf.log",
         config["files_path"]["log_dir"] + "/{interval_name}-clean_vcf.e"
     threads: 3
+    resources:
+        mem_mb=5000
     benchmark:
         config["files_path"]["benchmark"] + "/{interval_name}_clean_vcf.tsv"
     envmodules:
@@ -42,6 +44,8 @@ rule sites_only_vcf:
     log:
         config["files_path"]["log_dir"] + "/{interval_name}-sites_only_vcf.log",
         config["files_path"]["log_dir"] + "/{interval_name}-sites_only_vcf.e"
+    resources:
+        mem_mb=5000
     benchmark:
         config["files_path"]["benchmark"] + "/{interval_name}_sites_only_vcf.tsv"
     envmodules:
@@ -70,6 +74,8 @@ rule concat_vcfs:
         config["files_path"]["log_dir"] + "/ALL-concat_vcfs.log",
         config["files_path"]["log_dir"] + "/ALL-concat_vcfs.e"
     threads: 2
+    resources:
+        mem_mb=5000
     benchmark:
         config["files_path"]["benchmark"] + "/ALL_concat_vcfs.tsv"
     envmodules:
