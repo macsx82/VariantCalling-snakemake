@@ -94,6 +94,7 @@ def call_variants_by_sex(base_path):
 
 def sample_names_from_interval(wildcards):
     current_chr=get_chr_from_interval_list
+    print(current_chr)
     if current_chr == "chrY" :
         samples=list(samples_df[samples_df.sex == '1'].SAMPLE_ID)
     else :
