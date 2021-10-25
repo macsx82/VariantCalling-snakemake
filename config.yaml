@@ -105,6 +105,7 @@ rules:
     arguments: "--genomicsdb-shared-posixfs-optimizations true --batch-size 100"
     out_dir: "6.DbImport"
   gatk_genotype_gvcfs:
+    temp_folder: "/local_scratch/burlo/cocca/localtemp"
     arguments: "--genomicsdb-shared-posixfs-optimizations -G StandardAnnotation -G AS_StandardAnnotation -G StandardHCAnnotation --include-non-variant-sites --only-output-calls-starting-in-intervals"
     out_dir: "7.GenotypeGVCFs"
   pre_vqsr_rules:

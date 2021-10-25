@@ -103,7 +103,8 @@ rule gatk_genotype_gvcfs:
         ref_genome=resolve_single_filepath(*references_abs_path(), config.get("genome_fasta")),
         java_opt=config['java_opts']['opt3x'],
         fixed_args=config.get("rules").get("gatk_genotype_gvcfs").get("arguments"),
-        tmp=os.path.join(config.get("files_path").get("base_joint_call_path"),config.get("files_path").get("tmp"))
+        # tmp=os.path.join(config.get("files_path").get("base_joint_call_path"),config.get("files_path").get("tmp"))
+        tmp=config.get("rules").get("gatk_genotype_gvcfs").get("temp_folder")
     log:
         config["files_path"]["log_dir"] + "/{interval_name}-{scatteritem}-genotype_gvcfs.log",
         config["files_path"]["log_dir"] + "/{interval_name}-{scatteritem}-genotype_gvcfs.e"
@@ -117,6 +118,7 @@ rule gatk_genotype_gvcfs:
     message: """ GenotypeGVCFs """
     shell:
         """
+        mkdir -p {params.tmp}
         {params.gatk} --java-options "{params.java_opt}" GenotypeGVCFs -R {params.ref_genome} -L {input.import_interval} -V gendb://{input.import_db} -O {output[0]} {params.fixed_args} --tmp-dir {params.tmp} > {log[0]} 2> {log[1]}
         """
         # {params.gatk} --java-options "{params.java_opt}" GenotypeGVCFs -R {params.ref_genome} -V gendb://{input.import_db} -O {output[0]} {params.fixed_args} > {log[0]} 2> {log[1]}
