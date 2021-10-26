@@ -77,6 +77,7 @@ rule gatk_genomics_db_import:
     threads: 4
     resources:
         mem_mb=get_resources_from_jvm(config['java_opts']['opt3x'])
+    priority: 50
     benchmark:
         config["files_path"]["benchmark"] + "/{interval_name}_{scatteritem}_genomics_db_import.tsv"
     envmodules:
@@ -111,6 +112,7 @@ rule gatk_genotype_gvcfs:
     threads: 4
     resources:
         mem_mb=get_resources_from_jvm(config['java_opts']['opt3x'])
+    priority: 49
     benchmark:
         config["files_path"]["benchmark"] + "/{interval_name}-{scatteritem}_genotype_gvcfs.tsv"
     envmodules:
