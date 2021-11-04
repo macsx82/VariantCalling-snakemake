@@ -11,6 +11,8 @@ rule vcf_stats:
         config["files_path"]["log_dir"] + "/{interval_name}-vcf_stats.e"
     benchmark:
         config["files_path"]["benchmark"] + "/{interval_name}_vcf_stats.tsv"
+    resources:
+        mem_mb=5000
     envmodules:
         "bcftools/1.11"
     message: """ VCF stats before VQSR """

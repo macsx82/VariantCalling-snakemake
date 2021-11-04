@@ -132,19 +132,8 @@ else :
     include:
         include_prefix + "/vcf_stats.smk"
 
-# include:
-#     include_prefix + "/picard.smk"
-# include:
-#     include_prefix + "/picard_stats.smk"
-# include:
-#     include_prefix + "/call_variants.smk"
-# include:
-#     include_prefix + "/qc.smk"
-# include:
-#     include_prefix + "/vqsr.smk"
-# include:
-#     include_prefix + "/identity_check.smk"
-# include:
-#     include_prefix + "/coverage.smk"
-# include:
-#     include_prefix + "/mtdna.smk"
+onsuccess:
+    print("The workflow finished without errors!")
+
+onerror:
+    print("An error occurred in the current workflow execution!!")
