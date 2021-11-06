@@ -102,8 +102,9 @@ else :
             os.path.join(config.get("files_path").get("base_joint_call_path"),config.get("rules").get("pre_vqsr_rules").get("out_dir"),"ALL.CLEAN.SITES_ONLY.vcf.gz.tbi"),
             # expand(os.path.join(config.get("files_path").get("base_joint_call_path"),config.get("rules").get("rsid_annotation").get("out_dir"),"/{chr}.PASS_rsID.vcf.gz"),chr=config["call_chr"]),
             # expand(os.path.join(config.get("files_path").get("base_joint_call_path"),config.get("rules").get("rsid_annotation").get("out_dir"),"/{chr}.PASS_rsID.vcf.gz.tbi"),chr=config["call_chr"])
-            expand(os.path.join(config.get("files_path").get("base_joint_call_path"),config.get("rules").get("rsid_annotation").get("out_dir"),"{interval_name}.PASS_rsID.vcf.gz"),interval_name=call_intervals),
-            expand(os.path.join(config.get("files_path").get("base_joint_call_path"),config.get("rules").get("rsid_annotation").get("out_dir"),"{interval_name}.PASS_rsID.vcf.gz.tbi"),interval_name=call_intervals)
+            expand(os.path.join(config.get("files_path").get("base_joint_call_path"),config.get("rules").get("phase").get("out_dir"),"{interval_name}.phased.vcf.gz"),interval_name=call_intervals),
+            expand(os.path.join(config.get("files_path").get("base_joint_call_path"),config.get("rules").get("phase").get("out_dir"),"{interval_name}.phased.vcf.gz.tbi"),interval_name=call_intervals),
+            expand(os.path.join(config.get("files_path").get("base_joint_call_path"),config.get("rules").get("phase").get("out_dir"),"all.{interval_name}.stats"),interval_name=call_intervals)
             # [(BASE_OUT + "/"+ config["rules"]["ubam_gen"]["out_dir"]+"/" + "{sample}_unmap.bam").format(sample=sample_id) for sample_id in sample_names]
             # BASE_OUT + config["rules"]["bwa_mem"]["out_dir"] + "{sample}_map.bam"
 
@@ -131,6 +132,8 @@ else :
         include_prefix + "/variant_annotation.smk"    
     include:
         include_prefix + "/vcf_stats.smk"
+    include:
+        include_prefix + "/beautify.smk"
 
 onsuccess:
     print("The workflow finished without errors!")

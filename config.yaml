@@ -132,6 +132,10 @@ rules:
     out_dir: "10.Apply_VQSR"
   rsid_annotation:
     out_dir: "11.rsID_annotation"
+  phase:
+    genetic_map: "/large/___HOME___/burlo/cocca/software/eagle/Eagle_v2.4.1/tables/genetic_map_hg38_withX.txt.gz"
+    out_dir: "12.phased"
+
 
 
 #########SET UP YOUR EMAIL HERE ##############
@@ -150,6 +154,7 @@ files_path:
 
 ### - PATH TOOL - ###
 ALIGN_TOOL: "bwa-mem2"
+PHASE_TOOL: "eagle"
 PICARD_TOOL: "picard"
 SAMBAMBA_TOOL: "sambamba"
 SAMTOOLS: "samtools"

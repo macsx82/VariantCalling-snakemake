@@ -22,7 +22,7 @@ rule recal_pass_filter:
     message: """ Filter only PASS variants after VQSR"""
     shell:
         """
-        {params.bcftools} view -i "FILTER=='PASS'" {input} | {params.bcftools} norm -f {params.ref_genome} -O z -o {output[0]}
+        {params.bcftools} view -i "FILTER=='PASS'" {input} | {params.bcftools} norm -f {params.ref_genome} -m -both -O z -o {output[0]}
         {params.bcftools} index -t {output[0]}
         """
 
@@ -63,3 +63,5 @@ rule rsid_annotation:
         # echo "working on chromosome {params.current_chr}"
         # {params.bcftools} annotate -a {params.dbsp_latest} -c ID {input} | {params.bcftools} +fill-tags -O z -o {params.outfolder}/{params.current_chr}.PASS_rsID.vcf.gz
         # {params.bcftools} index -t {params.outfolder}/{params.current_chr}.PASS_rsID.vcf.gz
+
+    
