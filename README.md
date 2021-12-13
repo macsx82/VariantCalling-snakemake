@@ -40,3 +40,7 @@ Generate intervals for PAR regions on X chromosome
 ```
 
 We need to manually modify the non par regions start and end, since the bedtools operation leave the data with a 0-based position
+
+#TODO:
+In order to keep also the hom sites, we could apply a fix to the ALT sites, when they are missing, first selecting those sites with non missing genotypes.
+We could annotate the ALT allele using the latest dbsnp.

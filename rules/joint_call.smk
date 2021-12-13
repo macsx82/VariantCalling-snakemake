@@ -69,6 +69,7 @@ rule gatk_genomics_db_import:
         ref_genome=resolve_single_filepath(*references_abs_path(), config.get("genome_fasta")),
         java_opt=config['java_opts']['opt3x'],
         fixed_args=config.get("rules").get("gatk_genomics_db_import").get("arguments"),
+        genomics_db_option=config.get("rules").get("gatk_genomics_db_import").get("genomics_db_option"),
         tmp=os.path.join(config.get("files_path").get("base_joint_call_path"),config.get("files_path").get("tmp")),
         gvcf_args=lambda wildcards : " -V ".join(expand(config["files_path"]["base_joint_call_path"] + "/{sample}/{sample}_{interval_name}_g.vcf.gz", sample=sample_names_from_interval(wildcards.interval_name), interval_name=wildcards.interval_name))
     log:
@@ -86,7 +87,8 @@ rule gatk_genomics_db_import:
     shell:
         """
         echo "Let\'s do stuff with {input.import_interval}...."
-        {params.gatk} --java-options "{params.java_opt}" GenomicsDBImport --genomicsdb-workspace-path {output[0]} {params.fixed_args} -L {input.import_interval} -V {params.gvcf_args} --tmp-dir {params.tmp} > {log[0]} 2> {log[1]}
+        # {params.gatk} --java-options "{params.java_opt}" GenomicsDBImport --genomicsdb-workspace-path {output[0]} {params.fixed_args} -L {input.import_interval} -V {params.gvcf_args} --tmp-dir {params.tmp} > {log[0]} 2> {log[1]}
+        {params.gatk} --java-options "{params.java_opt}" GenomicsDBImport {params.genomics_db_option} {output[0]} {params.fixed_args} -L {input.import_interval} -V {params.gvcf_args} --tmp-dir {params.tmp} > {log[0]} 2> {log[1]}
         """
 
 #perform joint genotyping
