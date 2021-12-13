@@ -1,5 +1,5 @@
 #phasing rule using Eagle (so we can phase also non par chrX!!)
-    rule phase:
+rule phase:
     wildcard_constraints:
         interval_name='wgs_calling_regions_.+.interval_list'
     output:
