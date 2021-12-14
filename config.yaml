@@ -14,7 +14,7 @@
 #
 #
 ##############################
-pipe_mode : "BATCH" #change to "JOINT_CALL" to work in joint call mode.
+pipe_mode : "BATCH" #change to: "JOINT_CALL" to work in joint call mode, "JOINT_CALL_UPDATE" to add new samples to an existing callset.
 
 #Parameter file for fastq preprocesing step
 samples: "VARCALL_SAMPLE_FILE_PATH"
