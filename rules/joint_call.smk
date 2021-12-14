@@ -63,7 +63,7 @@ rule gatk_genomics_db_import:
         # gvcfs=expand(config["files_path"]["base_joint_call_path"] + "/{sample}/{sample}_wgs_calling_regions_chr{chr}.GRCh38.p13.interval_list_g.vcf.gz")
     output:
         # directory(os.path.join(config.get("files_path").get("base_joint_call_path"),config.get("rules").get("gatk_genomics_db_import").get("out_dir"),"{scatteritem}_{interval_name}"))
-        directory(config.get("files_path").get("base_joint_call_path")+ "/"+ config.get("rules").get("gatk_genomics_db_import").get("out_dir") + "/{scatteritem}_{interval_name}")
+        protected(directory(config.get("files_path").get("base_joint_call_path")+ "/"+ config.get("rules").get("gatk_genomics_db_import").get("out_dir") + "/{scatteritem}_{interval_name}"))
         # os.path.join(config.get("files_path").get("base_joint_call_path"),config.get("rules").get("gatk_genomics_db_import").get("out_dir"),"{scatteritem}_{interval_name}/pippo.txt")
     params:
         gatk=config['GATK_TOOL'],
