@@ -53,7 +53,7 @@ rule gatk_genotype_gvcfs:
     params:
         gatk=config['GATK_TOOL'],
         ref_genome=resolve_single_filepath(*references_abs_path(), config.get("genome_fasta")),
-        java_opt=config['java_opts']['opt3x'],
+        java_opt=config['java_opts']['opt4x'],
         fixed_args=config.get("rules").get("gatk_genotype_gvcfs").get("arguments"),
         # tmp=os.path.join(config.get("files_path").get("base_joint_call_path"),config.get("files_path").get("tmp"))
         tmp=config.get("rules").get("gatk_genotype_gvcfs").get("temp_folder")
@@ -62,7 +62,7 @@ rule gatk_genotype_gvcfs:
         config["files_path"]["log_dir"] + "/{interval_name}-{scatteritem}-genotype_gvcfs.e"
     threads: 4
     resources:
-        mem_mb=get_resources_from_jvm(config['java_opts']['opt3x'])
+        mem_mb=get_resources_from_jvm(config['java_opts']['opt4x'])
     priority: 49
     benchmark:
         config["files_path"]["benchmark"] + "/{interval_name}-{scatteritem}_genotype_gvcfs.tsv"

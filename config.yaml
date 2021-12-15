@@ -35,10 +35,10 @@ maa : 3           #max alternate alleles  # HaplotypeCaller
 #java options
 java_opts:
   opt_all: '-XX:ParallelGCThreads=1'       # All GATK steps
-  opt1x: '-Xms5g -Xmx5g -XX:+UseSerialGC' #memoria java       # Chr12,Wg12,21x2
-  opt2x: '-Xms10g -Xmx10g -XX:+UseSerialGC'    #java options       # 02,03,04,05x2,06,07,08,09,Chr10,Wg10x3,14,15,17,18,23,24,Chr25,Chr26
-  opt3x: '-Xms25g -Xmx25g -XX:+UseSerialGC'    #memoria java       # 19
-  opt4x: '-Xms100g -Xmx100g -XX:+UseSerialGC'   #memoria java       # 20
+  opt1x: '-Xms5g -Xmx5g -XX:+UseSerialGC' #java options
+  opt2x: '-Xms10g -Xmx10g -XX:+UseSerialGC'    #java options
+  opt3x: '-Xms25g -Xmx25g -XX:+UseSerialGC'    #java options
+  opt4x: '-Xms100g -Xmx100g -XX:+UseSerialGC'   #java options
 
 #################################################################################
 #paths and subfolders containing data we need for the pipeline to run
