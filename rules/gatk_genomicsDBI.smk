@@ -1,4 +1,3 @@
-
 # Start DBImport: the best would be to generate 5mb chunks on each chromosome, but this could end up in a lot of jobs
 rule gatk_genomics_db_import:
     wildcard_constraints:
@@ -39,4 +38,39 @@ rule gatk_genomics_db_import:
         mkdir -p {params.tmp}
         # {params.gatk} --java-options "{params.java_opt}" GenomicsDBImport --genomicsdb-workspace-path {output[0]} {params.fixed_args} -L {input.import_interval} -V {params.gvcf_args} --tmp-dir {params.tmp} > {log[0]} 2> {log[1]}
         {params.gatk} --java-options "{params.java_opt}" GenomicsDBImport {params.genomics_db_option} {output[0]} {params.fixed_args} -L {input.import_interval} -V {params.gvcf_args} --tmp-dir {params.tmp} > {log[0]} 2> {log[1]}
+        """
+
+#perform joint genotyping
+rule gatk_genotype_gvcfs:
+    input:
+        import_db=rules.gatk_genomics_db_import.output,
+        import_interval=os.path.join(config.get('files_path').get('base_joint_call_path'),config.get('rules').get('split_intervals').get('out_dir')) + '/{scatteritem}_{interval_name}'
+        # "db/imports/{interval}"
+    output:
+        os.path.join(config.get("files_path").get("base_joint_call_path"),config.get("rules").get("gatk_genotype_gvcfs").get("out_dir"),"{scatteritem}_{interval_name}/all.{scatteritem}_{interval_name}.vcf.gz"),
+        os.path.join(config.get("files_path").get("base_joint_call_path"),config.get("rules").get("gatk_genotype_gvcfs").get("out_dir"),"{scatteritem}_{interval_name}/all.{scatteritem}_{interval_name}.vcf.gz.tbi")
+        # protected("variant_calling/all.{scatteritem}_{interval_name}.vcf.gz")
+    params:
+        gatk=config['GATK_TOOL'],
+        ref_genome=resolve_single_filepath(*references_abs_path(), config.get("genome_fasta")),
+        java_opt=config['java_opts']['opt3x'],
+        fixed_args=config.get("rules").get("gatk_genotype_gvcfs").get("arguments"),
+        # tmp=os.path.join(config.get("files_path").get("base_joint_call_path"),config.get("files_path").get("tmp"))
+        tmp=config.get("rules").get("gatk_genotype_gvcfs").get("temp_folder")
+    log:
+        config["files_path"]["log_dir"] + "/{interval_name}-{scatteritem}-genotype_gvcfs.log",
+        config["files_path"]["log_dir"] + "/{interval_name}-{scatteritem}-genotype_gvcfs.e"
+    threads: 4
+    resources:
+        mem_mb=get_resources_from_jvm(config['java_opts']['opt3x'])
+    priority: 49
+    benchmark:
+        config["files_path"]["benchmark"] + "/{interval_name}-{scatteritem}_genotype_gvcfs.tsv"
+    envmodules:
+        "gatk/4.1.9.0"
+    message: """ GenotypeGVCFs """
+    shell:
+        """
+        mkdir -p {params.tmp}
+        {params.gatk} --java-options "{params.java_opt}" GenotypeGVCFs -R {params.ref_genome} -L {input.import_interval} -V gendb://{input.import_db} -O {output[0]} {params.fixed_args} --tmp-dir {params.tmp} > {log[0]} 2> {log[1]}
         """

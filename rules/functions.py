@@ -129,6 +129,13 @@ def get_chr_from_vcf(vcf):
 
     return vcf_chr
 
+#get path of an existing GenomicsDBImport database in the "update" branch of the joint calling workflow
+def get_db_path(db_path_file):
+    for line in open(db_path_file, 'r'):
+        if not(re.match('#', line.strip())):
+            db_path=line.strip()
+            break
+    return db_path
 
 def references_abs_path(ref='references'):
     references = config.get(ref)
