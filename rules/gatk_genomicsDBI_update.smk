@@ -56,7 +56,7 @@ rule gatk_genotype_gvcfs:
         ref_genome=resolve_single_filepath(*references_abs_path(), config.get("genome_fasta")),
         java_opt=config['java_opts']['opt3x'],
         fixed_args=config.get("rules").get("gatk_genotype_gvcfs").get("arguments"),
-        updated_import_db=get_db_path(input.import_db),
+        updated_import_db=lambda wildcards, input : get_db_path(input.import_db),
         # tmp=os.path.join(config.get("files_path").get("base_joint_call_path"),config.get("files_path").get("tmp"))
         tmp=config.get("rules").get("gatk_genotype_gvcfs").get("temp_folder")
     log:
