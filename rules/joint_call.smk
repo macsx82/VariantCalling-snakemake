@@ -52,10 +52,11 @@ rule split_intervals:
     
 if pipeline_mode == "JOINT_CALL" :
     include:
-        include_prefix + "/gatk_genomicsDBI.smk"
+        # include_prefix + "/gatk_genomicsDBI.smk"
+        "gatk_genomicsDBI.smk"
 else :
     include:
-        include_prefix + "/gatk_genomicsDBI_update.smk"
+        "gatk_genomicsDBI_update.smk"
 
 # #perform joint genotyping
 # rule gatk_genotype_gvcfs:
