@@ -18,7 +18,7 @@ rule vcf_stats:
     message: """ VCF stats before VQSR """
     shell:
         """
-        {params.bcftools} stats -v {input} > {output} 2> {log[1]}
+        {params.bcftools} stats -v {input[0]} > {output} 2> {log[1]}
         """
 
 
@@ -42,5 +42,5 @@ rule vcf_stats_final:
     message: """ VCF stats before VQSR """
     shell:
         """
-        {params.bcftools} stats -v {input} > {output} 2> {log[1]}
+        {params.bcftools} stats -v {input[0]} > {output} 2> {log[1]}
         """
