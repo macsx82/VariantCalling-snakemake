@@ -15,7 +15,7 @@ rule recal_pass_filter:
     benchmark:
         config["files_path"]["benchmark"] + "/all.{interval_name}_recal_pass_filter.tsv"
     envmodules:
-        "bcftools/1.11"
+        "bcftools/1.14"
     threads: 2
     resources:
         mem_mb=5000
@@ -25,7 +25,6 @@ rule recal_pass_filter:
         {params.bcftools} view -i "FILTER=='PASS'" {input} | {params.bcftools} norm -f {params.ref_genome} -m -both -O z -o {output[0]}
         {params.bcftools} index -t {output[0]}
         """
-
 
 rule rsid_annotation:
     wildcard_constraints:
@@ -50,7 +49,7 @@ rule rsid_annotation:
     benchmark:
         config["files_path"]["benchmark"] + "/all.{interval_name}_rsid_annotation.tsv"
     envmodules:
-        "bcftools/1.11"
+        "bcftools/1.14"
     threads: 2
     resources:
         mem_mb=10000
@@ -64,4 +63,4 @@ rule rsid_annotation:
         # {params.bcftools} annotate -a {params.dbsp_latest} -c ID {input} | {params.bcftools} +fill-tags -O z -o {params.outfolder}/{params.current_chr}.PASS_rsID.vcf.gz
         # {params.bcftools} index -t {params.outfolder}/{params.current_chr}.PASS_rsID.vcf.gz
 
-    
+rule AllChrConcat:

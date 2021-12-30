@@ -3,11 +3,17 @@
 # Options are:
 # - BATCH
 # - JOINT_CALL
+# - JOINT_CALL_UPDATE
 #
 # BATCH mode is meant to be used to run the pipeline splitting the samples in different batches from
 # alignment to HaplotypeCaller 
 #
 # JOINT_CALL mode is meant to be the subsequent step, where we collect all gVCF and perform 
+# - joint variant calling
+# - VQSR filtering
+# - variant annotation
+# 
+# JOINT_CALL_UPDATE mode is meant to be used to add new samples to and existing callset, starting from the ImportDB step and perform 
 # - joint variant calling
 # - VQSR filtering
 # - variant annotation

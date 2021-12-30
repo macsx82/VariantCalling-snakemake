@@ -73,7 +73,7 @@ rule gatk_genotype_gvcfs:
     message: """ GenotypeGVCFs """
     shell:
         """
-        mkdir -p {params.tmp}
+        temp=$(mktemp -u -d -p {params.tmp})
 
         {params.gatk} --java-options "{params.java_opt}" GenotypeGVCFs -R {params.ref_genome} -L {input.import_interval} -V gendb://{params.updated_import_db} -O {output[0]} {params.fixed_args} --tmp-dir {params.tmp} > {log[0]} 2> {log[1]}
         """
