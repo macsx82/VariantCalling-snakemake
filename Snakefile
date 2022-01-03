@@ -131,8 +131,6 @@ else :
     include:
         include_prefix + "/variant_annotation.smk"    
     include:
-        include_prefix + "/beautify.smk"
-    include:
         include_prefix + "/vcf_stats.smk"
 
 onsuccess:
