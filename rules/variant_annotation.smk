@@ -76,13 +76,13 @@ rule AllChrConcat:
         tmp=os.path.join(config.get("files_path").get("base_joint_call_path"),config.get("files_path").get("tmp")),
         ref_genome=resolve_single_filepath(*references_abs_path(), config.get("genome_fasta"))
     log:
-        config["files_path"]["log_dir"] + "/{interval_name}-AllChrConcat.log",
-        config["files_path"]["log_dir"] + "/{interval_name}-AllChrConcat.e"
+        config["files_path"]["log_dir"] + "/AllChrConcat.log",
+        config["files_path"]["log_dir"] + "/AllChrConcat.e"
     threads: 3
     resources:
         mem_mb=10000
     benchmark:
-        config["files_path"]["benchmark"] + "/{interval_name}_AllChrConcat.tsv"
+        config["files_path"]["benchmark"] + "/AllChrConcat.tsv"
     envmodules:
         "bcftools/1.14"
     message: """Let\'s gather things together!"""
