@@ -203,5 +203,8 @@ def _get_recal_params(wildcards):
     return "%s %s %s %s" %(base_params, tranches,annotations,arguments)
 
 
-
-
+# define a function to get annotated chromosomes for a final concatenated file, but excluding chrY
+# def get_all_vcf_but_y(wildcards):
+#     split_chr_folder=os.path.join(config.get("files_path").get("base_joint_call_path"),config.get("rules").get("rsid_annotation").get("out_dir"))
+#     #need to get all files in the folder as a list, excluding the one for chrY
+    

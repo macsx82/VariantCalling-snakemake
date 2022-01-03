@@ -63,4 +63,34 @@ rule rsid_annotation:
         # {params.bcftools} annotate -a {params.dbsp_latest} -c ID {input} | {params.bcftools} +fill-tags -O z -o {params.outfolder}/{params.current_chr}.PASS_rsID.vcf.gz
         # {params.bcftools} index -t {params.outfolder}/{params.current_chr}.PASS_rsID.vcf.gz
 
-rule AllChrConcat:
+#rule to concat all annotated chromosomes
+# rule AllChrConcat:
+#     wildcard_constraints:
+#         interval_name='wgs_calling_regions_.+.interval_list'
+#     output:
+#         os.path.join(config.get("files_path").get("base_joint_call_path"),config.get("rules").get("gatk_genotype_gvcfs").get("out_dir"),"all.{interval_name}.vcf.gz"),
+#         os.path.join(config.get("files_path").get("base_joint_call_path"),config.get("rules").get("gatk_genotype_gvcfs").get("out_dir"),"all.{interval_name}.vcf.gz.tbi")
+#     input:
+#         os.path.join(config.get("files_path").get("base_joint_call_path"),config.get("rules").get("rsid_annotation").get("out_dir"),"{interval_name}.PASS_rsID.vcf.gz")
+#     params:
+#         bcftools=config['BCFTOOLS'],
+#         tmp=os.path.join(config.get("files_path").get("base_joint_call_path"),config.get("files_path").get("tmp")),
+#         ref_genome=resolve_single_filepath(*references_abs_path(), config.get("genome_fasta"))
+#     log:
+#         config["files_path"]["log_dir"] + "/{interval_name}-chrom_intervals_gather.log",
+#         config["files_path"]["log_dir"] + "/{interval_name}-chrom_intervals_gather.e"
+#     threads: 3
+#     resources:
+#         mem_mb=5000
+#     benchmark:
+#         config["files_path"]["benchmark"] + "/{interval_name}_chrom_intervals_gather.tsv"
+#     envmodules:
+#         "bcftools/1.11"
+#     message: """Let\'s gather things together, by chromosome, basically!"""
+#     shell:
+#         """
+#         temp=$(mktemp -u -d -p {params.tmp})
+
+#         {params.bcftools} concat {input} | {params.bcftools} sort -T ${{temp}} | {params.bcftools} norm -f {params.ref_genome} -O z -o {output[0]} > {log[0]} 2> {log[1]}
+#         {params.bcftools} index -t {output[0]}
+#         """
