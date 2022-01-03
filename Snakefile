@@ -91,10 +91,10 @@ else :
             os.path.join(config.get("files_path").get("base_joint_call_path"),config.get("rules").get("pre_vqsr_rules").get("out_dir"),"ALL.CLEAN.SITES_ONLY.vcf.gz.tbi"),
             # expand(os.path.join(config.get("files_path").get("base_joint_call_path"),config.get("rules").get("rsid_annotation").get("out_dir"),"/{chr}.PASS_rsID.vcf.gz"),chr=config["call_chr"]),
             # expand(os.path.join(config.get("files_path").get("base_joint_call_path"),config.get("rules").get("rsid_annotation").get("out_dir"),"/{chr}.PASS_rsID.vcf.gz.tbi"),chr=config["call_chr"])
-            expand(os.path.join(config.get("files_path").get("base_joint_call_path"),config.get("rules").get("phase").get("out_dir"),"{interval_name}.phased.vcf.gz"),interval_name=call_intervals),
-            expand(os.path.join(config.get("files_path").get("base_joint_call_path"),config.get("rules").get("phase").get("out_dir"),"{interval_name}.phased.vcf.gz.tbi"),interval_name=call_intervals),
-            expand(os.path.join(config.get("files_path").get("base_joint_call_path"),config.get("rules").get("phase").get("out_dir"),"all.{interval_name}.stats"),interval_name=call_intervals),
-            #point to the final merged output file. This final file is the one that has to go through the beautify/last qc pipeline
+            # expand(os.path.join(config.get("files_path").get("base_joint_call_path"),config.get("rules").get("phase").get("out_dir"),"{interval_name}.phased.vcf.gz"),interval_name=call_intervals),
+            # expand(os.path.join(config.get("files_path").get("base_joint_call_path"),config.get("rules").get("phase").get("out_dir"),"{interval_name}.phased.vcf.gz.tbi"),interval_name=call_intervals),
+            # expand(os.path.join(config.get("files_path").get("base_joint_call_path"),config.get("rules").get("phase").get("out_dir"),"all.{interval_name}.stats"),interval_name=call_intervals),
+            # #point to the final merged output file. This final file is the one that has to go through the beautify/last qc pipeline
             os.path.join(config.get("files_path").get("base_joint_call_path"),config.get("rules").get("AllChrConcat").get("out_dir"),"all."+ PROJ+".vcf.gz"),
             os.path.join(config.get("files_path").get("base_joint_call_path"),config.get("rules").get("AllChrConcat").get("out_dir"),"all."+ PROJ+".vcf.gz.tbi")
 
