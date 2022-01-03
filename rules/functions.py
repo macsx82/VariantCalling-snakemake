@@ -206,13 +206,13 @@ def _get_recal_params(wildcards):
 # define a function to get annotated chromosomes for a final concatenated file, but excluding chrY
 def get_all_vcf_but_y(wildcards):
     split_chr_folder=os.path.join(config.get("files_path").get("base_joint_call_path"),config.get("rules").get("rsid_annotation").get("out_dir"))
-    chrs=config.get("call_chr").remove("chrY")
+    chrs=config.get("call_chr")
     all_call_intervals=["wgs_calling_regions_%s.GRCh38.p13.interval_list.PASS_rsID.vcf.gz" %(chrom) for chrom in chrs]
 
     # split_chr_folder="/large/___SCRATCH___/burlo/cocca/WGS_JOINT_CALL/20211021/11.rsID_annotation"
     #need to get all files in the folder as a list, excluding the one for chrY
     # all_files=[ os.path.join(split_chr_folder,x) for x in os.listdir(split_chr_folder) if x.endswith("vcf.gz") if not(re.search('chrY',x))]
-    all_files=[ os.path.join(split_chr_folder,x) for x in all_call_intervals]
+    all_files=[ os.path.join(split_chr_folder,x) for x in all_call_intervals if not(re.search('chrY',x))]
 
     return all_files
     
