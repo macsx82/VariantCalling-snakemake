@@ -64,33 +64,32 @@ rule rsid_annotation:
         # {params.bcftools} index -t {params.outfolder}/{params.current_chr}.PASS_rsID.vcf.gz
 
 #rule to concat all annotated chromosomes
-# rule AllChrConcat:
-#     wildcard_constraints:
-#         interval_name='wgs_calling_regions_.+.interval_list'
-#     output:
-#         os.path.join(config.get("files_path").get("base_joint_call_path"),config.get("rules").get("gatk_genotype_gvcfs").get("out_dir"),"all.{interval_name}.vcf.gz"),
-#         os.path.join(config.get("files_path").get("base_joint_call_path"),config.get("rules").get("gatk_genotype_gvcfs").get("out_dir"),"all.{interval_name}.vcf.gz.tbi")
-#     input:
-#         os.path.join(config.get("files_path").get("base_joint_call_path"),config.get("rules").get("rsid_annotation").get("out_dir"),"{interval_name}.PASS_rsID.vcf.gz")
-#     params:
-#         bcftools=config['BCFTOOLS'],
-#         tmp=os.path.join(config.get("files_path").get("base_joint_call_path"),config.get("files_path").get("tmp")),
-#         ref_genome=resolve_single_filepath(*references_abs_path(), config.get("genome_fasta"))
-#     log:
-#         config["files_path"]["log_dir"] + "/{interval_name}-chrom_intervals_gather.log",
-#         config["files_path"]["log_dir"] + "/{interval_name}-chrom_intervals_gather.e"
-#     threads: 3
-#     resources:
-#         mem_mb=5000
-#     benchmark:
-#         config["files_path"]["benchmark"] + "/{interval_name}_chrom_intervals_gather.tsv"
-#     envmodules:
-#         "bcftools/1.11"
-#     message: """Let\'s gather things together, by chromosome, basically!"""
-#     shell:
-#         """
-#         temp=$(mktemp -u -d -p {params.tmp})
+rule AllChrConcat:
+    output:
+        os.path.join(config.get("files_path").get("base_joint_call_path"),config.get("rules").get("AllChrConcat").get("out_dir"),"all."+ PROJ+".vcf.gz"),
+        os.path.join(config.get("files_path").get("base_joint_call_path"),config.get("rules").get("AllChrConcat").get("out_dir"),"all."+ PROJ+".vcf.gz.tbi")
+    input:
+        # os.path.join(config.get("files_path").get("base_joint_call_path"),config.get("rules").get("rsid_annotation").get("out_dir"),"{interval_name}.PASS_rsID.vcf.gz")
+        get_all_vcf_but_y
+    params:
+        bcftools=config['BCFTOOLS'],
+        tmp=os.path.join(config.get("files_path").get("base_joint_call_path"),config.get("files_path").get("tmp")),
+        ref_genome=resolve_single_filepath(*references_abs_path(), config.get("genome_fasta"))
+    log:
+        config["files_path"]["log_dir"] + "/{interval_name}-AllChrConcat.log",
+        config["files_path"]["log_dir"] + "/{interval_name}-AllChrConcat.e"
+    threads: 3
+    resources:
+        mem_mb=10000
+    benchmark:
+        config["files_path"]["benchmark"] + "/{interval_name}_AllChrConcat.tsv"
+    envmodules:
+        "bcftools/1.14"
+    message: """Let\'s gather things together!"""
+    shell:
+        """
+        temp=$(mktemp -u -d -p {params.tmp})
 
-#         {params.bcftools} concat {input} | {params.bcftools} sort -T ${{temp}} | {params.bcftools} norm -f {params.ref_genome} -O z -o {output[0]} > {log[0]} 2> {log[1]}
-#         {params.bcftools} index -t {output[0]}
-#         """
+        {params.bcftools} concat {input} | {params.bcftools} sort -T ${{temp}} | {params.bcftools} norm -f {params.ref_genome} -O z -o {output[0]} > {log[0]} 2> {log[1]}
+        {params.bcftools} index -t {output[0]}
+        """
