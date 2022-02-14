@@ -22,34 +22,31 @@
 ##############################
 pipe_mode : "BATCH" #change to: "JOINT_CALL" to work in joint call mode, "JOINT_CALL_UPDATE" to add new samples to an existing callset.
 
-#Parameter file for fastq preprocesing step
-samples: "VARCALL_SAMPLE_FILE_PATH"
+########### INPUT DEFINITION ####################
+samples: "VARCALL_SAMPLE_FILE_PATH"   # Manifest file with the list of sample ids, relative fastq files to process and sex for each sample
 
-#prject name
 proj_name : "WGS_VarCalling" #name of the project to be used also as suffix for file naming in the final concat rule
 
-#define some variables to be used for some rules
-#library name
-lb : "L001"
-pl : "Illumina"
-#compression level
-cl : 5
+#########################
+#Define some variables to be used for RG creation.
+#These variables can be left to this defaults values or set to the correct ones, if known.
+#
+lb : "L001"      #library name
+pl : "Illumina"  #sequencing platform
+cl : 5           #bam compression level
 
-ip1 : 500         #interval_padding (bp)  # HaplotypeCaller
-maa : 3           #max alternate alleles  # HaplotypeCaller
-
-#java options
+######### JAVA OPTIONS #####################
+#
 java_opts:
-  opt_all: '-XX:ParallelGCThreads=1'       # All GATK steps
-  opt1x: '-Xms5g -Xmx5g -XX:+UseSerialGC' #java options
+  opt_all: '-XX:ParallelGCThreads=1'           # All GATK steps
+  opt1x: '-Xms5g -Xmx5g -XX:+UseSerialGC'      #java options
   opt2x: '-Xms10g -Xmx10g -XX:+UseSerialGC'    #java options
   opt3x: '-Xms25g -Xmx25g -XX:+UseSerialGC'    #java options
-  opt4x: '-Xms100g -Xmx100g -XX:+UseSerialGC'   #java options
+  opt4x: '-Xms100g -Xmx100g -XX:+UseSerialGC'  #java options
 
-#################################################################################
+################### REFERENCES AND INTERVALS #####################################
 #paths and subfolders containing data we need for the pipeline to run
 references:
-  # basepath: "/home/max/Work/OTHER_PJS/HQ_WGS_QC/pipeline_tests/test_files/resources"
   basepath: "/storage/burlo/cocca/resources"
   provider: "hgRef"
   release: "GRCh38.p13"
@@ -71,8 +68,9 @@ known_variants:
 # Subset of chromosomes to call
 call_chr: ["chr1","chr2","chr3","chr4","chr5","chr6","chr7","chr8","chr9","chr10","chr11","chr12","chr13","chr14","chr15","chr16","chr17","chr18","chr19","chr20","chr21","chr22","chrX_PAR","chrX_NONPAR","chrY"]
 ############################################
-#Template to pre-process fastq files
-# with parameters for different tools in different rules
+
+#################### RULES PARAMETERS ################################
+# parameters for different tools in different rules
 rules:
   ubam_gen:
     out_dir: "1.ALIGNMENT"
@@ -97,6 +95,8 @@ rules:
   apply_bqsr:
     out_dir: "2.BQSR"
   gatk_hap_caller:
+    ip1 : 500         #interval_padding (bp)  # HaplotypeCaller
+    maa : 3           #max alternate alleles  # HaplotypeCaller
     out_dir: "3.VarCall"
   stats:
     out_dir: "4.Stats"
@@ -142,18 +142,10 @@ rules:
     out_dir: "11.rsID_annotation"
   AllChrConcat:
     out_dir: "12.Concat_vcf"
-  # phase:
-  #   genetic_map: "/large/___HOME___/burlo/cocca/software/eagle/Eagle_v2.4.1/tables/genetic_map_hg38_withX.txt.gz"
-  #   out_dir: "12.phased"
 
 
-
-#########SET UP YOUR EMAIL HERE ##############
-mail: ""
-#########SET UP YOUR EMAIL HERE ##############
-
-### - GENERAL PATHS - ###
-### - PATH FILE - ###
+############# PATHS #############
+### - OUTPUT PATHS - ###
 files_path:
   base_out: "VARCALL_OUT_FOLDER"
   tmp: "localtemp"

@@ -4,30 +4,6 @@ A Snakemake implementation of the variant calling pipeline
 
 This pipeline is designed to perform Variant calling on WGS data, starting from preprocessed fastq files. A pipeline to perform the necessary preprocessing steps is available [here](https://gitlab.burlo.trieste.it/max/SeqPreproc-snakemake/-/tree/main)
 
-The pipeline can be executed in different modes:
-
-- BATCH
-- JOINT_CALL
-- JOINT_CALL_UPDATE
-
-
-**BATCH mode** is meant to be used to run the pipeline splitting the samples in different batches and will process each sample separately from alignment to HaplotypeCaller rules.
- **On new samples, this is the running mode that has to be used to generate the initial variant call data for each sample.**
-
-
-**JOINT_CALL mode** represents the second step, where we collect all gVCF and perform :
-
-- joint variant calling
-- VQSR filtering
-- variant annotation
-
- 
-**JOINT_CALL_UPDATE** mode is meant to be used to add new samples to an existing callset, **after performing a BATCH mode run**, using the 'ImportDB' update mode and performing :
-
-- joint variant calling
-- VQSR filtering
-- variant annotation
-
 
 ---
 
@@ -204,7 +180,7 @@ SAMPLE_ID fq1 fq2 sex
 ```
 
 
-At this point, we can proceed with the system environment setup, the same we did for the SeqPreprocessing pipeline.
+At this point, we can proceed with the pipeline setup, the same we did for the SeqPreprocessing pipeline.
 
 
 ---
@@ -223,8 +199,40 @@ This command will create a new folder, in the current location, named **VariantC
 
 Before running the pipeline, it is necessary to provide some information using a config file. A config file template, with default values is provided and it is named **config.yaml**
 
-It is advisable not to execute the pipeline in the repository folder, but to create a separate folder and a copy a copy of the config file to fill the relevant parameters.
+It is advisable not to execute the pipeline in the repository folder, but to create a separate folder and a copy of the config file to fill the relevant parameters.
 
+
+### Config file setup
+
+A config file template, with default values is provided and it is named **config.yaml** . The final user has to provide some information to the pipeline, in order to retrieve input files and to define output location.
+
+### Execution modes
+
+The pipeline can be executed in different modes:
+
+- **BATCH**
+- **JOINT_CALL**
+- **JOINT_CALL_UPDATE**
+
+
+**BATCH mode** is meant to be used to run the pipeline splitting the samples in different batches and will process each sample separately from alignment to HaplotypeCaller rules.
+ **On new samples, this is the running mode that has to be used to generate the initial variant call data for each sample.**
+
+
+**JOINT_CALL mode** represents the second step, where we collect all gVCF and perform :
+
+- joint variant calling
+- VQSR filtering
+- variant annotation
+
+ 
+**JOINT_CALL_UPDATE** mode is meant to be used to add new samples to an existing callset, **after performing a BATCH mode run**, using the 'ImportDB' update mode and performing :
+
+- joint variant calling
+- VQSR filtering
+- variant annotation
+
+To define the execution mode, we can set the parameter **pipe_mode** in the config file.
 
 
 
