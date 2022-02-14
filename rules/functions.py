@@ -15,17 +15,17 @@ def get_rg_id_data(wildcards):
     header_sections=[rg_id for section in header.decode('utf-8').split(' ') for rg_id in section.split(":") ]
     #define the RG tag dictionary to be used 
     RG_TAG={}
-    RG_TAG["PU1"]=header_sections[0]
-    RG_TAG["PU2"]=header_sections[1]
-    RG_TAG["ID1"]=header_sections[2]
-    RG_TAG["FL"]=header_sections[3]
-    RG_TAG["TNFL"]=header_sections[4]
-    RG_TAG["XX"]=header_sections[5]
-    RG_TAG["YY"]=header_sections[6]
-    RG_TAG["PAIR"]=header_sections[7]
-    RG_TAG["FIL"]=header_sections[8]
-    RG_TAG["BITS"]=header_sections[9]
-    RG_TAG["ID2"]=header_sections[10]
+    RG_TAG["PU1"]=header_sections[0] #the unique instrument name
+    RG_TAG["PU2"]=header_sections[1] #the run id
+    RG_TAG["ID1"]=header_sections[2] #the flowcell id
+    RG_TAG["FL"]=header_sections[3] #flowcell lane
+    RG_TAG["TNFL"]=header_sections[4] #tile number within the flowcell lane
+    RG_TAG["XX"]=header_sections[5] #'x'-coordinate of the cluster within the tile
+    RG_TAG["YY"]=header_sections[6] #'y'-coordinate of the cluster within the tile
+    RG_TAG["PAIR"]=header_sections[7] #the member of a pair, 1 or 2 (paired-end or mate-pair reads only)
+    RG_TAG["FIL"]=header_sections[8] #Y if the read is filtered (did not pass), N otherwise
+    RG_TAG["BITS"]=header_sections[9] #0 when none of the control bits are on, otherwise it is an even number
+    RG_TAG["ID2"]=header_sections[10] #index sequence 
     return RG_TAG
 
 def get_input_fasta(wildcards):
