@@ -15,7 +15,7 @@ rule vcf_stats:
     resources:
         mem_mb=5000
     envmodules:
-        "bcftools/1.11"
+        "bcftools/1.14"
     message: """ VCF stats before VQSR """
     shell:
         """

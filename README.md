@@ -1,4 +1,6 @@
-# Snakemake implementation of the variant calling pipeline
+# Variant Calling pipeline
+
+A Snakemake implementation of the variant calling pipeline
 
 This pipeline is designed to perform Variant calling on WGS data, starting from preprocessed fastq files. A pipeline to perform the necessary preprocessing steps is available [here](https://gitlab.burlo.trieste.it/max/SeqPreproc-snakemake/-/tree/main)
 
@@ -9,7 +11,7 @@ The pipeline can be executed in different modes:
 - JOINT_CALL_UPDATE
 
 
-**BATCH mode** is meant to be used to run the pipeline splitting the samples in different batches and will process each sample separately from alignment to HaplotypeCaller.
+**BATCH mode** is meant to be used to run the pipeline splitting the samples in different batches and will process each sample separately from alignment to HaplotypeCaller rules. **On new samples, this is the running mode that has to be used to generate the initial variant call data for each sample.**
 
 
 **JOINT_CALL mode** is meant to be the subsequent step, where we collect all gVCF and perform :
@@ -19,29 +21,120 @@ The pipeline can be executed in different modes:
 - variant annotation
 
  
-**JOINT_CALL_UPDATE** mode is meant to be used to add new samples to and existing callset, starting from the ImportDB step and perform :
+**JOINT_CALL_UPDATE** mode is meant to be used to add new samples to an existing callset, **after performing a BATCH mode run**, starting from the ImportDB step and perform :
 
 - joint variant calling
 - VQSR filtering
 - variant annotation
 
 
- will setup the variant calling pipeline, from fastq alignment to vcf file generation, using snakemake, to make it portable and deployable on different cluster.
-
 ---
-#Genome reference
 
-We used GRCh38.p13, as default reference for alignment and variant calling.
+## Setting things up
+
+In order to run the pipeline, there are some requirements to fullfill and some set up needs to be perfomed.
+In this current version, the pipeline is tested and configured to be run on the [ORFEO cluster](https://orfeo-documentation.readthedocs.io/en/latest/) .
+It is possible to run the pipeline on the Apollo cluster, but it will require to manually specify the location of all software binaries in the provided config file.
+
+### Required Software
+
+The following software has to be installed system-wide, in a user-defined Conda environment or using the modules architecture (ORFEO cluster).
+
++ awk
++ sed
++ python3
++ [bwa-mem2](https://github.com/bwa-mem2/bwa-mem2)
++ [bcftools](http://www.htslib.org/doc/)
++ [samtools](http://www.htslib.org/doc/)
++ [htslib](http://www.htslib.org/doc/)
++ [sambamba](https://lomereiter.github.io/sambamba/index.html)
++ [GATK](https://gatk.broadinstitute.org/hc/en-us)
++ [Picard](https://gatk.broadinstitute.org/hc/en-us)
++ R
++ git
+
+At the moment, the load call of each module on the ORFEO cluster is in the form "module-name/version". The modules and version used are:
+
++ gatk/4.1.9.0
++ gatk/4.2.2.0
++ picard/2.24.0
++ bcftools/1.14
++ samtools/1.14
++ sambamba/0.8.0
++ R/4.0.3
++ bwa-mem2/2.1/gnu/9.3.0
+
+**Before switching to a new version of each software/module, a test run should be performed to check that the expected output are generated.**
+
+### Required python packages
+
+In order to run the pipeline, the following python packages have to be installed in your conda environment:
+
++ pandas
++ pathlib
++ io
++ os
++ re
++ snakemake
+
+### Other requirements
+
+Absolute paths of the fastq files (saparate files for R1 and R2 strand) to be processed, named with the **Illumina convention**, demultiplexed.
+
+Manifest file following the template provided in the **resource** folder, space separated and with the following header line:
+
+```
+SAMPLE_ID fq1 fq2
+```
+
+
+
+## Resources setup
+
+In order to run the pipeline on a new system, there are some preparatory steps to perform, in order to retrieve or generate the resources needed.
+
+At the moment, all resources needed are already available on the APOLLO cluster, at the following locations:
+
+```
+references:
+  basepath: "/shared/resources"
+  provider: "hgRef"
+  release: "GRCh38.p13"
+
+genome_fasta: "GCA_000001405.15_GRCh38_full_plus_hs38d1_analysis_set.fna"
+callable_intervals: "wgs_intervals"
+
+dbsnp_latest: "/shared/resources/dbSNP/human_9606_b154_GRCh38p12/GCF_000001405.38.vcf.gz"
+dbsnp: "/shared/resources/gatk4hg38db/dbsnp_151.hg38.vcf.gz"
+hapmap: "/shared/resources/gatk4hg38db/hapmap_3.3.hg38.vcf.gz"
+g1k: "/shared/resources/gatk4hg38db/1000G_phase1.snps.high_confidence.hg38.vcf.gz"
+omni: "/shared/resources/gatk4hg38db/1000G_omni2.5.hg38.vcf.gz"
+mills: "/shared/resources/gatk4hg38db/Mills_and_1000G_gold_standard.indels.hg38.vcf.gz"
+indels: "/shared/resources/gatk4hg38db/Homo_sapiens_assembly38.known_indels.vcf.gz"
+axiom: "/shared/resources/gatk4hg38db/Axiom_Exome_Plus.genotypes.all_populations.poly.hg38.vcf.gz"
+
+```
+
+
+
+# Genome reference
+
+We used [GRCh38.p13](https://www.ncbi.nlm.nih.gov/assembly/GCF_000001405.39/) , as default reference for alignment and variant calling.
+Since the aligned data will be saved using the **CRAM** format, it is necessary to have a backup copy of the **exact file** of the reference used.
+
+
 Since we want to use the same interval list approach used with the standard GATK bundle, we will generate the
 callable regions interval list.
 
-We'll the following pipeline:
+We'll follow this workflow:
 
-1- Use picard ScatterIntervalsByNs to extract the non-poly N regions.
+1- Use *picard ScatterIntervalsByNs* to extract the non-poly N regions.
 2- Convert this interval list to bed with awk.
-3- Run bedtools makewindows to generate your regions.
+3- Run *bedtools makewindows* to generate your regions.
 	(from https://www.biostars.org/p/473462/#473466 )
 
+
+The example command below are executed on the ORFEO cluster. Please modify accordingly the job submission an the relevant paths.
 
 ```bash
 base_out=/storage/burlo/cocca/resources/hgRef/GRCh38.p13
@@ -80,11 +173,6 @@ This pipeline aims to provide a tool to get a first look at fastq data. With thi
 2) Perform trimming on the fastq files
 3) Rerun a fastQC check after trimming 
 4) Generate a multiQC report to have a comprehensive look at the data
-
-
-## Setting things up
-
-In order to run the pipeline, there are some requirements to fullfill and some set up needs to be perfomed. In this current version, the pipeline is tested and configured to be run on the [ORFEO cluster](https://orfeo-documentation.readthedocs.io/en/latest/) . It is possible to run the pipeline on the Apollo cluster, but it will require to manually specify fastp and fastQC binary location in the provided config file.
 
 
 ### Required Software

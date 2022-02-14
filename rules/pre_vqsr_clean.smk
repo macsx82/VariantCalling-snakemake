@@ -22,7 +22,7 @@ rule clean_and_excess_het_filter:
     benchmark:
         config["files_path"]["benchmark"] + "/{interval_name}_clean_vcf.tsv"
     envmodules:
-        "bcftools/1.11"
+        "bcftools/1.14"
     message: """Let\'s clean a little bit, by chromosome!"""
     shell:
         """
@@ -49,7 +49,7 @@ rule sites_only_vcf:
     benchmark:
         config["files_path"]["benchmark"] + "/{interval_name}_sites_only_vcf.tsv"
     envmodules:
-        "bcftools/1.11"
+        "bcftools/1.14"
     message: """Create sites only files, by chromosome!"""
     shell:
         """
@@ -79,7 +79,7 @@ rule concat_vcfs:
     benchmark:
         config["files_path"]["benchmark"] + "/ALL_concat_vcfs.tsv"
     envmodules:
-        "bcftools/1.11"
+        "bcftools/1.14"
     message: """Concat sites only files!"""
     shell:
         """

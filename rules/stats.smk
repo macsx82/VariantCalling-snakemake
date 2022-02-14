@@ -14,7 +14,7 @@ rule sam_validate:
     benchmark:
         config["files_path"]["benchmark"] + "/{sample}_validate.tsv"
     envmodules:
-        "samtools/1.11"
+        "samtools/1.14"
     message: """ Samtools quickcheck validation for bqsr'ed files """
     shell:
         """
@@ -38,7 +38,7 @@ rule sam_stats:
     benchmark:
         config["files_path"]["benchmark"] + "/{sample}_stats.tsv"
     envmodules:
-        "samtools/1.11"
+        "samtools/1.14"
     message: """ Samtools stats for bqsr'ed files """
     shell:
         """
@@ -62,7 +62,7 @@ rule sam_flagstats:
     benchmark:
         config["files_path"]["benchmark"] + "/{sample}_flagstat.tsv"
     envmodules:
-        "samtools/1.11"
+        "samtools/1.14"
     message: """ Samtools flagstat validation for bqsr'ed files """
     shell:
         """

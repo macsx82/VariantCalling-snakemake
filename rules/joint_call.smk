@@ -77,7 +77,7 @@ rule chrom_intervals_gather:
     benchmark:
         config["files_path"]["benchmark"] + "/{interval_name}_chrom_intervals_gather.tsv"
     envmodules:
-        "bcftools/1.11"
+        "bcftools/1.14"
     message: """Let\'s gather things together, by chromosome, basically!"""
     shell:
         """
