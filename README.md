@@ -11,17 +11,18 @@ The pipeline can be executed in different modes:
 - JOINT_CALL_UPDATE
 
 
-**BATCH mode** is meant to be used to run the pipeline splitting the samples in different batches and will process each sample separately from alignment to HaplotypeCaller rules. **On new samples, this is the running mode that has to be used to generate the initial variant call data for each sample.**
+**BATCH mode** is meant to be used to run the pipeline splitting the samples in different batches and will process each sample separately from alignment to HaplotypeCaller rules.
+ **On new samples, this is the running mode that has to be used to generate the initial variant call data for each sample.**
 
 
-**JOINT_CALL mode** is meant to be the subsequent step, where we collect all gVCF and perform :
+**JOINT_CALL mode** represents the second step, where we collect all gVCF and perform :
 
 - joint variant calling
 - VQSR filtering
 - variant annotation
 
  
-**JOINT_CALL_UPDATE** mode is meant to be used to add new samples to an existing callset, **after performing a BATCH mode run**, starting from the ImportDB step and perform :
+**JOINT_CALL_UPDATE** mode is meant to be used to add new samples to an existing callset, **after performing a BATCH mode run**, using the 'ImportDB' update mode and performing :
 
 - joint variant calling
 - VQSR filtering
@@ -52,8 +53,9 @@ The following software has to be installed system-wide, in a user-defined Conda 
 + [Picard](https://gatk.broadinstitute.org/hc/en-us)
 + R
 + git
++ snakemake
 
-At the moment, the load call of each module on the ORFEO cluster is in the form "module-name/version". The modules and version used are:
+At the moment, the load directive of each module on the ORFEO cluster is hard-coded in the pipeline code, with the form "module-name/version". Modules and versions used are:
 
 + gatk/4.1.9.0
 + gatk/4.2.2.0
@@ -64,7 +66,7 @@ At the moment, the load call of each module on the ORFEO cluster is in the form 
 + R/4.0.3
 + bwa-mem2/2.1/gnu/9.3.0
 
-**Before switching to a new version of each software/module, a test run should be performed to check that the expected output are generated.**
+**Before switching to a new version of each software/module, a test run should be performed to check that the expected output files are generated and that they are consistent with the previous production version.**
 
 ### Required python packages
 
@@ -76,18 +78,41 @@ In order to run the pipeline, the following python packages have to be installed
 + os
 + re
 + snakemake
-
-### Other requirements
-
-Absolute paths of the fastq files (saparate files for R1 and R2 strand) to be processed, named with the **Illumina convention**, demultiplexed.
-
-Manifest file following the template provided in the **resource** folder, space separated and with the following header line:
-
-```
-SAMPLE_ID fq1 fq2
-```
++ gzip 
++ re
++ sys
++ errno
++ multiprocessing
++ psutil
 
 
+### ORFEO/general set up
+1. Install Snakemake via conda ([link](https://snakemake.readthedocs.io/en/stable/getting\_started/installation.html));
+    ```bash
+    conda create -c conda-forge -c bioconda -n snakemake snakemake pandas
+    ```
+2. Activate the environment you created
+    ```bash
+    conda activate snakemake
+    ```
+
+### Apollo set up
+
+1. Add the global snakemake environment to your environment list:
+    ```bash
+    conda config --append envs_dirs /shared/software/conda/envs
+    conda config --prepend envs_dirs ~/.conda/envs
+    ```
+
+2. Check that the environment is available to you (you should see an entry "snakemake_g" in the list)
+    ```bash
+    conda env list
+    ```
+3. Load the environment
+    ```bash
+    conda activate snakemake_g
+    ```
+---
 
 ## Resources setup
 
@@ -115,18 +140,22 @@ axiom: "/shared/resources/gatk4hg38db/Axiom_Exome_Plus.genotypes.all_populations
 
 ```
 
+Below are some indication on how to retrieve the data from external resources.
+
+### GATK4 data bundle
+
+All the files in the folder */shared/resources/gatk4hg38db/* are available to download from the gatk4 [gcp-public-data--broad-references/hg38/v0](https://console.cloud.google.com/storage/browser/gcp-public-data--broad-references/hg38/v0)
 
 
-# Genome reference
+### Genome reference
 
-We used [GRCh38.p13](https://www.ncbi.nlm.nih.gov/assembly/GCF_000001405.39/) , as default reference for alignment and variant calling.
+We used [GRCh38.p13](https://www.ncbi.nlm.nih.gov/assembly/GCF_000001405.39/), as default reference for alignment and variant calling.
 Since the aligned data will be saved using the **CRAM** format, it is necessary to have a backup copy of the **exact file** of the reference used.
 
 
-Since we want to use the same interval list approach used with the standard GATK bundle, we will generate the
-callable regions interval list.
+Since the pipeline uses the same interval list approach used with the standard GATK bundle, we re-generated the callable regions interval list.
 
-We'll follow this workflow:
+We followed this workflow:
 
 1- Use *picard ScatterIntervalsByNs* to extract the non-poly N regions.
 2- Convert this interval list to bed with awk.
@@ -134,107 +163,51 @@ We'll follow this workflow:
 	(from https://www.biostars.org/p/473462/#473466 )
 
 
-The example command below are executed on the ORFEO cluster. Please modify accordingly the job submission an the relevant paths.
+The example command below are executed on the ORFEO cluster. Please modify accordingly the job submission and the relevant paths.
 
 ```bash
-base_out=/storage/burlo/cocca/resources/hgRef/GRCh38.p13
+base_out=/storage/burlo/cocca/resources/hgRef/GRCh38.p13/wgs_intervals
 ref_seq=/storage/burlo/cocca/resources/hgRef/GRCh38.p13/GCA_000001405.15_GRCh38_full_plus_hs38d1_analysis_set.fna
 log_folder=/large/___HOME___/burlo/cocca/analyses/Logs
 
-
-# echo "module load picard/2.24.0;java -jar $picard CreateSequenceDictionary R=${ref_seq} O=/storage/burlo/cocca/resources/hgRef/GRCh38.p13/GCA_000001405.15_GRCh38_full_plus_hs38d1_analysis_set.dict" | qsub -q thin -V -k eod -o ${log_folder}/picard_index_ref.o -e ${log_folder}/picard_index_ref.e -l nodes=1:ppn=1 -l walltime=48:00:00 -l mem=10g
 echo "module load picard/2.24.0;java -jar $picard ScatterIntervalsByNs R=${ref_seq} OT=ACGT O=${base_out}/wgs_calling_regions.GRCh38.p13.interval_list" | qsub -q thin -V -k eod -o ${log_folder}/picard_split_interval.o -e ${log_folder}/picard_split_interval.e -l nodes=1:ppn=1 -l walltime=48:00:00 -l mem=10g
 
 ```
 
-Generate intervals for PAR regions on X chromosome
+The Variant calling with GATK can be performed adding the ploidy information for each sample, to perform the variant calling correctly on the X and Y chromosome.
+For this purpose, the PAR and NON PAR regions on chrX have to be treated separately. 
+We need to create a bed file with PAR1 and PAR2 regions cohordinates. The file has to be TAB separated:
+
+```
+chrX	10001	2781479	PAR1                
+chrX	155701383	156030895	PAR2
+```
+
+Using the par regions bed file, we can generate intervals for PAR regions on X chromosome:
 
 ```bash
-(fgrep "@" wgs_calling_regions_chrX.GRCh38.p13.interval_list;bedtools subtract -a <(fgrep -v "@" wgs_calling_regions_chrX.GRCh38.p13.interval_list) -b par_regions.bed )> wgs_calling_regions_chrX_NONPAR.GRCh38.p13.interval_list
-
-(fgrep "@" wgs_calling_regions_chrX.GRCh38.p13.interval_list;bedtools intersect -a <(fgrep -v "@" wgs_calling_regions_chrX.GRCh38.p13.interval_list) -b par_regions.bed -wb|cut -f -5,9) > wgs_calling_regions_chrX_PAR.GRCh38.p13.interval_list
+(fgrep "@" /storage/burlo/cocca/resources/hgRef/GRCh38.p13/wgs_intervals/wgs_calling_regions_chrX.GRCh38.p13.interval_list;bedtools subtract -a <(fgrep -v "@" /storage/burlo/cocca/resources/hgRef/GRCh38.p13/wgs_intervals/wgs_calling_regions_chrX.GRCh38.p13.interval_list) -b /storage/burlo/cocca/resources/hgRef/GRCh38.p13/wgs_intervals/par_regions.bed )> /storage/burlo/cocca/resources/hgRef/GRCh38.p13/wgs_intervals/wgs_calling_regions_chrX_NONPAR.GRCh38.p13.interval_list
+(fgrep "@" /storage/burlo/cocca/resources/hgRef/GRCh38.p13/wgs_intervals/wgs_calling_regions_chrX.GRCh38.p13.interval_list;bedtools intersect -a <(fgrep -v "@" /storage/burlo/cocca/resources/hgRef/GRCh38.p13/wgs_intervals/wgs_calling_regions_chrX.GRCh38.p13.interval_list) -b /storage/burlo/cocca/resources/hgRef/GRCh38.p13/wgs_intervals/par_regions.bed -wb|cut -f -5,9) > /storage/burlo/cocca/resources/hgRef/GRCh38.p13/wgs_intervals/wgs_calling_regions_chrX_PAR.GRCh38.p13.interval_list
 
 ```
 
-We need to manually modify the non par regions start and end, since the bedtools operation leave the data with a 0-based position
-
-#TODO:
-In order to keep also the hom sites, we could apply a fix to the ALT sites, when they are missing, first selecting those sites with non missing genotypes.
-We could annotate the ALT allele using the latest dbsnp.
-
-
----
-
-# Preprocessing pipeline for sequence data.
-
-This pipeline aims to provide a tool to get a first look at fastq data. With this pipelinie we will:
-
-1) Perform a astQC check on raw fastq data
-2) Perform trimming on the fastq files
-3) Rerun a fastQC check after trimming 
-4) Generate a multiQC report to have a comprehensive look at the data
-
-
-### Required Software
-
-The following software has to be installed system-wide or in a user-defined Conda environment (something more about conda below).
-
-+ awk
-+ sed
-+ python3
-+ fastp
-+ fastQC
-+ git
-
-### Required python packages
-
-In order to run the pipeline, the following python packages have to be installed in your conda environment:
-
-+ pandas
-+ pathlib
-+ io
-+ os
-+ re
-+ snakemake
+**We need to manually modify the NON PAR regions start and end, since the bedtools operation leave the data with a 0-based position.**
 
 ### Other requirements
 
-Absolute paths of the fastq files (saparate files for R1 and R2 strand) to be processed, named with the **Illumina convention**, demultiplexed.
+Absolute paths of the fastq files (saparate files for R1 and R2 strand) to be processed, produced by the [SeqPreprocessing](https://gitlab.burlo.trieste.it/max/SeqPreproc-snakemake/-/tree/main) pipeline.
 
 Manifest file following the template provided in the **resource** folder, space separated and with the following header line:
 
 ```
-SAMPLE_ID fq1 fq2
+SAMPLE_ID fq1 fq2 sex
 ```
 
 
-### ORFEO/general set up
-1. Install Snakemake via conda ([link](https://snakemake.readthedocs.io/en/stable/getting\_started/installation.html));
-    ```bash
-    conda create -c conda-forge -c bioconda -n snakemake snakemake ruamel.yaml
-    ```
-2. Activate the environment you created
-    ```bash
-    conda activate snakemake
-    ```
+At this point, we can proceed with the system environment setup, the same we did for the SeqPreprocessing pipeline.
 
-### Apollo set up
 
-1. Add the global snakemake environment to your environment list:
-    ```bash
-    conda config --append envs_dirs /shared/software/conda/envs
-    conda config --prepend envs_dirs ~/.conda/envs
-    ```
-
-2. Check that the environment is available to you (you should see an entry "snakemake_g" in the list)
-    ```bash
-    conda env list
-    ```
-3. Load the environment
-    ```bash
-    conda activate snakemake_g
-    ```
-
+---
 
 ## Usage
 
@@ -242,28 +215,22 @@ It is advised to clone the pipeline to a personal folder from the git repository
 The clone command to use is:
 
 ```bash
-	git clone https://gitlab.burlo.trieste.it/max/SeqPreproc-snakemake.git
+	git clone https://gitlab.burlo.trieste.it/max/VariantCalling-snakemake.git
 ```
 
-This command will create a new folder, in the current location, named **SeqPreproc-snakemake**
+This command will create a new folder, in the current location, named **VariantCalling-snakemake**
 
 
 Before running the pipeline, it is necessary to provide some information using a config file. A config file template, with default values is provided and it is named **config.yaml**
 
 It is advisable not to execute the pipeline in the repository folder, but to create a separate folder and a copy a copy of the config file to fill the relevant parameters.
 
-To exploit the trimming functions of the pipeline, the parameters:
 
-+ cR1
-+ cR2
-+ tpcR1
-+ tpcR2
 
-should be set according to the desired number of bp to trim from each read.
 
 ### Running the pipeline
 
-There are differen ways to run the pipeline: **Local mode**, **Cluster mode** or **Single node mode**
+There are different ways to run the pipeline: **Local mode**, **Cluster mode** or **Single node mode**
 
 ### Local mode
 
@@ -272,13 +239,13 @@ In Local mode, the pipeline is execute in an interactive shell session (locally 
 ```bash
 conda activate snakemake
 
-base_cwd=/<USER_DEFINED_PATH>/PREPROCESSING
+base_cwd=/<USER_DEFINED_PATH>/VAR_CALL
 log_folder=${base_cwd}/Log
 mkdir -p ${log_folder}
 cd ${base_cwd}
 
-snakefile=/<USER_DEFINED_PATH>/SeqPreproc-snakemake/Snakefile
-configfile=/<USER_DEFINED_PATH>/PREPROCESSING/preprocessing_pipeline.yaml
+snakefile=/<USER_DEFINED_PATH>/VariantCalling-snakemake/Snakefile
+configfile=/<USER_DEFINED_PATH>/VAR_CALL/variantCalling_pipeline.yaml
 cores=24
 
 snakemake -p -r -s ${snakefile} --configfile ${configfile} --use-envmodules --keep-going --cores ${cores}
@@ -298,16 +265,16 @@ One example of a Cluster execution, on the **ORFEO cluster**, is:
 module load conda
 conda activate snakemake
 
-base_cwd=/<USER_DEFINED_PATH>/PREPROCESSING
+base_cwd=/<USER_DEFINED_PATH>/VAR_CALL
 log_folder=${base_cwd}/Log
 mkdir -p ${log_folder}
 cd ${base_cwd}
 
-snakefile=/<USER_DEFINED_PATH>/SeqPreproc-snakemake/Snakefile
-configfile=/<USER_DEFINED_PATH>/PREPROCESSING/preprocessing_pipeline.yaml
+snakefile=/<USER_DEFINED_PATH>/VariantCalling-snakemake/Snakefile
+configfile=/<USER_DEFINED_PATH>/VAR_CALL/variantCalling_pipeline.yaml
 
-log_name=preprocessing_pipeline.log
-stderr_name=preprocessing_pipeline.err
+log_name=variantCalling_pipeline.log
+stderr_name=variantCalling_pipeline.err
 cores=24
 queue=thin
 
@@ -327,16 +294,16 @@ One example of a single node mode execution, on the **ORFEO cluster**, is:
 module load conda
 conda activate snakemake
 
-base_cwd=/<USER_DEFINED_PATH>/PREPROCESSING
+base_cwd=/<USER_DEFINED_PATH>/VAR_CALL
 log_folder=${base_cwd}/Log
 mkdir -p ${log_folder}
 cd ${base_cwd}
 
-snakefile=/<USER_DEFINED_PATH>/SeqPreproc-snakemake/Snakefile
-configfile=/<USER_DEFINED_PATH>/PREPROCESSING/preprocessing_pipeline.yaml
+snakefile=/<USER_DEFINED_PATH>/VariantCalling-snakemake/Snakefile
+configfile=/<USER_DEFINED_PATH>/VAR_CALL/variantCalling_pipeline.yaml
 
-log_name=preprocessing_pipeline.log
-stderr_name=preprocessing_pipeline.err
+log_name=variantCalling_pipeline.log
+stderr_name=variantCalling_pipeline.err
 cores=24
 queue=thin
 mem=750g

@@ -32,16 +32,10 @@ sample_names = list(samples_df.SAMPLE_ID)
 # we need file names for R1 and R2
 R1 = [ os.path.splitext(os.path.splitext(os.path.basename(fq1))[0])[0] for fq1 in samples_df.fq1 ]
 R2 = [ os.path.splitext(os.path.splitext(os.path.basename(fq2))[0])[0] for fq2 in samples_df.fq2 ]
-# print(sample_names)
-# print(R1)
-# print(R2)
-#get WGS calling intervals from GATK bundle
-# samples_df = pd.read_table(config["wgs_gatk"], sep=" ", header=0, dtype='object')
 # Define some variables
 PROJ= config["proj_name"]
 BASE_OUT=config["files_path"]["base_out"]
 
-# call_intervals=expand(config["callable_intervals"]+"/wgs_calling_regions_{chr}.GRCh38.p13.interval_list", chr=config["call_chr"])
 #this list of intervals is the complete liste we have to use when we work with all samples. If we are performing variant caling, we have to use the smartest get_intervals_by_sex function,
 #which allows us to define the interval list based on sample's sex
 call_intervals=expand("wgs_calling_regions_{chr}.GRCh38.p13.interval_list", chr=config["call_chr"])
