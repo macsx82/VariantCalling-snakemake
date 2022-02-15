@@ -28,7 +28,7 @@ samples: "VARCALL_SAMPLE_FILE_PATH"   # Manifest file with the list of sample id
 proj_name : "WGS_VarCalling" #name of the project to be used also as suffix for file naming in the final concat rule
 
 #########################
-#Define some variables to be used for RG creation.
+#Variables to be used for RG creation and compression level for bam files.
 #These variables can be left to this defaults values or set to the correct ones, if known.
 #
 lb : "L001"      #library name

@@ -185,7 +185,7 @@ At this point, we can proceed with the pipeline setup, the same we did for the S
 
 ---
 
-## Usage
+# Usage
 
 It is advised to clone the pipeline to a personal folder from the git repository, in order to be able to correctly execute the workflow.
 The clone command to use is:
@@ -202,7 +202,7 @@ Before running the pipeline, it is necessary to provide some information using a
 It is advisable not to execute the pipeline in the repository folder, but to create a separate folder and a copy of the config file to fill the relevant parameters.
 
 
-### Config file setup
+## Config file setup
 
 A config file template, with default values is provided and it is named **config.yaml** . The final user has to provide some information to the pipeline, in order to retrieve input files and to define output location.
 
@@ -232,9 +232,117 @@ The pipeline can be executed in different modes:
 - VQSR filtering
 - variant annotation
 
-To define the execution mode, we can set the parameter **pipe_mode** in the config file.
+To define the execution mode, we can set the parameter **pipe_mode** in the config file:
+
+```bash
+##############################
+pipe_mode : "BATCH" #change to: "JOINT_CALL" to work in joint call mode, "JOINT_CALL_UPDATE" to add new samples to an existing callset.
+
+```
+
+### Samples manifest and project name
+
+The user has to provide the path to a manifest file, generated as explained in the section **Other requirements** .
+It is advisable to provide a meaningful project name, in order to distinguish different pipeline runs. In joint_call mode and joint_call_update mode, the project name will be used to generate the name of the final vcf file.
+
+```bash
+########### INPUT DEFINITION ####################
+samples: "VARCALL_SAMPLE_FILE_PATH"   # Manifest file with the list of sample ids, relative fastq files to process and sex for each sample
+proj_name : "WGS_VarCalling" #name of the project to be used also as suffix for file naming in the final concat rule
+
+```
+
+### Read Group parameters
+
+After defining the manifest file and project name, the parameters **lp**, **pl** and **cl** are set up. Those parameters are used to fill the Read Group (RG) tag in the aligned bam/cram files. In the config file are provided default values that can be used. In case of different platform or in case that the library used is known, the user should fill the values accordingly.
+
+```bash
+#########################
+#Variables to be used for RG creation and compression level for bam files.
+#These variables can be left to this defaults values or set to the correct ones, if known.
+#
+lb : "L001"      #library name
+pl : "Illumina"  #sequencing platform
+cl : 5           #bam compression level
+```
+
+### References and intervals
+
+This section of the config file contains default values for the execution on the ORFEO cluster. At the moment, the paths provided point to a shared folder under the user "cocca", but they should be changed to a group shared path. The alternative, on ORFEO cluster, is to generate a resource folder for each user.
+
+```bash
+################### REFERENCES AND INTERVALS #####################################
+#paths and subfolders containing data we need for the pipeline to run
+references:
+  basepath: "/storage/burlo/cocca/resources"
+  provider: "hgRef"
+  release: "GRCh38.p13"
+
+genome_fasta: "GCA_000001405.15_GRCh38_full_plus_hs38d1_analysis_set.fna"
+callable_intervals: "wgs_intervals"
+#################################################################################
+known_variants:
+  dbsnp_latest: "/storage/burlo/cocca/resources/dbSNP/human_9606_b154_GRCh38p12/GCF_000001405.38.vcf.gz"
+  dbsnp: "/storage/burlo/cocca/resources/gatk4hg38db/dbsnp_151.hg38.vcf.gz"
+  hapmap: "/storage/burlo/cocca/resources/gatk4hg38db/hapmap_3.3.hg38.vcf.gz"
+  g1k: "/storage/burlo/cocca/resources/gatk4hg38db/1000G_phase1.snps.high_confidence.hg38.vcf.gz"
+  omni: "/storage/burlo/cocca/resources/gatk4hg38db/1000G_omni2.5.hg38.vcf.gz"
+  mills: "/storage/burlo/cocca/resources/gatk4hg38db/Mills_and_1000G_gold_standard.indels.hg38.vcf.gz"
+  indels: "/storage/burlo/cocca/resources/gatk4hg38db/Homo_sapiens_assembly38.known_indels.vcf.gz"
+  axiom: "/storage/burlo/cocca/resources/gatk4hg38db/Axiom_Exome_Plus.genotypes.all_populations.poly.hg38.vcf.gz"
 
 
+```
+
+### Chromosome definition
+
+The user can specify the chromosomes to be processed. Regarding chrX , to correctly perform the variant calling, the user has to use the notation **"chrX_PAR"**,**"chrX_NONPAR"**.
+
+```bash
+#################################################################################
+# Subset of chromosomes to call
+call_chr: ["chr1","chr2","chr3","chr4","chr5","chr6","chr7","chr8","chr9","chr10","chr11","chr12","chr13","chr14","chr15","chr16","chr17","chr18","chr19","chr20","chr21","chr22","chrX_PAR","chrX_NONPAR","chrY"]
+############################################
+
+```
+
+### Rules parameters
+
+This section of the config file contains parameters that should be modified only if the relevant rules o tools change because of new software version.
+
+### Paths definition
+
+The bottom section of the config file allow the user to specify the output paths and the paths of each tool used.
+
+Regarding output paths, if a relative path is provided, all folders will be generated in a path relative to the current pipeline execution folder.
+The **base_joint_call_path** parameter will be used to generate some symlink to allow for the joint variant calling mode to correctly retrieve the input files.
+
+```bash
+############# PATHS #############
+### - OUTPUT PATHS - ###
+files_path:
+  base_out: "VARCALL_OUT_FOLDER"
+  tmp: "localtemp"
+  log_dir: "Log"
+  benchmark: "benchmarks"
+  base_joint_call_path : "[...]" #this folder should be located in a different path, so that can be accessed by all concurrent batch instances of the pipeline, to create symlink to gvcf files. Than, it could be read in joint call mode and used to perform DbImport and all other steps
+```
+
+The PATH TOOL section contains path of the binary used in the pipeline. This path should be changed only if the software used are not available in the user **$PATH** , following a custom installation, for example.
+
+```bash
+### - PATH TOOL - ###
+ALIGN_TOOL: "bwa-mem2"
+PHASE_TOOL: "eagle"
+PICARD_TOOL: "picard"
+SAMBAMBA_TOOL: "sambamba"
+SAMTOOLS: "samtools"
+BCFTOOLS: "bcftools"
+GATK_TOOL: "gatk"
+BEDTOOLS: "bedtools"
+```
+
+---
 
 ### Running the pipeline
 
