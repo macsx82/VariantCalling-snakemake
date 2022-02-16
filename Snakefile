@@ -116,7 +116,7 @@ else :
         include_prefix + "/vcf_stats.smk"
 
 onstart:
-    if config.get("paths").get("base_joint_call_path") == "":
+    if config.get("files_path").get("base_joint_call_path") == "":
         print("The parameter base_joint_call_path is not defined!!")
         print("You need to define this parameter in order to start the pipeline!")
         shell("exit 1")
