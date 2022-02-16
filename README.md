@@ -169,6 +169,22 @@ Using the par regions bed file, we can generate intervals for PAR regions on X c
 
 **We need to manually modify the NON PAR regions start and end, since the bedtools operation leave the data with a 0-based position.**
 
+i.e. the NON PAR file will have the following cohordinates for the first interval:
+
+```
+chrX    2781479 37099262        +       ACGTmer
+```
+Since the START position (2781479) is overlapping with the END position of the PAR1 region (2781479), we need to shift by 1 base, that cohordinate.
+
+Same for the last interval:
+
+```
+chrX    144475607       155701383       +       ACGTmer
+```
+
+We need to fix the overlap between the END position (155701383) and the START position of the PAR2 region (155701383), shifting by 1 base.
+
+
 ### Other requirements
 
 Absolute paths of the fastq files (saparate files for R1 and R2 strand) to be processed, produced by the [SeqPreprocessing](https://gitlab.burlo.trieste.it/max/SeqPreproc-snakemake/-/tree/main) pipeline.
@@ -254,7 +270,7 @@ proj_name : "WGS_VarCalling" #name of the project to be used also as suffix for 
 
 ### Read Group parameters
 
-After defining the manifest file and project name, the parameters **lp**, **pl** and **cl** are set up. Those parameters are used to fill the Read Group (RG) tag in the aligned bam/cram files. In the config file are provided default values that can be used. In case of different platform or in case that the library used is known, the user should fill the values accordingly.
+After defining the manifest file and project name, the parameters **lb**, **pl** and **cl** are set up. Those parameters are used to fill the Read Group (RG) tag in the aligned bam/cram files. In the config file are provided default values that can be used. In case of different platform or in case that the library used is known, the user should fill the values accordingly.
 
 ```bash
 #########################
@@ -343,8 +359,59 @@ BEDTOOLS: "bedtools"
 ```
 
 ---
+## Details on Execution modes
 
-### Running the pipeline
+As explained above, the pipeline can be executed in different modes:
+
+- **BATCH**
+- **JOINT_CALL**
+- **JOINT_CALL_UPDATE**
+
+
+**BATCH mode** is always the mode to choose if you are processing samples from scratch, to perform alignment and variant calling using GATK HaplotypeCaller. With this mode the pipeline will work by sample.
+If you plan to perform joint variant calling, after this first step, you have to specify a working location for the pipeline, using the parameter "base_joint_call_path" in the config file.
+The value of this parameter should be always the same, for each batch mode pipeline run, if you plan to perform joint calling on all your processed samples.
+For example, if you have 30 samples splitted in 3 batches of 10 samples each and you process them with 3 different runs of the pipeline for alignment and variant calling, you should specify the same location in the "base_joint_call_path" parameter.
+
+
+
+**JOINT_CALL mode** is ideally the second step in a population-based callset.
+To activate this mode, you should set the "pipe_mode" parameter accordingly. It is advisable to run the pipeline in a different working folder with respect to the BATCH mode runs. For example:
+We run 3 batches of samples in BATCH mode in the following paths:
+
+```bash
+/large/___HOME___/burlo/cocca/analyses/WGS_HC/AREA/20211116_VARCALL/BATCHES/BATCH000
+/large/___HOME___/burlo/cocca/analyses/WGS_HC/AREA/20211116_VARCALL/BATCHES/BATCH001
+/large/___HOME___/burlo/cocca/analyses/WGS_HC/AREA/20211116_VARCALL/BATCHES/BATCH002
+```
+
+for each batch we have a config file with all the relevant parameter set, and for all batches, the "base_joint_call_path" parameter points at:
+
+```bash
+  base_joint_call_path : "/large/___SCRATCH___/burlo/cocca/WGS_JOINT_CALL/20220216"
+
+```
+
+This way 
+
+- joint variant calling
+- VQSR filtering
+- variant annotation
+
+ 
+**JOINT_CALL_UPDATE** mode is meant to be used to add new samples to an existing callset, **after performing a BATCH mode run**, using the 'ImportDB' update mode and performing :
+
+- joint variant calling
+- VQSR filtering
+- variant annotation
+
+---
+## Output
+
+
+---
+
+## Running the pipeline
 
 There are different ways to run the pipeline: **Local mode**, **Cluster mode** or **Single node mode**
 
