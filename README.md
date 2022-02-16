@@ -372,17 +372,18 @@ As explained above, the pipeline can be executed in different modes:
 If you plan to perform joint variant calling, after this first step, you have to specify a working location for the pipeline, using the parameter "base_joint_call_path" in the config file.
 The value of this parameter should be always the same, for each batch mode pipeline run, if you plan to perform joint calling on all your processed samples.
 For example, if you have 30 samples splitted in 3 batches of 10 samples each and you process them with 3 different runs of the pipeline for alignment and variant calling, you should specify the same location in the "base_joint_call_path" parameter.
-
+**The parameter "base_joint_call_path" cannot be left with the default setting (empty string), otherwise the pipeline will produce an error.**
 
 
 **JOINT_CALL mode** is ideally the second step in a population-based callset.
-To activate this mode, you should set the "pipe_mode" parameter accordingly. It is advisable to run the pipeline in a different working folder with respect to the BATCH mode runs. For example:
+To activate this mode, you should set the "pipe_mode" parameter accordingly. It is advisable to run the pipeline in a different working folder with respect to the BATCH mode runs.
+For example:
 We run 3 batches of samples in BATCH mode in the following paths:
 
 ```bash
-/large/___HOME___/burlo/cocca/analyses/WGS_HC/AREA/20211116_VARCALL/BATCHES/BATCH000
-/large/___HOME___/burlo/cocca/analyses/WGS_HC/AREA/20211116_VARCALL/BATCHES/BATCH001
-/large/___HOME___/burlo/cocca/analyses/WGS_HC/AREA/20211116_VARCALL/BATCHES/BATCH002
+${HOME}/WGS_HC/20220216_VARCALL/BATCHES/BATCH000
+${HOME}/WGS_HC/20220216_VARCALL/BATCHES/BATCH001
+${HOME}/WGS_HC/20220216_VARCALL/BATCHES/BATCH002
 ```
 
 for each batch we have a config file with all the relevant parameters set and, for all batches, the "base_joint_call_path" parameter points at:
@@ -392,22 +393,86 @@ for each batch we have a config file with all the relevant parameters set and, f
 
 ```
 
-This way 
+This way all the processed samples will have a symlink to the joint variant calling folder, so that the pipeline can perform all the subsequent steps.
+This folder will be the base folder for the creation of the DBImport database, in the default folder named as "6.DbImport".
+The "6.DbImport" folder will be referenced also when using the JOINT_CALL_UPDATE mode.
 
-- joint variant calling
-- VQSR filtering
-- variant annotation
+To start a JOINT_CALL run, we will create a new folder, for example in:
 
- 
-**JOINT_CALL_UPDATE** mode is meant to be used to add new samples to an existing callset, **after performing a BATCH mode run**, using the 'ImportDB' update mode and performing :
+```bash
+${HOME}/WGS_HC/20220216_JOINT_CALL
+```
 
-- joint variant calling
-- VQSR filtering
-- variant annotation
+And we will need to create a new config file, using as template one of the config files generated for the BATCH mode. This way we will have all the parameters correctly set, even the mandatory "base_joint_call_path".
+The user should also provide a new manifest file, containing ALL the processed samples information. This could be done merging together the manifest files of different batches, i.e.:
+
+```bash
+
+(echo "SAMPLE_ID fq1 fq2 sex";cat ${HOME}/WGS_HC/20220216_VARCALL/BATCHES/BATCH000/manifest_file_BATCH000.txt ${HOME}/WGS_HC/20220216_VARCALL/BATCHES/BATCH001/manifest_file_BATCH001.txt ${HOME}/WGS_HC/20220216_VARCALL/BATCHES/BATCH002/manifest_file_BATCH002.txt | fgrep -v "SAMPLE_ID" ) > ${HOME}/WGS_HC/20220216_JOINT_CALL/manifest_file_JOINT.txt
+```
+
+That will include all 30 samples already processed that will undergo joint calling procedures and will be the new value of the "samples" parameter in the new config file.
+
+
+In **JOINT_CALL_UPDATE** mode, the pipeline will exploit a feature introduced by GATK v4.2+ that allow to UPDATE the DBImport object. This way, you will save some time, since you will perform only the GVCFGenotype step, on the whole callset.
+This mode should be chosen if you plan to add samples on a population-based callset. As a first step you should perform a standard BATCH mode run, to align and generate the GVCF files for each new sample.
+After the batch mode run, similarly to the JOINT_CALL mode, it is advisable to create a new working folder for the pipeline to run, and a new config file, specifying the new pipeline mode.
+In addition, you have to add the new samples to the manifest file with all the existing samples in your call set. If we want to add a 4th batch to our callset, for example, we will run:
+
+```bash
+mkdir -p ${HOME}/WGS_HC/20220216_JOINT_CALL_UPDATE
+cp ${HOME}/WGS_HC/20220216_JOINT_CALL/config.yaml ${HOME}/WGS_HC/20220216_JOINT_CALL_UPDATE/config.yaml
+
+(echo "SAMPLE_ID fq1 fq2 sex";cat ${HOME}/WGS_HC/20220216_JOINT_CALL/manifest_file_JOINT.txt ${HOME}/WGS_HC/20220216_VARCALL/BATCHES/BATCH003/manifest_file_BATCH003.txt | fgrep -v "SAMPLE_ID" ) > ${HOME}/WGS_HC/20220216_JOINT_CALL_UPDATE/manifest_file_JOINT_UPDATED.txt
+```
+
+Then we need to point the "samples" parameter to the new manifest file. In this case, there will be no need to modify anything else, since all the parameter needed have been already set by the previous joint calling run.
 
 ---
 ## Output
 
+The pipeline produces different outputs by sample, when in BATCH mode, and by cohort, when in JOINT_CALL mode.
+
+For a BATCH mode run, the output folder structure will look as follow:
+
+```
+.
+├── 1.ALIGNMENT
+├── 2.BQSR
+├── 3.VarCall
+├── 4.Stats
+└── localtemp
+
+```
+
+The folder "3.VarCall" will contain a subfolder for each sample, with the GVCF files generated by GATK HaplotypeCaller. Those files will be referenced to when in JOINT_CALL mode.
+
+When in JOINT_CALL mode, the folder structure will be as follow:
+
+```
+.
+├── [SAMPLE_ID1]
+├── [SAMPLE_ID2]
+├── ....
+├── [SAMPLE_IDn]
+├── 5.SplittedIntervals
+├── 6.DbImport
+├── 7.GenotypeGVCFs
+├── 8.VQSR_input
+├── 9.VQSR
+├── 10.Apply_VQSR
+├── 11.rsID_annotation
+├── 12.Concat_vcf
+
+```
+
+There will be a folder for each sample processed in batch mode and included in the call set.
+The "6.DbImport" folder will contain the variant DB generated to perform the joint calling.
+The "7.GenotypeGVCFs" folder will contain the GVCF actual calls for all samples
+The "8.VQSR_input" and "9.VQSR" folders will contain VCF format files used to perform the VQSR filtering by GATK and the recalibration tables and outputs.
+The "10.Apply_VQSR" folder will contain the VCF files after the application of the VQSR filter.
+The "11.rsID_annotation" folder will contain rsID annotated VCF files (splitted by chromosome)
+The "12.Concat_vcf" folder will contain a single file with chromosomes from 1 to X. Chromosome Y is not included since it is called only for males samples. ChrY data can be still found in the previous folder.
 
 ---
 
