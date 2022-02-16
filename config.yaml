@@ -151,7 +151,7 @@ files_path:
   tmp: "localtemp"
   log_dir: "Log"
   benchmark: "benchmarks"
-  base_joint_call_path : "[...]" #this folder should be located in a different path, so that can be accessed by all concurrent batch instances of the pipeline, to create symlink to gvcf files. Than, it could be read in joint call mode and used to perform DbImport and all other steps
+  base_joint_call_path : "" #this folder should be located in a different path, so that can be accessed by all concurrent batch instances of the pipeline, to create symlink to gvcf files. Than, it could be read in joint call mode and used to perform DbImport and all other steps
 
 
 ### - PATH TOOL - ###

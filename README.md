@@ -385,7 +385,7 @@ We run 3 batches of samples in BATCH mode in the following paths:
 /large/___HOME___/burlo/cocca/analyses/WGS_HC/AREA/20211116_VARCALL/BATCHES/BATCH002
 ```
 
-for each batch we have a config file with all the relevant parameter set, and for all batches, the "base_joint_call_path" parameter points at:
+for each batch we have a config file with all the relevant parameters set and, for all batches, the "base_joint_call_path" parameter points at:
 
 ```bash
   base_joint_call_path : "/large/___SCRATCH___/burlo/cocca/WGS_JOINT_CALL/20220216"
