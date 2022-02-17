@@ -341,7 +341,7 @@ files_path:
   tmp: "localtemp"
   log_dir: "Log"
   benchmark: "benchmarks"
-  base_joint_call_path : "[...]" #this folder should be located in a different path, so that can be accessed by all concurrent batch instances of the pipeline, to create symlink to gvcf files. Than, it could be read in joint call mode and used to perform DbImport and all other steps
+  base_joint_call_path : "" #this folder should be located in a different path, so that can be accessed by all concurrent batch instances of the pipeline, to create symlink to gvcf files. Than, it could be read in joint call mode and used to perform DbImport and all other steps
 ```
 
 The PATH TOOL section contains path of the binary used in the pipeline. This path should be changed only if the software used are not available in the user **$PATH** , following a custom installation, for example.
