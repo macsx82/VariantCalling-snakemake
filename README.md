@@ -4,6 +4,7 @@ A Snakemake implementation of the variant calling pipeline
 
 This pipeline is designed to perform Variant calling on WGS data, starting from preprocessed fastq files. A pipeline to perform the necessary preprocessing steps is available [here](https://gitlab.burlo.trieste.it/max/SeqPreproc-snakemake/-/tree/main)
 
+This pipeline is designed following [GATK best practices](https://gatk.broadinstitute.org/hc/en-us/articles/360035894711-About-the-GATK-Best-Practices).
 
 ---
 
@@ -195,6 +196,7 @@ Manifest file following the template provided in the **resource** folder, space 
 SAMPLE_ID fq1 fq2 sex
 ```
 
+Sex has to be coded as 1=MALE and 2=FEMALE.
 
 At this point, we can proceed with the pipeline setup, the same we did for the SeqPreprocessing pipeline.
 
@@ -467,11 +469,17 @@ When in JOINT_CALL mode, the folder structure will be as follow:
 ```
 
 There will be a folder for each sample processed in batch mode and included in the call set.
+
 The "6.DbImport" folder will contain the variant DB generated to perform the joint calling.
-The "7.GenotypeGVCFs" folder will contain the GVCF actual calls for all samples
-The "8.VQSR_input" and "9.VQSR" folders will contain VCF format files used to perform the VQSR filtering by GATK and the recalibration tables and outputs.
+
+The "7.GenotypeGVCFs" folder will contain the GVCF actual calls for all samples.
+
+The "8.VQSR_input" and "9.VQSR" folders will contain VCF format files used to perform the [VQSR filtering by GATK](https://gatk.broadinstitute.org/hc/en-us/articles/4405443709595-VariantRecalibrator) and the recalibration tables and outputs.
+
 The "10.Apply_VQSR" folder will contain the VCF files after the application of the VQSR filter.
+
 The "11.rsID_annotation" folder will contain rsID annotated VCF files (splitted by chromosome)
+
 The "12.Concat_vcf" folder will contain a single file with chromosomes from 1 to X. Chromosome Y is not included since it is called only for males samples. ChrY data can be still found in the previous folder.
 
 ---

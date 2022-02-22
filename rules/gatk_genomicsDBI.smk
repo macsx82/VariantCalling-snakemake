@@ -32,7 +32,6 @@ rule gatk_genomics_db_import:
         """
         echo "Let\'s do stuff with {input.import_interval}...."
         mkdir -p {params.tmp}
-        # {params.gatk} --java-options "{params.java_opt}" GenomicsDBImport --genomicsdb-workspace-path {output[0]} {params.fixed_args} -L {input.import_interval} -V {params.gvcf_args} --tmp-dir {params.tmp} > {log[0]} 2> {log[1]}
         {params.gatk} --java-options "{params.java_opt}" GenomicsDBImport {params.genomics_db_option} {output[0]} {params.fixed_args} -L {input.import_interval} -V {params.gvcf_args} --tmp-dir {params.tmp} > {log[0]} 2> {log[1]}
         """
 
