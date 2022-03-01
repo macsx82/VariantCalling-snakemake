@@ -419,16 +419,11 @@ That will include all 30 samples already processed that will undergo joint calli
 In **JOINT_CALL_UPDATE** mode, the pipeline will exploit a feature introduced by GATK v4.2+ that allow to UPDATE the DBImport object. This way, you will save some time, since you will perform only the GVCFGenotype step, on the whole callset.
 This mode should be chosen if you plan to add samples on a population-based callset. As a first step you should perform a standard BATCH mode run, to align and generate the GVCF files for each new sample.
 After the batch mode run, similarly to the JOINT_CALL mode, it is advisable to create a new working folder for the pipeline to run, and a new config file, specifying the new pipeline mode.
-In addition, you have to add the new samples to the manifest file with all the existing samples in your call set. If we want to add a 4th batch to our callset, for example, we will run:
 
-```bash
-mkdir -p ${HOME}/WGS_HC/20220216_JOINT_CALL_UPDATE
-cp ${HOME}/WGS_HC/20220216_JOINT_CALL/config.yaml ${HOME}/WGS_HC/20220216_JOINT_CALL_UPDATE/config.yaml
+**In this mode, you need to provide, as a sample manifest file, only the list of the NEW samples added to the call set.**
 
-(echo "SAMPLE_ID fq1 fq2 sex";cat ${HOME}/WGS_HC/20220216_JOINT_CALL/manifest_file_JOINT.txt ${HOME}/WGS_HC/20220216_VARCALL/BATCHES/BATCH003/manifest_file_BATCH003.txt | fgrep -v "SAMPLE_ID" ) > ${HOME}/WGS_HC/20220216_JOINT_CALL_UPDATE/manifest_file_JOINT_UPDATED.txt
-```
-
-Then we need to point the "samples" parameter to the new manifest file. In this case, there will be no need to modify anything else, since all the parameter needed have been already set by the previous joint calling run.
+Then we need to point the "samples" parameter to the new manifest file.
+In this case, there will be no need to modify anything else, since all the parameter needed have been already set by the previous joint calling run.
 
 ---
 ## Output
