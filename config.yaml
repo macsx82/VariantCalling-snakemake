@@ -109,7 +109,7 @@ rules:
     out_dir: "5.SplittedIntervals"
   gatk_genomics_db_import:
     #This parameter is used to trigger the creation of a new db_import or to append data to existing resources. To add data to an existing db, change the parameter to --genomicsdb-update-workspace-path
-    genomics_db_option: "--genomicsdb-workspace-path" #default: --genomicsdb-workspace-path. Allowed: --genomicsdb-workspace-path/--genomicsdb-update-workspace-path
+    # genomics_db_option: "--genomicsdb-workspace-path" #default: --genomicsdb-workspace-path. Allowed: --genomicsdb-workspace-path/--genomicsdb-update-workspace-path
     arguments: "--genomicsdb-shared-posixfs-optimizations true --batch-size 100"
     out_dir: "6.DbImport"
   gatk_genotype_gvcfs:

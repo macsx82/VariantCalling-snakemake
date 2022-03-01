@@ -12,7 +12,8 @@ rule gatk_genomics_db_import:
         ref_genome=resolve_single_filepath(*references_abs_path(), config.get("genome_fasta")),
         java_opt=config['java_opts']['opt3x'],
         fixed_args=config.get("rules").get("gatk_genomics_db_import").get("arguments"),
-        genomics_db_option=config.get("rules").get("gatk_genomics_db_import").get("genomics_db_option"),
+        # genomics_db_option=config.get("rules").get("gatk_genomics_db_import").get("genomics_db_option"),
+        genomics_db_option="--genomicsdb-update-workspace-path",
         genomics_db_location=os.path.join(config.get("files_path").get("base_joint_call_path"),config.get("rules").get("gatk_genomics_db_import").get("out_dir"),"{scatteritem}_{interval_name}"),
         tmp=os.path.join(config.get("files_path").get("base_joint_call_path"),config.get("files_path").get("tmp")),
         gvcf_args=lambda wildcards : " -V ".join(expand(config["files_path"]["base_joint_call_path"] + "/{sample}/{sample}_{interval_name}_g.vcf.gz", sample=sample_names_from_interval(wildcards.interval_name), interval_name=wildcards.interval_name))
